@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import FestivalTag from '@/components/festival/FestivalTag';
 import Link from 'next/link';
 
 export default function Page() {
@@ -6,7 +6,7 @@ export default function Page() {
     <div>
       <h1>Home</h1>
       <Link href="/about">About</Link>
-      <Badge className="bg-red-500">만화</Badge>
+      <FestivalTag festivalType="comic" />
     </div>
   );
 }
