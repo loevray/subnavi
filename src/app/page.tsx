@@ -6,7 +6,7 @@ export default function Page() {
     <div>
       <h1>Home</h1>
       <Link href="/about">About</Link>
-      <FestivalTag festivalType="comic" />
+      <FestivalTag label="만화" color="bg-red-500" />
     </div>
   );
 }
