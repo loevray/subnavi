@@ -12,9 +12,13 @@ const meta = {
   tags: ['autodocs'],
   // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    festivalType: {
+    label: {
       control: 'text',
-      description: 'all | comic | game',
+      description: 'tag label',
+    },
+    color: {
+      control: 'text',
+      description: 'tailwind bg color like `bg-red-500`',
     },
   },
   // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
@@ -24,8 +28,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Default: Story = {
+export const Comic: Story = {
   args: {
-    festivalType: 'comic',
+    label: '만화',
+    color: 'bg-red-500',
+  },
+};
+
+export const Game: Story = {
+  args: {
+    label: '게임',
+    color: 'bg-blue-500',
   },
 };
