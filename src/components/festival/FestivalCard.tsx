@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from '../ui/card';
-import FestivalTag from './FestivalTag';
+import FestivalTag, { FestivalTagType } from './FestivalTag';
 interface I_FestivalCard {
   title: string;
   thumbnailSrc: string;
@@ -8,6 +8,7 @@ interface I_FestivalCard {
     end: string;
   };
   address: string;
+  tagData: FestivalTagType[];
 }
 
 export default function FestivalCard({
@@ -15,6 +16,7 @@ export default function FestivalCard({
   thumbnailSrc,
   dateRange,
   address,
+  tagData,
 }: I_FestivalCard) {
   return (
     <Card className="w-full max-w-sm py-0 overflow-hidden gap-0">
@@ -27,12 +29,17 @@ export default function FestivalCard({
         />
       </CardHeader>
       <CardContent className="flex flex-col gap-0.5 pt-2 pb-4">
-        <h1 className="font-bold truncate">{title}</h1>
+        <h1 title={title} className="font-bold truncate">
+          {title}
+        </h1>
         <span className="text-xs truncate">{`${dateRange.start} ~ ${dateRange.end}`}</span>
         <section className="flex items-end justify-between gap-2">
-          <address className="text-xs truncate flex-1">{address}</address>
-          <FestivalTag label="만화" color="bg-red-500" />
-          <FestivalTag label="장르 무관" color="bg-cyan-500" />
+          <address title={address} className="text-xs truncate flex-1">
+            {address}
+          </address>
+          {tagData.map(({ key, label, color }) => (
+            <FestivalTag key={key} label={label} color={color} />
+          ))}
         </section>
       </CardContent>
     </Card>
