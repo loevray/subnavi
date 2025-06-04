@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import FestivalCard from './FestivalCard';
-import { DUMMY_TAG_DATA } from '@/app/page';
+import { DUMMY_TAG_DATA } from './FestivalCard';
 
 const meta = {
   title: 'Festival/FestivalCard',
