@@ -11,6 +11,15 @@ interface I_FestivalCard {
   tagData: FestivalTagType[];
 }
 
+export const DUMMY_TAG_DATA = [
+  {
+    key: 'comic',
+    label: '만화',
+    color: 'bg-red-500',
+  },
+  { key: 'all', label: '장르무관', color: 'bg-cyan-500' },
+];
+
 export default function FestivalCard({
   title,
   thumbnailSrc,
@@ -19,7 +28,7 @@ export default function FestivalCard({
   tagData,
 }: I_FestivalCard) {
   return (
-    <Card className="w-full max-w-sm py-0 overflow-hidden gap-0">
+    <Card className="w-full max-w-sm py-0 overflow-hidden gap-0 hover:brightness-95 cursor-pointer">
       <CardHeader className="px-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
