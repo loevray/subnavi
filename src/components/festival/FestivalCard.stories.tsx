@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import FestivalCard from './FestivalCard';
-import { DUMMY_TAG_DATA } from './FestivalCard';
+import FestivalCard, { DUMMY_FESTIVAL_CARD_DATA } from './FestivalCard';
 
 const meta = {
   title: 'Festival/FestivalCard',
@@ -41,21 +40,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    title: '코믹월드 SUMMER 2025',
-    dateRange: { start: '2025.07.19', end: '2025.07.20' },
-    address: '일산 킨텍스 제1전시장',
-    thumbnailSrc:
-      'https://comicw.co.kr/data/item/1748337413/11_7J6E7Iuc7Ys7Iqk7YSw_6riw67O4.png',
-    tagData: DUMMY_TAG_DATA,
+    ...DUMMY_FESTIVAL_CARD_DATA[0],
   },
 };
 
 export const Truncated: Story = {
   args: {
-    title: '가나다라마바사아자차카타파하 가나다라마바사아자차카타파하',
-    dateRange: { start: '2025.07.19', end: '2025.07.20' },
-    address: '여기서 저기로 가면 저기서 여기로 가고 여기서 저기로',
-    thumbnailSrc: 'https://picsum.photos/600/400',
-    tagData: DUMMY_TAG_DATA,
+    ...DUMMY_FESTIVAL_CARD_DATA[1], //long text
   },
 };
