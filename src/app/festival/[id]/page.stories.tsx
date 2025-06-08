@@ -1,17 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import FestivalDetail from '../[id]/page';
-import { Suspense } from 'react';
+import { rscDecorator } from '../../../../.storybook/decorators';
 
 const meta = {
   title: 'Festival/FestivalDetail',
   component: FestivalDetail,
-  decorators: [
-    (Story) => (
-      <Suspense>
-        <Story />
-      </Suspense>
-    ),
-  ],
+  decorators: [rscDecorator],
   parameters: {
     layout: 'centered',
   },

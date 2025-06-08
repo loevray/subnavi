@@ -8,13 +8,6 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div style={{ width: '1000px' }}>
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     title: {
       control: 'text',
