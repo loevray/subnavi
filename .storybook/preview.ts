@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/nextjs-vite';
 import '../src/app/globals.css';
+import { withMainLayout } from '../.storybook/decorators';
 
 const preview: Preview = {
   parameters: {
@@ -9,7 +10,9 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    layout: 'fullscreen',
   },
+  decorators: [withMainLayout],
 };
 
 export default preview;
