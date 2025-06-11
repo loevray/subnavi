@@ -1,13 +1,20 @@
 import { z } from 'zod';
 import { Constants } from '../../../database.types';
 
-export const EventSchema = z.object({
+export const CreateEventSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional().nullable(),
   start_datetime: z.string().min(1), // ISO datetime string
   end_datetime: z.string().min(1),
   location: z.string().min(1),
-  region_id: z.number().optional().nullable(),
+  category_ids: z.array(
+    z.number().int().min(1).max(Constants.public.Enums.category_name.length)
+  ),
+  region_id: z
+    .number()
+    .int()
+    .min(1)
+    .max(Constants.public.Enums.region_name.length),
   poster_image_url: z.string().url().optional().nullable(),
   thumbnail_image_url: z.string().url().optional().nullable(),
   organizer_name: z.string().min(1),
@@ -22,8 +29,4 @@ export const EventSchema = z.object({
   event_rules: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
   status: z.enum(Constants.public.Enums.event_status).optional().nullable(),
-  view_count: z.number().int().optional().nullable(),
-  is_approved: z.boolean().optional().nullable(),
-  created_at: z.string().datetime().optional().nullable(),
-  updated_at: z.string().datetime().optional().nullable(),
 });
