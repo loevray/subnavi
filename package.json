@@ -26,7 +26,8 @@
     "react-dom": "^19.0.0",
     "simple-icons": "^15.0.0",
     "supabase": "^2.24.3",
-    "tailwind-merge": "^3.3.0"
+    "tailwind-merge": "^3.3.0",
+    "zod": "^3.25.61"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.0.0-next.16",
