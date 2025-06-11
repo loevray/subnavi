@@ -1,3 +1,4 @@
+import { EventSchema } from '@/schema/zod/events';
 import { createClient } from '@/utils/supabase/server';
 
 const EVENTS_TABLE = 'events';
@@ -48,6 +49,22 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  //행사 추가
-  return request;
+  const json = await request.json();
+  const parsed = EventSchema.safeParse(json);
+
+  if (!parsed.success) {
+    return Response.json(parsed.error.flatten(), { status: 400 });
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from(EVENTS_TABLE)
+    .upsert([parsed.data]); // 배열형 필요시 유지
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return Response.json(data, { status: 200 });
 }
