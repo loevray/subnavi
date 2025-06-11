@@ -49,6 +49,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  //태그도 받아와야 함
+  //event categori목록을 db에서 쿼리 후 fe에 제공, 그 값을 기반으로 태그를 fe에서 be로 넘겨줘야 무결성이 보장된다.
+
   const json = await request.json();
   const parsed = EventSchema.safeParse(json);
 
@@ -56,15 +59,19 @@ export async function POST(request: Request) {
     return Response.json(parsed.error.flatten(), { status: 400 });
   }
 
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from(EVENTS_TABLE)
-    .upsert([parsed.data]); // 배열형 필요시 유지
+    const { data, error } = await supabase
+      .from(EVENTS_TABLE)
+      .upsert(parsed.data);
 
-  if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    if (error) {
+      return Response.json({ error: error.message }, { status: 500 });
+    }
+
+    return Response.json(data, { status: 201 });
+  } catch {
+    return Response.json({ error: 'Failed to create events' }, { status: 500 });
   }
-
-  return Response.json(data, { status: 200 });
 }
