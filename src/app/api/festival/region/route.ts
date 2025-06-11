@@ -3,15 +3,13 @@ import { createClient } from '@/utils/supabase/server';
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data: categories, error } = await supabase
-      .from('categories')
-      .select('*');
+    const { data: regions, error } = await supabase.from('regions').select('*');
 
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json(categories);
+    return Response.json(regions);
   } catch (err) {
     console.log('Failed to fetch categories', err);
     return Response.json(
