@@ -12,15 +12,15 @@ export type Database = {
       categories: {
         Row: {
           id: number;
-          name: string;
+          name: Database['public']['Enums']['category_name'];
         };
         Insert: {
           id?: number;
-          name: string;
+          name: Database['public']['Enums']['category_name'];
         };
         Update: {
           id?: number;
-          name?: string;
+          name?: Database['public']['Enums']['category_name'];
         };
         Relationships: [];
       };
@@ -194,15 +194,15 @@ export type Database = {
       regions: {
         Row: {
           id: number;
-          name: string;
+          name: Database['public']['Enums']['region_name'];
         };
         Insert: {
           id?: number;
-          name: string;
+          name: Database['public']['Enums']['region_name'];
         };
         Update: {
           id?: number;
-          name?: string;
+          name?: Database['public']['Enums']['region_name'];
         };
         Relationships: [];
       };
@@ -246,7 +246,34 @@ export type Database = {
     };
     Enums: {
       age_rating: '전체관람가' | '12세 이상' | '15세 이상' | '18세 이상';
+      category_name:
+        | '만화'
+        | '웹툰'
+        | '게임'
+        | '코스프레'
+        | '판매부스'
+        | 'VTuber'
+        | '기타'
+        | '장르무관';
       event_status: 'active' | 'cancelled' | 'ended';
+      region_name:
+        | '서울'
+        | '부산'
+        | '대구'
+        | '인천'
+        | '광주'
+        | '대전'
+        | '울산'
+        | '세종'
+        | '경기'
+        | '강원'
+        | '충북'
+        | '충남'
+        | '전북'
+        | '전남'
+        | '경북'
+        | '경남'
+        | '제주';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -363,7 +390,36 @@ export const Constants = {
   public: {
     Enums: {
       age_rating: ['전체관람가', '12세 이상', '15세 이상', '18세 이상'],
+      category_name: [
+        '만화',
+        '웹툰',
+        '게임',
+        '코스프레',
+        '판매부스',
+        'VTuber',
+        '기타',
+        '장르무관',
+      ],
       event_status: ['active', 'cancelled', 'ended'],
+      region_name: [
+        '서울',
+        '부산',
+        '대구',
+        '인천',
+        '광주',
+        '대전',
+        '울산',
+        '세종',
+        '경기',
+        '강원',
+        '충북',
+        '충남',
+        '전북',
+        '전남',
+        '경북',
+        '경남',
+        '제주',
+      ],
     },
   },
 } as const;
