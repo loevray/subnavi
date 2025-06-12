@@ -17,7 +17,8 @@ export const EventSchema = z.object({
   description: z
     .string()
     .min(10, '설명은 최소 10글자 이상이어야 합니다.')
-    .optional(), // 설명은 10자 이상, 선택 사항
+    .optional()
+    .nullable(),
   location: z
     .string()
     .min(2, '장소는 최소 2글자 이상이어야 합니다.')
@@ -27,35 +28,37 @@ export const EventSchema = z.object({
     .min(2, '주최자 이름은 최소 2글자 이상이어야 합니다.')
     .max(100, '주최자 이름은 100글자를 초과할 수 없습니다.'),
   start_datetime: z.string(),
-
   end_datetime: z.string(),
-
   poster_image_url: z
     .string()
     .url('유효한 포스터 이미지 URL을 입력해주세요.')
-    .optional(),
+    .optional()
+    .nullable(),
   thumbnail_image_url: z
     .string()
     .url('유효한 썸네일 이미지 URL을 입력해주세요.')
-    .optional(),
+    .optional()
+    .nullable(),
   booking_link: z
     .string()
     .url('유효한 예약 링크 URL을 입력해주세요.')
-    .optional(),
+    .optional()
+    .nullable(),
   official_website: z
     .string()
     .url('유효한 공식 웹사이트 URL을 입력해주세요.')
-    .optional(),
+    .optional()
+    .nullable(),
 
-  age_rating: z.enum(Constants.public.Enums.age_rating).nullable(), // Enum 사용, nullable
+  age_rating: z.enum(Constants.public.Enums.age_rating).optional().nullable(), // Enum 사용, nullable
   current_participants: z
     .number()
     .int()
     .min(0, '현재 참가자 수는 0보다 작을 수 없습니다.')
     .nullable(), // 정수, 0 이상, nullable
-  event_rules: z.string().optional(), // 선택 사항
+  event_rules: z.string().optional().nullable(), // 선택 사항
   is_approved: z.boolean().nullable(), // nullable
-  notes: z.string().optional(), // 선택 사항
+  notes: z.string().optional().nullable(), // 선택 사항
   organizer_contact: z
     .string()
     .email('유효한 이메일 주소 또는 연락처를 입력해주세요.')
@@ -64,10 +67,11 @@ export const EventSchema = z.object({
     .number()
     .int()
     .min(1, '참가자 제한은 1 이상이어야 합니다.')
-    .nullable(), // 정수, 1 이상, nullable
+    .nullable()
+    .optional(), // 정수, 1 이상, nullable
   participation_fee: z.string().optional(), // 문자열 형식으로 저장되나, 금액이라면 숫자 변환 필요 여부 고려
   region_id: z.number().int().nullable(),
-  sns_links: SnsLinksJsonSchema.nullable(),
+  sns_links: SnsLinksJsonSchema.nullable().optional(),
   status: z.enum(Constants.public.Enums.event_status).nullable(),
   view_count: z
     .number()
@@ -112,26 +116,21 @@ export const UpdateEventRequestSchema = EventSchema.omit({
 export type UpdateEventRequest = z.infer<typeof UpdateEventRequestSchema>;
 
 export const CategoryNameSchema = z.enum(Constants.public.Enums.category_name);
-export const RegionNameSchema = z.enum(Constants.public.Enums.age_rating);
+export const RegionNameSchema = z.enum(Constants.public.Enums.region_name);
 
 export const EventCategorySchema = z.object({
   id: z.number().int(),
   name: CategoryNameSchema,
 });
 
-export const EventListItemSchema = z.object({
-  id: z.string().uuid(),
-  title: z.string(),
-  poster_image_url: z.string().url().optional(),
-  start_datetime: z
-    .string()
-    .datetime()
-    .transform((str) => new Date(str)),
-  end_datetime: z
-    .string()
-    .datetime()
-    .transform((str) => new Date(str)),
-  location: z.string(),
+export const EventListItemSchema = EventSchema.pick({
+  id: true,
+  title: true,
+  poster_image_url: true,
+  start_datetime: true,
+  end_datetime: true,
+  location: true,
+}).extend({
   event_categories: z.array(EventCategorySchema),
   region: RegionNameSchema,
 });
