@@ -1,4 +1,9 @@
-// lib/api-client.ts
+import {
+  CreateEventRequest,
+  EventsListResponse,
+  UpdateEventRequest,
+} from '@/schema/events';
+
 interface ApiResponse<T> {
   data?: T;
   error?: string;
@@ -150,28 +155,7 @@ const getApiBaseUrl = () => {
   return process.env.API_BASE_URL || 'http://localhost:3000/api';
 };
 
-// 싱글톤 인스턴스
 export const apiClient = new ApiClient(getApiBaseUrl());
-
-// 타입 정의 개선
-export interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string; // ISO 8601 형식 권장
-  location: string;
-  created_at: string; // ISO 8601 형식 권장
-}
-
-export type CreateEventRequest = Omit<Event, 'id' | 'created_at'>;
-export type UpdateEventRequest = Partial<Omit<Event, 'id' | 'created_at'>>;
-
-export interface EventsListResponse {
-  events: Event[];
-  total: number;
-  page?: number;
-  limit?: number;
-}
 
 export interface QueryParams {
   page?: number;
