@@ -1,4 +1,4 @@
-import { CreateEventSchema } from '@/schema/zod/events';
+import { CreateEventRequestSchema } from '@/schema/events';
 import { createClient } from '@/utils/supabase/server';
 
 const EVENTS_TABLE = 'events';
@@ -58,7 +58,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const parsed = CreateEventSchema.safeParse(body);
+  const parsed = CreateEventRequestSchema.safeParse(body);
 
   if (!parsed.success) {
     return Response.json(parsed.error.flatten(), { status: 400 });
