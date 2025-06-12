@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import FestivalDetail from '../[id]/page';
+import EventDetail from './page';
 import { rscDecorator } from '../../../../.storybook/decorators';
 
 const meta = {
-  title: 'Festival/FestivalDetail',
-  component: FestivalDetail,
+  title: 'Event/EventDetail',
+  component: EventDetail,
   decorators: [rscDecorator],
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {},
-} satisfies Meta<typeof FestivalDetail>;
+} satisfies Meta<typeof EventDetail>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

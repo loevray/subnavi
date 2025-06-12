@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '../ui/card';
-import FestivalTag, { FestivalTagType } from './FestivalTag';
-export interface I_FestivalCard {
+import EventTag, { EventTagType } from './EventTag';
+export interface I_EventCard {
   title: string;
   thumbnailSrc: string;
   dateRange: {
@@ -8,7 +8,7 @@ export interface I_FestivalCard {
     end: string;
   };
   address: string;
-  tagData: FestivalTagType[];
+  tagData: EventTagType[];
 }
 
 export const DUMMY_TAG_DATA = [
@@ -20,7 +20,7 @@ export const DUMMY_TAG_DATA = [
   { key: 'all', label: '장르무관', color: 'bg-cyan-500' },
 ];
 
-export const DUMMY_FESTIVAL_CARD_DATA: I_FestivalCard[] = [
+export const DUMMY_EVENT_CARD_DATA: I_EventCard[] = [
   {
     title: '코믹월드 SUMMER 2025',
     dateRange: { start: '2025.07.19', end: '2025.07.20' },
@@ -38,13 +38,13 @@ export const DUMMY_FESTIVAL_CARD_DATA: I_FestivalCard[] = [
   },
 ];
 
-export default function FestivalCard({
+export default function EventCard({
   title,
   thumbnailSrc,
   dateRange,
   address,
   tagData,
-}: I_FestivalCard) {
+}: I_EventCard) {
   return (
     <Card className="w-full max-w-sm py-0 overflow-hidden gap-0 hover:brightness-95 cursor-pointer">
       <CardHeader className="px-0">
@@ -52,7 +52,7 @@ export default function FestivalCard({
         <img
           className="w-full aspect-video object-cover"
           src={thumbnailSrc}
-          alt="festival thumbnail"
+          alt="event thumbnail"
         />
       </CardHeader>
       <CardContent className="flex flex-col gap-0.5 pt-2 pb-4">
@@ -65,7 +65,7 @@ export default function FestivalCard({
             {address}
           </address>
           {tagData.map(({ key, label, color }) => (
-            <FestivalTag key={key} label={label} color={color} />
+            <EventTag key={key} label={label} color={color} />
           ))}
         </section>
       </CardContent>
