@@ -1,4 +1,3 @@
-// types/api.ts
 export class ApiError extends Error {
   constructor(message: string, public status: number, public endpoint: string) {
     super(message);
@@ -6,14 +5,13 @@ export class ApiError extends Error {
   }
 }
 
-// lib/api-client- .ts
 import {
   CreateEventRequest,
+  Event,
   EventsListResponse,
   UpdateEventRequest,
 } from '@/schema/events';
 
-// 서버 컴포넌트용 API 클라이언트 (에러를 throw)
 class ApiClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string> = {};
