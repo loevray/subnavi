@@ -50,7 +50,7 @@ export async function GET() {
       };
     });
 
-    return Response.json(transformedEvents);
+    return Response.json({ events: transformedEvents });
   } catch {
     return Response.json({ error: 'Failed to fetch events' }, { status: 500 });
   }
