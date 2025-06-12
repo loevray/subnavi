@@ -1,2 +1,2 @@
-npm run test --no-cache
+npm run test -- --no-cache
 npx lint-staged
