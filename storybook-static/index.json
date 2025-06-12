@@ -1,1 +1,83 @@
-{"v":5,"entries":{"festival-festivaltag--docs":{"id":"festival-festivaltag--docs","title":"Festival/FestivalTag","name":"Docs","importPath":"./src/components/festival/FesitvalTag.stories.ts","type":"docs","tags":["dev","test","autodocs"],"storiesImports":[]},"festival-festivaltag--comic":{"type":"story","id":"festival-festivaltag--comic","name":"Comic","title":"Festival/FestivalTag","importPath":"./src/components/festival/FesitvalTag.stories.ts","componentPath":"./src/components/festival/FestivalTag.tsx","tags":["dev","test","autodocs"]},"festival-festivaltag--game":{"type":"story","id":"festival-festivaltag--game","name":"Game","title":"Festival/FestivalTag","importPath":"./src/components/festival/FesitvalTag.stories.ts","componentPath":"./src/components/festival/FestivalTag.tsx","tags":["dev","test","autodocs"]},"festival-festivalcard--docs":{"id":"festival-festivalcard--docs","title":"Festival/FestivalCard","name":"Docs","importPath":"./src/components/festival/FestivalCard.stories.tsx","type":"docs","tags":["dev","test","autodocs"],"storiesImports":[]},"festival-festivalcard--default":{"type":"story","id":"festival-festivalcard--default","name":"Default","title":"Festival/FestivalCard","importPath":"./src/components/festival/FestivalCard.stories.tsx","componentPath":"./src/components/festival/FestivalCard.tsx","tags":["dev","test","autodocs"]},"festival-festivalcard--truncated":{"type":"story","id":"festival-festivalcard--truncated","name":"Truncated","title":"Festival/FestivalCard","importPath":"./src/components/festival/FestivalCard.stories.tsx","componentPath":"./src/components/festival/FestivalCard.tsx","tags":["dev","test","autodocs"]}}}
+{
+  "v": 5,
+  "entries": {
+    "event-festivaltag--docs": {
+      "id": "event-festivaltag--docs",
+      "title": "Event/EventTag",
+      "name": "Docs",
+      "importPath": "./src/components/event/FesitvalTag.stories.ts",
+      "type": "docs",
+      "tags": [
+        "dev",
+        "test",
+        "autodocs"
+      ],
+      "storiesImports": []
+    },
+    "event-festivaltag--comic": {
+      "type": "story",
+      "id": "event-festivaltag--comic",
+      "name": "Comic",
+      "title": "Event/EventTag",
+      "importPath": "./src/components/event/FesitvalTag.stories.ts",
+      "componentPath": "./src/components/event/EventTag.tsx",
+      "tags": [
+        "dev",
+        "test",
+        "autodocs"
+      ]
+    },
+    "event-festivaltag--game": {
+      "type": "story",
+      "id": "event-festivaltag--game",
+      "name": "Game",
+      "title": "Event/EventTag",
+      "importPath": "./src/components/event/FesitvalTag.stories.ts",
+      "componentPath": "./src/components/event/EventTag.tsx",
+      "tags": [
+        "dev",
+        "test",
+        "autodocs"
+      ]
+    },
+    "event-festivalcard--docs": {
+      "id": "event-festivalcard--docs",
+      "title": "Event/EventCard",
+      "name": "Docs",
+      "importPath": "./src/components/event/EventCard.stories.tsx",
+      "type": "docs",
+      "tags": [
+        "dev",
+        "test",
+        "autodocs"
+      ],
+      "storiesImports": []
+    },
+    "event-festivalcard--default": {
+      "type": "story",
+      "id": "event-festivalcard--default",
+      "name": "Default",
+      "title": "Event/EventCard",
+      "importPath": "./src/components/event/EventCard.stories.tsx",
+      "componentPath": "./src/components/event/EventCard.tsx",
+      "tags": [
+        "dev",
+        "test",
+        "autodocs"
+      ]
+    },
+    "event-festivalcard--truncated": {
+      "type": "story",
+      "id": "event-festivalcard--truncated",
+      "name": "Truncated",
+      "title": "Event/EventCard",
+      "importPath": "./src/components/event/EventCard.stories.tsx",
+      "componentPath": "./src/components/event/EventCard.tsx",
+      "tags": [
+        "dev",
+        "test",
+        "autodocs"
+      ]
+    }
+  }
+}

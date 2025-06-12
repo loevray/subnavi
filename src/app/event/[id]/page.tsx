@@ -1,21 +1,21 @@
 import {
-  DUMMY_FESTIVAL_CARD_DATA,
-  I_FestivalCard,
-} from '@/components/festival/FestivalCard';
-import FestivalTag from '@/components/festival/FestivalTag';
+  DUMMY_EVENT_CARD_DATA,
+  I_EventCard,
+} from '@/components/event/EventCard';
+import EventTag from '@/components/event/EventTag';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ShareButtons from '@/components/ui/shareButtons';
 import Link from 'next/link';
 
-export interface I_FestivalDetail extends I_FestivalCard {
+export interface I_EventDetail extends I_EventCard {
   description: string;
   reservationLink: string;
 }
 
 const reservationLink = 'https://comicw.co.kr/';
 
-export default async function FestivalDetail({
+export default async function EventDetail({
   params,
 }: {
   params: { id: string };
@@ -24,7 +24,7 @@ export default async function FestivalDetail({
 
   // 실제 서비스에서는 id를 기반으로 데이터를 fetch 하셔야 합니다.
   const { title, dateRange, address, thumbnailSrc, tagData } =
-    DUMMY_FESTIVAL_CARD_DATA[0];
+    DUMMY_EVENT_CARD_DATA[0];
 
   return (
     <main className="container py-4 max-w-4xl">
@@ -35,7 +35,7 @@ export default async function FestivalDetail({
           </CardTitle>
           <div className="flex flex-wrap gap-2 mt-2">
             {tagData.map(({ key, label, color }) => (
-              <FestivalTag key={key} label={label} color={color} />
+              <EventTag key={key} label={label} color={color} />
             ))}
           </div>
         </CardHeader>
@@ -43,7 +43,7 @@ export default async function FestivalDetail({
           <div className="rounded-xl overflow-hidden">
             <img
               src={thumbnailSrc}
-              alt="festival thumbnail"
+              alt="event thumbnail"
               width={400}
               height={300}
               className="rounded-xl object-cover w-full h-auto"
@@ -79,7 +79,7 @@ export default async function FestivalDetail({
             <h2 className="text-xl font-semibold mb-4">행사 장소</h2>
             <div className="rounded-lg overflow-hidden">
               <iframe
-                title="festival-location-map"
+                title="event-location-map"
                 src={`https://www.google.com/maps?q=${encodeURIComponent(
                   address
                 )}&output=embed`}

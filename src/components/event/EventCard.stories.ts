@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import FestivalCard, { DUMMY_FESTIVAL_CARD_DATA } from './FestivalCard';
+import EventCard, { DUMMY_EVENT_CARD_DATA } from './EventCard';
 
 const meta = {
-  title: 'Festival/FestivalCard',
-  component: FestivalCard,
+  title: 'Event/EventCard',
+  component: EventCard,
   parameters: {
     layout: 'centered',
   },
@@ -11,34 +11,34 @@ const meta = {
   argTypes: {
     title: {
       control: 'text',
-      description: 'festival title',
+      description: 'event title',
     },
     thumbnailSrc: {
       control: 'text',
-      description: 'festival thumbnail image URL',
+      description: 'event thumbnail image URL',
     },
     dateRange: {
-      description: 'festival start date, end date',
+      description: 'event start date, end date',
       control: 'object',
     },
     address: {
       control: 'text',
-      description: 'festival address',
+      description: 'event address',
     },
   },
-} satisfies Meta<typeof FestivalCard>;
+} satisfies Meta<typeof EventCard>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    ...DUMMY_FESTIVAL_CARD_DATA[0],
+    ...DUMMY_EVENT_CARD_DATA[0],
   },
 };
 
 export const Truncated: Story = {
   args: {
-    ...DUMMY_FESTIVAL_CARD_DATA[1], //long text
+    ...DUMMY_EVENT_CARD_DATA[1], //long text
   },
 };
