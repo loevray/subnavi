@@ -6,7 +6,7 @@ export class ApiError extends Error {
   }
 }
 
-// lib/api-client-server.ts
+// lib/api-client- .ts
 import {
   CreateEventRequest,
   EventsListResponse,
@@ -14,7 +14,7 @@ import {
 } from '@/schema/events';
 
 // 서버 컴포넌트용 API 클라이언트 (에러를 throw)
-class ServerApiClient {
+class ApiClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string> = {};
 
@@ -139,11 +139,11 @@ class ServerApiClient {
 }
 
 // 서버 사이드 전용 설정
-const getServerApiBaseUrl = () => {
+const getApiBaseUrl = () => {
   return process.env.API_BASE_URL || 'http://localhost:3000/api';
 };
 
-export const serverApiClient = new ServerApiClient(getServerApiBaseUrl());
+export const apiClient = new ApiClient(getApiBaseUrl());
 
 export interface QueryParams {
   page?: number;
@@ -153,9 +153,7 @@ export interface QueryParams {
   sortOrder?: 'asc' | 'desc';
 }
 
-// 서버 컴포넌트용 이벤트 API (타입 보장)
-export const serverEventsApi = {
-  // 모든 이벤트 가져오기 - 타입이 보장됨
+export const EventsApi = {
   getAll: async (params?: QueryParams): Promise<EventsListResponse> => {
     const searchParams = new URLSearchParams();
     if (params) {
@@ -167,31 +165,31 @@ export const serverEventsApi = {
     }
     const queryString = searchParams.toString();
     const endpoint = queryString ? `/events?${queryString}` : '/events';
-    return serverApiClient.get<EventsListResponse>(endpoint);
+    return apiClient.get<EventsListResponse>(endpoint);
   },
 
   // 특정 이벤트 가져오기 - 타입이 보장됨
   getById: async (id: string): Promise<Event> => {
-    return serverApiClient.get<Event>(`/events/${id}`);
+    return apiClient.get<Event>(`/events/${id}`);
   },
 
   // 이벤트 생성 - 타입이 보장됨
   create: async (event: CreateEventRequest): Promise<Event> => {
-    return serverApiClient.post<Event>('/events', event);
+    return apiClient.post<Event>('/events', event);
   },
 
   // 이벤트 수정 - 타입이 보장됨
   update: async (id: string, event: UpdateEventRequest): Promise<Event> => {
-    return serverApiClient.patch<Event>(`/events/${id}`, event);
+    return apiClient.patch<Event>(`/events/${id}`, event);
   },
 
   // 이벤트 전체 교체 - 타입이 보장됨
   replace: async (id: string, event: CreateEventRequest): Promise<Event> => {
-    return serverApiClient.put<Event>(`/events/${id}`, event);
+    return apiClient.put<Event>(`/events/${id}`, event);
   },
 
   // 이벤트 삭제 - 타입이 보장됨
   delete: async (id: string): Promise<void> => {
-    return serverApiClient.delete<void>(`/events/${id}`);
+    return apiClient.delete<void>(`/events/${id}`);
   },
 };
