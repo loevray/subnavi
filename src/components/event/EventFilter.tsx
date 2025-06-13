@@ -47,30 +47,26 @@ export default function EventFilter({
   ];
 
   return (
-    <div className="py-8 bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap gap-3 justify-center">
-          {extendedCategories.map(({ id, name }) => {
-            const isSelected = selectedCategory === name;
-            return (
-              <Button
-                className={`
+    <div className="flex overflow-x-auto gap-3 w-full xl:justify-center px-4 sm:px-6 lg:px-8 ">
+      {extendedCategories.map(({ id, name }) => {
+        const isSelected = selectedCategory === name;
+        return (
+          <Button
+            className={`
                   px-6 py-2  border border-gray-200 rounded-full font-medium transition-all duration-300
                   ${
                     isSelected
                       ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
                       : 'bg-white text-gray-70 hover:bg-gray-50'
                   }`}
-                key={`${id}${name}`}
-                size="lg"
-                onClick={() => handleCategoryClick(name)}
-              >
-                {`${cateogriesWithEmojis[name] ?? '🎈'}  ${name}`}
-              </Button>
-            );
-          })}
-        </div>
-      </div>
+            key={`${id}${name}`}
+            size="lg"
+            onClick={() => handleCategoryClick(name)}
+          >
+            {`${cateogriesWithEmojis[name] ?? '🎈'}  ${name}`}
+          </Button>
+        );
+      })}
     </div>
   );
 }
