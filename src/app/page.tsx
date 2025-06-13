@@ -1,7 +1,7 @@
-import { serverEventsApi } from '@/lib/api-client-server';
+import { EventsApi } from '@/lib/api-client';
 
 export default async function Page() {
-  const data = await serverEventsApi.getAll();
+  const data = await EventsApi.getAll();
   console.log(data);
   return (
     <div>
