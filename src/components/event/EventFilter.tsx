@@ -1,13 +1,13 @@
 'use client';
 
-import { EventCategoriesResponse } from '@/schema/events';
-import { Database } from '../../../database.types';
+import { EventCategoriesResponse as BaseEventCategoriesResponse } from '@/schema/events';
 import { Button } from '../ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const cateogriesWithEmojis: Partial<{
-  [key in Database['public']['Enums']['category_name']]: string;
+  [key in ExtendedCategoryName]: string;
 }> = {
+  전체: '🎁',
   장르무관: '🔥',
   게임: '🎮',
   만화: '📚',
@@ -16,10 +16,19 @@ const cateogriesWithEmojis: Partial<{
   기타: '🎸',
 };
 
+type ExtendedCategoryName =
+  | BaseEventCategoriesResponse[number]['name']
+  | '전체';
+
+export type ExtendedEventCategoriesResponse = {
+  id: number;
+  name: ExtendedCategoryName;
+}[];
+
 export default function EventFilter({
   categories,
 }: {
-  categories: EventCategoriesResponse;
+  categories: ExtendedEventCategoriesResponse;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,11 +41,16 @@ export default function EventFilter({
     router.push(`?${params.toString()}`);
   };
 
+  const extendedCategories: ExtendedEventCategoriesResponse = [
+    { id: 999, name: '전체' },
+    ...categories,
+  ];
+
   return (
     <div className="py-8 bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap gap-3 justify-center">
-          {categories.map(({ id, name }) => {
+          {extendedCategories.map(({ id, name }) => {
             const isSelected = selectedCategory === name;
             return (
               <Button
