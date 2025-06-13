@@ -123,6 +123,8 @@ export const EventCategorySchema = z.object({
   name: CategoryNameSchema,
 });
 
+export type EventCategoriesResponse = z.infer<typeof EventCategorySchema>[];
+
 export const EventListItemSchema = EventSchema.pick({
   id: true,
   title: true,
