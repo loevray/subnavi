@@ -8,6 +8,7 @@ export class ApiError extends Error {
 import {
   CreateEventRequest,
   Event,
+  EventCategoriesResponse,
   EventsListResponse,
   UpdateEventRequest,
 } from '@/schema/events';
@@ -189,5 +190,8 @@ export const EventsApi = {
   // 이벤트 삭제 - 타입이 보장됨
   delete: async (id: string): Promise<void> => {
     return apiClient.delete<void>(`/events/${id}`);
+  },
+  Categories: {
+    getAll: () => apiClient.get<EventCategoriesResponse>('/events/categories'),
   },
 };
