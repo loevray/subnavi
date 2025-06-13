@@ -11,6 +11,9 @@ const preview: Preview = {
       },
     },
     layout: 'fullscreen',
+    nextjs: {
+      appDirectory: true,
+    },
   },
   decorators: [withMainLayout],
 };
