@@ -1,3 +1,4 @@
+import { GRID_STYLES } from '@/components/event/EventList';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Loading() {
@@ -16,7 +17,7 @@ export default function Loading() {
       </div>
 
       {/* Grid Skeleton */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className={GRID_STYLES}>
         {Array.from({ length: 10 }).map((_, i) => (
           <div key={i} className="space-y-3">
             <Skeleton className="h-[200px] w-full rounded-xl" />
