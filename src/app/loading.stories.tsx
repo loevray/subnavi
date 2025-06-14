@@ -6,7 +6,7 @@ const meta = {
   component: Loading,
 
   parameters: {
-    layout: 'centered',
+    layout: 'fullscreen',
   },
   tags: ['autodocs'],
   argTypes: {},
