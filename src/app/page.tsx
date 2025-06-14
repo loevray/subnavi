@@ -1,9 +1,8 @@
-import EventCard from '@/components/event/EventCard';
 import EventPagination from '@/components/event/EventPagination';
 import { EventsApi } from '@/lib/api-client';
 import EventFilter from '@/components/event/EventFilter';
 import EventListLayoutToggleButtons from '@/components/event/EventListLayoutToggleButtons';
-import Link from 'next/link';
+import EventList from '@/components/event/EventList';
 
 export default async function Page() {
   const { events } = await EventsApi.getAll();
@@ -13,7 +12,7 @@ export default async function Page() {
       <div className="py-8  bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
         <EventFilter categories={categories} />
       </div>
-      {/* Events Section */}
+
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full">
           {/* Section Header */}
@@ -29,49 +28,8 @@ export default async function Page() {
             <EventListLayoutToggleButtons />
           </div>
 
-          {/* Events Grid */}
-          <div
-            className="grid gap-4 place-items-center md:place-items-stretch 
-            grid-cols-1
-            md:grid-cols-2
-            lg:grid-cols-3
-            xl:grid-cols-4
-            2xl:grid-cols-5
-          "
-          >
-            {events.map(
-              ({
-                id,
-                title,
-                poster_image_url,
-                start_datetime,
-                end_datetime,
-                location,
-                event_categories,
-              }) => (
-                <Link
-                  key={id}
-                  href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/event/${id}`}
-                >
-                  <EventCard
-                    title={title}
-                    thumbnailSrc={
-                      poster_image_url ?? 'https://picsum.photos/600/400'
-                    }
-                    dateRange={{ start: start_datetime, end: end_datetime }}
-                    address={location}
-                    tagData={event_categories.map(({ id, name }) => ({
-                      key: `${id}`,
-                      label: name,
-                      color: 'bg-gradient-to-r from-indigo-500 to-purple-500',
-                    }))}
-                  />
-                </Link>
-              )
-            )}
-          </div>
+          <EventList events={events} />
 
-          {/* Improved Pagination */}
           <div className="mt-12">
             <div className="text-center mb-6">
               <div className="text-sm text-gray-600">

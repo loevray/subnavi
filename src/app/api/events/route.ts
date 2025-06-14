@@ -7,7 +7,6 @@ const EVENTS_LIST_QUERY = `
 id,
 title,
 poster_image_url,
-description,
 start_datetime,
 end_datetime,
 location
