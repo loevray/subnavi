@@ -51,7 +51,7 @@ export default function EventList({
           <Link key={id} href={createEventUrl(id)}>
             <EventCard
               title={title}
-              thumbnailSrc={poster_image_url ?? DEFAULT_THUMBNAIL}
+              posterImageUrl={poster_image_url ?? DEFAULT_THUMBNAIL}
               dateRange={dateRange}
               address={location}
               tagData={tags}

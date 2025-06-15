@@ -23,7 +23,7 @@ export default async function EventDetail({
   const { id } = await params;
 
   // 실제 서비스에서는 id를 기반으로 데이터를 fetch 하셔야 합니다.
-  const { title, dateRange, address, thumbnailSrc, tagData } =
+  const { title, dateRange, address, posterImageUrl, tagData } =
     DUMMY_EVENT_CARD_DATA[0];
 
   return (
@@ -42,7 +42,7 @@ export default async function EventDetail({
         <CardContent className="grid md:grid-cols-2 gap-6">
           <div className="rounded-xl overflow-hidden">
             <img
-              src={thumbnailSrc}
+              src={posterImageUrl}
               alt="event thumbnail"
               width={400}
               height={300}
