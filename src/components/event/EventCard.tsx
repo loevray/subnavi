@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from '../ui/card';
 import EventTag, { EventTagType } from './EventTag';
 export interface I_EventCard {
   title: string;
-  thumbnailSrc: string;
+  posterImageUrl: string;
   dateRange: {
     start: string;
     end: string;
@@ -25,7 +25,7 @@ export const DUMMY_EVENT_CARD_DATA: I_EventCard[] = [
     title: '코믹월드 SUMMER 2025',
     dateRange: { start: '2025.07.19', end: '2025.07.20' },
     address: '일산 킨텍스 제1전시장',
-    thumbnailSrc:
+    posterImageUrl:
       'https://comicw.co.kr/data/item/1748337413/11_7J6E7Iuc7Ys7Iqk7YSw_6riw67O4.png',
     tagData: DUMMY_TAG_DATA,
   },
@@ -33,25 +33,25 @@ export const DUMMY_EVENT_CARD_DATA: I_EventCard[] = [
     title: '가나다라마바사아자차카타파하 가나다라마바사아자차카타파하',
     dateRange: { start: '2025.07.19', end: '2025.07.20' },
     address: '여기서 저기로 가면 저기서 여기로 가고 여기서 저기로',
-    thumbnailSrc: 'https://picsum.photos/600/400',
+    posterImageUrl: 'https://picsum.photos/600/400',
     tagData: DUMMY_TAG_DATA,
   },
 ];
 
 export default function EventCard({
   title,
-  thumbnailSrc,
+  posterImageUrl,
   dateRange,
   address,
   tagData,
 }: I_EventCard) {
   return (
-    <Card className="w-full max-w-sm py-0 overflow-hidden gap-0 hover:brightness-95 cursor-pointer">
+    <Card className="hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg w-full max-w-sm py-0 overflow-hidden gap-0 cursor-pointer">
       <CardHeader className="px-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className="w-full aspect-video object-cover"
-          src={thumbnailSrc}
+          src={posterImageUrl}
           alt="event thumbnail"
         />
       </CardHeader>

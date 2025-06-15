@@ -13,7 +13,7 @@ const meta = {
       control: 'text',
       description: 'event title',
     },
-    thumbnailSrc: {
+    posterImageUrl: {
       control: 'text',
       description: 'event thumbnail image URL',
     },
