@@ -4,14 +4,30 @@ import EventFilter from '@/components/event/EventFilter';
 import EventListLayoutToggleButtons from '@/components/event/EventListLayoutToggleButtons';
 import EventList from '@/components/event/EventList';
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: {
+    page: string;
+    category: string;
+  };
+}) {
+  const { page, category } = searchParams;
+  console.log(page, category);
   const { events } = await EventsApi.getAll();
   const categories = await EventsApi.Categories.getAll();
   return (
-    <div className="overflow-x-hidden min-h-screen bg-gradient-to-br max-w-[112rem] from-slate-50 via-white to-indigo-50">
-      <div className="py-8  bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
+    <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+      <header className="py-8 bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="absolute top-1/2 -translate-y-1/2 cursor-pointer"
+          width={180}
+          src="/subnavi-logo.svg"
+          alt="SUBNAVI"
+        />
         <EventFilter categories={categories} />
-      </div>
+      </header>
 
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full">
@@ -36,7 +52,7 @@ export default async function Page() {
                 총{' '}
                 <span className="font-semibold text-indigo-600">1,247개</span>{' '}
                 이벤트 중
-                <span className="font-semibold text-indigo-600"> 1-24개</span>{' '}
+                <span className="font-semibold text-indigo-600"> 1-10개</span>{' '}
                 표시
               </div>
             </div>

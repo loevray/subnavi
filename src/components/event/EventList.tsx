@@ -24,12 +24,10 @@ function formatEventData(event: EventsListResponse['events'][0]) {
   };
 }
 
-export const GRID_STYLES = `
-  grid gap-4 place-items-center md:place-items-stretch 
-  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5
-`
-  .replace(/\s+/g, ' ')
-  .trim();
+export const GRID_STYLES =
+  `grid gap-4 place-items-center md:place-items-stretch grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5`
+    .replace(/\s+/g, ' ')
+    .trim();
 
 const DEFAULT_THUMBNAIL = 'https://picsum.photos/600/400';
 
@@ -48,7 +46,7 @@ export default function EventList({
         const { title, id, poster_image_url, location } = event;
 
         return (
-          <Link key={id} href={createEventUrl(id)}>
+          <Link className="contents" key={id} href={createEventUrl(id)}>
             <EventCard
               title={title}
               posterImageUrl={poster_image_url ?? DEFAULT_THUMBNAIL}
