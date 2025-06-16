@@ -103,7 +103,7 @@ export type Database = {
           participant_limit: number | null;
           participation_fee: string | null;
           poster_image_url: string | null;
-          region_id: number | null;
+          region_id: number;
           sns_links: Json | null;
           start_datetime: string;
           status: Database['public']['Enums']['event_status'] | null;
@@ -130,7 +130,7 @@ export type Database = {
           participant_limit?: number | null;
           participation_fee?: string | null;
           poster_image_url?: string | null;
-          region_id?: number | null;
+          region_id: number;
           sns_links?: Json | null;
           start_datetime: string;
           status?: Database['public']['Enums']['event_status'] | null;
@@ -157,7 +157,7 @@ export type Database = {
           participant_limit?: number | null;
           participation_fee?: string | null;
           poster_image_url?: string | null;
-          region_id?: number | null;
+          region_id?: number;
           sns_links?: Json | null;
           start_datetime?: string;
           status?: Database['public']['Enums']['event_status'] | null;
