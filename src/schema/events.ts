@@ -70,7 +70,7 @@ export const EventSchema = z.object({
     .nullable()
     .optional(), // 정수, 1 이상, nullable
   participation_fee: z.string().optional(), // 문자열 형식으로 저장되나, 금액이라면 숫자 변환 필요 여부 고려
-  region_id: z.number().int().nullable(),
+  region_id: z.number().int(),
   sns_links: SnsLinksJsonSchema.nullable().optional(),
   status: z.enum(Constants.public.Enums.event_status).nullable(),
   view_count: z
@@ -142,8 +142,12 @@ export type EventListItem = z.infer<typeof EventListItemSchema>;
 // 이벤트 목록 응답 스키마
 export const EventsListResponseSchema = z.object({
   events: z.array(EventListItemSchema),
-  total: z.number().int().min(0),
-  page: z.number().int().min(1).optional(),
-  limit: z.number().int().min(1).optional(),
+  pagination: z.object({
+    page: z.number().int().min(1),
+    pageSize: z.number().int().min(1).max(10), //페이지사이즈는 아직 10개가 맥스
+    hasMore: z.boolean(),
+    total: z.number().int().min(0),
+    totalPages: z.number().int(),
+  }),
 });
 export type EventsListResponse = z.infer<typeof EventsListResponseSchema>;
