@@ -7,12 +7,12 @@ import EventList from '@/components/event/EventList';
 export default async function Page({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page: string;
     category: string;
-  };
+  }>;
 }) {
-  const { page, category } = searchParams;
+  const { page, category } = await searchParams;
   console.log(page, category);
   const { events } = await EventsApi.getAll();
   const categories = await EventsApi.Categories.getAll();
@@ -31,7 +31,6 @@ export default async function Page({
 
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full">
-          {/* Section Header */}
           <div className="flex items-center justify-center md:justify-between mb-8">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -43,7 +42,7 @@ export default async function Page({
             </div>
             <EventListLayoutToggleButtons />
           </div>
-
+          <div>{/*인기있는 이벤트 리스트 보여줄 자리(4~5개정도)*/}</div>
           <EventList events={events} />
 
           <div className="mt-12">
