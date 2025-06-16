@@ -8,13 +8,16 @@ export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
-    page: string;
-    category: string;
+    page?: string;
+    category?: string;
   }>;
 }) {
   const { page, category } = await searchParams;
-  console.log(page, category);
-  const { events } = await EventsApi.getAll();
+  console.log(category);
+  const { events, pagination } = await EventsApi.getAll({
+    page: parseInt(page ?? '1'),
+    pageSize: 5, //기본 페이지 사이즈
+  });
   const categories = await EventsApi.Categories.getAll();
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
@@ -56,9 +59,9 @@ export default async function Page({
               </div>
             </div>
             <EventPagination
-              totalItems={63}
-              itemsPerPage={10}
-              maxVisiblePages={5}
+              totalItems={pagination.total}
+              itemsPerPage={pagination.pageSize}
+              maxVisiblePages={1}
             />
           </div>
         </div>
