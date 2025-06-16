@@ -146,7 +146,7 @@ export const apiClient = new ApiClient(getApiBaseUrl());
 
 export interface QueryParams {
   page?: number;
-  limit?: number;
+  pageSize?: number;
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
