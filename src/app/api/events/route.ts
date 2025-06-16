@@ -1,5 +1,6 @@
-import { CreateEventRequestSchema } from '@/schema/events';
+import { CreateEventRequestSchema, EventsListResponse } from '@/schema/events';
 import { createClient } from '@/utils/supabase/server';
+import { NextRequest } from 'next/server';
 
 const EVENTS_TABLE = 'events';
 
@@ -21,36 +22,62 @@ const EVENTS_REGION_QUERY = `
 regions(name)
 `;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1');
+    const pageSize = parseInt(searchParams.get('pageSize') || '5');
+
     const supabase = await createClient();
-    const { data: events, error } = await supabase
+
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const query = supabase
       .from(EVENTS_TABLE)
       .select(
         `${EVENTS_LIST_QUERY},
         ${EVENTS_CATEGORIES_QUERY},
-        ${EVENTS_REGION_QUERY}
-      `
+        ${EVENTS_REGION_QUERY}`,
+        { count: 'exact' }
       )
+      .range(from, to)
       .order('created_at', { ascending: false });
+
+    const { data: events, error, count } = await query;
 
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
-    const transformedEvents = events.map((event) => {
-      const { regions, ...rest } = event;
-      const flatCategories = event.event_categories.map((ec) => ec.categories);
+    const transformedEvents =
+      events.map((event) => {
+        const { regions, ...rest } = event;
+        const flatCategories = event.event_categories.map(
+          (ec) => ec.categories
+        );
 
-      return {
-        ...rest,
-        event_categories: flatCategories,
-        region: regions?.name,
-      };
-    });
+        return {
+          ...rest,
+          event_categories: flatCategories,
+          region: regions.name,
+        };
+      }) || [];
 
-    return Response.json({ events: transformedEvents });
-  } catch {
+    const response: EventsListResponse = {
+      events: transformedEvents,
+      pagination: {
+        page,
+        pageSize,
+        hasMore: (count ?? 0) > page * pageSize,
+        total: count ?? 0,
+        totalPages: Math.ceil((count ?? 0) / pageSize),
+      },
+    };
+
+    return Response.json(response);
+  } catch (error) {
+    console.error('Failed to fetch events:', error);
     return Response.json({ error: 'Failed to fetch events' }, { status: 500 });
   }
 }
