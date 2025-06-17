@@ -11,7 +11,9 @@
     "test-with-story": "vitest --project=storybook",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "gen:types": "powershell -ExecutionPolicy Bypass -File ./supabase-type-gen.ps1",
+    "setup": "copy .env.example .env"
   },
   "dependencies": {
     "@radix-ui/react-aspect-ratio": "^1.1.7",
