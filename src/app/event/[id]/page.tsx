@@ -1,48 +1,54 @@
 import {
-  DUMMY_EVENT_CARD_DATA,
-  I_EventCard,
-} from '@/components/event/EventCard';
+  DEFAULT_TAG_BG,
+  DEFAULT_THUMBNAIL,
+} from '@/components/event/EventList';
 import EventTag from '@/components/event/EventTag';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ShareButtons from '@/components/ui/shareButtons';
+import { EventsApi } from '@/lib/api-client';
+import formatDateRange from '@/utils/formatDateRange';
 import Link from 'next/link';
-
-export interface I_EventDetail extends I_EventCard {
-  description: string;
-  reservationLink: string;
-}
-
-const reservationLink = 'https://comicw.co.kr/';
 
 export default async function EventDetail({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const {
+    title,
+    categories,
+    posterImageUrl,
+    location,
+    startDatetime,
+    endDatetime,
+    bookingLink,
+    description,
+  } = await EventsApi.getById(id);
 
-  // 실제 서비스에서는 id를 기반으로 데이터를 fetch 하셔야 합니다.
-  const { title, dateRange, address, posterImageUrl, tagData } =
-    DUMMY_EVENT_CARD_DATA[0];
+  const dateRange = formatDateRange(startDatetime, endDatetime);
 
   return (
     <main className="container py-4 max-w-4xl">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-bold">
-            id:{id}, {title}
-          </CardTitle>
+          <CardTitle className="text-3xl font-extrabold">{title}</CardTitle>
           <div className="flex flex-wrap gap-2 mt-2">
-            {tagData.map(({ key, label, color }) => (
-              <EventTag key={key} label={label} color={color} />
+            {categories.map(({ id, name }) => (
+              <EventTag
+                key={`${id}-${name}`}
+                label={name}
+                color={DEFAULT_TAG_BG}
+              />
             ))}
           </div>
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-6">
           <div className="rounded-xl overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={posterImageUrl}
+              src={posterImageUrl ?? DEFAULT_THUMBNAIL}
               alt="event thumbnail"
               width={400}
               height={300}
@@ -54,12 +60,12 @@ export default async function EventDetail({
               {dateRange.start} ~ {dateRange.end}
             </div>
             <address className="not-italic text-base text-gray-800">
-              {address}
+              {location}
             </address>
             <div className="flex gap-3">
-              <Button asChild>
+              <Button asChild disabled={!bookingLink}>
                 <Link
-                  href={reservationLink}
+                  href={bookingLink ?? '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -68,12 +74,7 @@ export default async function EventDetail({
               </Button>
               <ShareButtons url="" title={title} />
             </div>
-            <div>
-              행사 내용:ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
-              ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
-              ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
-              ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
-            </div>
+            <div>{description ?? '행사 설명 없음'}</div>
           </div>
           <section className="md:col-span-2">
             <h2 className="text-xl font-semibold mb-4">행사 장소</h2>
@@ -81,7 +82,7 @@ export default async function EventDetail({
               <iframe
                 title="event-location-map"
                 src={`https://www.google.com/maps?q=${encodeURIComponent(
-                  address
+                  location
                 )}&output=embed`}
                 width="100%"
                 height="250"
