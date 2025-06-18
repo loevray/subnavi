@@ -19,12 +19,12 @@ end_datetime,
 location
 `;
 
-const EVENTS_CATEGORIES_QUERY = `
+export const EVENTS_CATEGORIES_QUERY = `
 event_categories(
 categories(id,name)
 )`;
 
-const EVENTS_REGION_QUERY = `
+export const EVENTS_REGION_QUERY = `
 regions(name)
 `;
 
