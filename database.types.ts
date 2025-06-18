@@ -102,7 +102,7 @@ export type Database = {
           region_id: number;
           sns_links: Json | null;
           start_datetime: string;
-          status: Database['public']['Enums']['event_status'] | null;
+          status: Database['public']['Enums']['event_status'];
           title: string;
           updated_at: string | null;
         };
@@ -123,7 +123,7 @@ export type Database = {
           region_id: number;
           sns_links?: Json | null;
           start_datetime: string;
-          status?: Database['public']['Enums']['event_status'] | null;
+          status?: Database['public']['Enums']['event_status'];
           title: string;
           updated_at?: string | null;
         };
@@ -144,7 +144,7 @@ export type Database = {
           region_id?: number;
           sns_links?: Json | null;
           start_datetime?: string;
-          status?: Database['public']['Enums']['event_status'] | null;
+          status?: Database['public']['Enums']['event_status'];
           title?: string;
           updated_at?: string | null;
         };
@@ -237,7 +237,7 @@ export type Database = {
         | 'VTuber'
         | '기타'
         | '장르무관';
-      event_status: 'active' | 'cancelled' | 'ended';
+      event_status: 'active' | 'cancelled' | 'ended' | 'draft';
       region_name:
         | '서울'
         | '부산'
@@ -382,7 +382,7 @@ export const Constants = {
         '기타',
         '장르무관',
       ],
-      event_status: ['active', 'cancelled', 'ended'],
+      event_status: ['active', 'cancelled', 'ended', 'draft'],
       region_name: [
         '서울',
         '부산',

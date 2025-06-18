@@ -1,22 +1,22 @@
-import { EventsListResponse } from '@/schema/events';
+import { EventListItem, EventListResponse } from '@/dto/event/event-list.dto';
 import EventCard from './EventCard';
 import formatUtcToKst from '@/utils/formatUtcToKst';
 import Link from 'next/link';
 
 const DEFAULT_TAG_BG = 'bg-gradient-to-r from-indigo-500 to-purple-500';
 
-function formatEventData(event: EventsListResponse['events'][0]) {
-  const { start_datetime, end_datetime, event_categories } = event;
+function formatEventData(event: EventListItem) {
+  const { startDatetime, endDatetime, categories } = event;
 
-  const startDate = formatUtcToKst(start_datetime);
-  const endDate = formatUtcToKst(end_datetime);
+  const startDate = formatUtcToKst(startDatetime);
+  const endDate = formatUtcToKst(endDatetime);
 
   return {
     dateRange: {
       start: `${startDate.year}.${startDate.month}.${startDate.day}`,
       end: `${endDate.year}.${endDate.month}.${endDate.day}`,
     },
-    tags: event_categories.map(({ id, name }) => ({
+    tags: categories.map(({ id, name }) => ({
       key: `${id}`,
       label: name,
       color: DEFAULT_TAG_BG,
@@ -37,19 +37,19 @@ const createEventUrl = (id: string) =>
 export default function EventList({
   events,
 }: {
-  events: EventsListResponse['events'];
+  events: EventListResponse['events'];
 }) {
   return (
     <div className={GRID_STYLES}>
       {events.map((event) => {
         const { dateRange, tags } = formatEventData(event);
-        const { title, id, poster_image_url, location } = event;
+        const { title, id, posterImageUrl, location } = event;
 
         return (
           <Link className="contents" key={id} href={createEventUrl(id)}>
             <EventCard
               title={title}
-              posterImageUrl={poster_image_url ?? DEFAULT_THUMBNAIL}
+              posterImageUrl={posterImageUrl ?? DEFAULT_THUMBNAIL}
               dateRange={dateRange}
               address={location}
               tagData={tags}
