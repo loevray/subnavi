@@ -3,7 +3,7 @@ import EventCard from './EventCard';
 import formatUtcToKst from '@/utils/formatUtcToKst';
 import Link from 'next/link';
 
-const DEFAULT_TAG_BG = 'bg-gradient-to-r from-indigo-500 to-purple-500';
+export const DEFAULT_TAG_BG = 'bg-gradient-to-r from-indigo-500 to-purple-500';
 
 function formatEventData(event: EventListItem) {
   const { startDatetime, endDatetime, categories } = event;
@@ -29,7 +29,7 @@ export const GRID_STYLES =
     .replace(/\s+/g, ' ')
     .trim();
 
-const DEFAULT_THUMBNAIL = 'https://picsum.photos/600/400';
+export const DEFAULT_THUMBNAIL = 'https://picsum.photos/600/400';
 
 const createEventUrl = (id: string) =>
   `${process.env.NEXT_PUBLIC_API_BASE_URL}/event/${id}`;
