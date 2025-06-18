@@ -1,6 +1,6 @@
 'use client';
 
-import { EventCategoriesResponse as BaseEventCategoriesResponse } from '@/schema/events';
+import { EventCategory } from '@/dto/event/shared-event.dto';
 import { Button } from '../ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -16,9 +16,7 @@ const cateogriesWithEmojis: Partial<{
   기타: '🎸',
 };
 
-type ExtendedCategoryName =
-  | BaseEventCategoriesResponse[number]['name']
-  | '전체';
+type ExtendedCategoryName = EventCategory['name'] | '전체';
 
 export type ExtendedEventCategoriesResponse = {
   id: number;

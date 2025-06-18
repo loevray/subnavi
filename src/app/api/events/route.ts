@@ -1,6 +1,12 @@
-import { CreateEventRequestSchema, EventsListResponse } from '@/schema/events';
+import {
+  EventListResponse,
+  EventListResponseDto,
+} from '@/dto/event/event-list.dto';
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest } from 'next/server';
+import camelCaseKeys from 'camelcase-keys';
+import { CreateEventRequestDto } from '@/dto/event/create-event.dto';
+import snakeCaseKeys from 'snakecase-keys';
 
 const EVENTS_TABLE = 'events';
 
@@ -50,22 +56,19 @@ export async function GET(request: NextRequest) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
-    const transformedEvents =
-      events.map((event) => {
-        const { regions, ...rest } = event;
-        const flatCategories = event.event_categories.map(
-          (ec) => ec.categories
-        );
+    const transformedEvents = events.map((event) => {
+      const { regions, ...rest } = event;
+      const flatCategories = event.event_categories.map((ec) => ec.categories);
 
-        return {
-          ...rest,
-          event_categories: flatCategories,
-          region: regions.name,
-        };
-      }) || [];
+      return {
+        ...rest,
+        categories: flatCategories,
+        region: regions.name,
+      };
+    });
 
-    const response: EventsListResponse = {
-      events: transformedEvents,
+    const response: EventListResponse = {
+      events: camelCaseKeys(transformedEvents),
       pagination: {
         page,
         pageSize,
@@ -75,7 +78,13 @@ export async function GET(request: NextRequest) {
       },
     };
 
-    return Response.json(response);
+    const parsed = EventListResponseDto.safeParse(response);
+
+    if (!parsed.success) {
+      return Response.json(parsed.error.flatten(), { status: 400 });
+    }
+
+    return Response.json(parsed.data);
   } catch (error) {
     console.error('Failed to fetch events:', error);
     return Response.json({ error: 'Failed to fetch events' }, { status: 500 });
@@ -84,13 +93,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const parsed = CreateEventRequestSchema.safeParse(body);
+  const parsed = CreateEventRequestDto.safeParse(body);
 
   if (!parsed.success) {
     return Response.json(parsed.error.flatten(), { status: 400 });
   }
 
-  const { region_id, category_ids, ...eventData } = parsed.data;
+  const { region_id, categories, ...eventData } = snakeCaseKeys(parsed.data);
 
   try {
     const supabase = await createClient();
@@ -105,9 +114,9 @@ export async function POST(request: Request) {
       return Response.json({ error: eventError.message }, { status: 500 });
     }
 
-    const eventCategoriesToInsert = category_ids.map((category_id) => ({
+    const eventCategoriesToInsert = categories.map(({ id }) => ({
       event_id: eventInsert.id,
-      category_id: category_id,
+      category_id: id,
     }));
 
     const { error: eventCategoryMappingError } = await supabase

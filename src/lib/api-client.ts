@@ -1,17 +1,21 @@
+import {
+  CreateEventRequest,
+  CreateEventResponse,
+} from '@/dto/event/create-event.dto';
+import { EventDetailResponse } from '@/dto/event/event-detail.dto';
+import { EventListResponse } from '@/dto/event/event-list.dto';
+import { EventCategory } from '@/dto/event/shared-event.dto';
+import {
+  UpdateEventRequest,
+  UpdateEventResponse,
+} from '@/dto/event/update-event.dto';
+
 export class ApiError extends Error {
   constructor(message: string, public status: number, public endpoint: string) {
     super(message);
     this.name = 'ApiError';
   }
 }
-
-import {
-  CreateEventRequest,
-  Event,
-  EventCategoriesResponse,
-  EventsListResponse,
-  UpdateEventRequest,
-} from '@/schema/events';
 
 class ApiClient {
   private baseUrl: string;
@@ -153,7 +157,7 @@ export interface QueryParams {
 }
 
 export const EventsApi = {
-  getAll: async (params?: QueryParams): Promise<EventsListResponse> => {
+  getAll: async (params?: QueryParams): Promise<EventListResponse> => {
     const searchParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -164,34 +168,33 @@ export const EventsApi = {
     }
     const queryString = searchParams.toString();
     const endpoint = queryString ? `/events?${queryString}` : '/events';
-    return apiClient.get<EventsListResponse>(endpoint);
+    return apiClient.get<EventListResponse>(endpoint);
   },
 
-  // 특정 이벤트 가져오기 - 타입이 보장됨
-  getById: async (id: string): Promise<Event> => {
-    return apiClient.get<Event>(`/events/${id}`);
+  getById: async (id: string): Promise<EventDetailResponse> => {
+    return apiClient.get<EventDetailResponse>(`/events/${id}`);
   },
 
-  // 이벤트 생성 - 타입이 보장됨
-  create: async (event: CreateEventRequest): Promise<Event> => {
-    return apiClient.post<Event>('/events', event);
+  create: async (event: CreateEventRequest): Promise<CreateEventResponse> => {
+    return apiClient.post<CreateEventResponse>('/events', event);
   },
 
-  // 이벤트 수정 - 타입이 보장됨
-  update: async (id: string, event: UpdateEventRequest): Promise<Event> => {
-    return apiClient.patch<Event>(`/events/${id}`, event);
+  update: async (
+    id: string,
+    event: UpdateEventRequest
+  ): Promise<UpdateEventResponse> => {
+    return apiClient.patch<UpdateEventResponse>(`/events/${id}`, event);
   },
 
-  // 이벤트 전체 교체 - 타입이 보장됨
-  replace: async (id: string, event: CreateEventRequest): Promise<Event> => {
+  /*   replace: async (id: string, event: CreateEventRequest): Promise<Event> => {
     return apiClient.put<Event>(`/events/${id}`, event);
-  },
+  }, */
 
-  // 이벤트 삭제 - 타입이 보장됨
   delete: async (id: string): Promise<void> => {
     return apiClient.delete<void>(`/events/${id}`);
   },
+
   Categories: {
-    getAll: () => apiClient.get<EventCategoriesResponse>('/events/categories'),
+    getAll: () => apiClient.get<EventCategory[]>('/events/categories'),
   },
 };
