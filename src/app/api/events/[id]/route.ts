@@ -1,4 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
+import { EVENTS_CATEGORIES_QUERY, EVENTS_REGION_QUERY } from '../route';
+import { EventDetailResponseDto } from '@/dto/event/event-detail.dto';
+import camelcaseKeys from 'camelcase-keys';
 
 export async function GET(
   request: Request,
@@ -12,7 +15,7 @@ export async function GET(
     const supabase = await createClient();
     const { data: event, error } = await supabase
       .from('events')
-      .select(`*`)
+      .select(`*,${EVENTS_CATEGORIES_QUERY},${EVENTS_REGION_QUERY}`)
       .eq('id', id)
       .single();
 
@@ -24,8 +27,20 @@ export async function GET(
     if (!event) {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
+    const { event_categories, regions, ...rest } = event;
 
-    return Response.json(event);
+    const newEvent = camelcaseKeys({
+      ...rest,
+      region: regions.name,
+      categories: event_categories.map((ec) => ec.categories),
+    });
+
+    const parsed = EventDetailResponseDto.safeParse(newEvent);
+    if (!parsed.success) {
+      return Response.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
+    return Response.json(parsed.data);
   } catch (err) {
     console.error('Failed to fetch event:', err);
     return Response.json({ error: 'Failed to fetch event' }, { status: 500 });
