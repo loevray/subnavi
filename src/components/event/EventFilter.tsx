@@ -16,7 +16,7 @@ const cateogriesWithEmojis: Partial<{
   기타: '🎸',
 };
 
-type ExtendedCategoryName = EventCategory['name'] | '전체';
+export type ExtendedCategoryName = EventCategory['name'] | '전체';
 
 export type ExtendedEventCategoriesResponse = {
   id: number;
@@ -33,9 +33,16 @@ export default function EventFilter({
 
   const selectedCategory = searchParams.get('category');
 
-  const handleCategoryClick = (category: string) => {
+  const handleCategoryClick = (category: ExtendedCategoryName) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('category', category); // 기존 'category' 쿼리를 덮어씀
+    params.set('page', '1'); //카테고리 변경시 1페이지로 초기화
+
+    if (category === '전체') {
+      params.delete('category');
+    } else {
+      params.set('category', category);
+    }
+
     router.push(`?${params.toString()}`);
   };
 
