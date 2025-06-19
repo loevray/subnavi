@@ -4,6 +4,7 @@ import EventFilter from '@/components/event/EventFilter';
 import EventListLayoutToggleButtons from '@/components/event/EventListLayoutToggleButtons';
 import EventList from '@/components/event/EventList';
 import { EventCategory } from '@/dto/event/shared-event.dto';
+import { Input } from '@/components/ui/input';
 
 export default async function Page({
   searchParams,
@@ -23,19 +24,17 @@ export default async function Page({
   const categories = await EventsApi.Categories.getAll();
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
-      <header className="py-8 bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
+      <header className="flex items-center bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="absolute top-1/2 -translate-y-1/2 cursor-pointer"
-          width={180}
-          src="/subnavi-logo.svg"
-          alt="SUBNAVI"
-        />
-        <EventFilter categories={categories} />
+        <img width={180} src="/subnavi-logo.svg" alt="SUBNAVI" />
+        <Input className="max-w-3xl" /> {/* 검색용 인풋 자리 */}
       </header>
 
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
+      <div className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="w-full">
+          <div className="w-full pb-4 mb-2 overflow-x-auto">
+            <EventFilter categories={categories} />
+          </div>
           <div className="flex items-center justify-center md:justify-between mb-8">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
