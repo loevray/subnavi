@@ -31,7 +31,7 @@ export default function EventFilter({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const selectedCategory = searchParams.get('category');
+  const selectedCategory = searchParams.get('category') ?? '전체';
 
   const handleCategoryClick = (category: ExtendedCategoryName) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -52,7 +52,7 @@ export default function EventFilter({
   ];
 
   return (
-    <div className="flex overflow-x-auto gap-3 w-full xl:justify-center px-4 sm:px-6 lg:px-8 ">
+    <div className="flex  gap-3 w-full xl:justify-center px-4 sm:px-6 lg:px-8 ">
       {extendedCategories.map(({ id, name }) => {
         const isSelected = selectedCategory === name;
         return (
