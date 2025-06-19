@@ -22,7 +22,6 @@ export default async function EventDetailView({
 }: {
   event: EventDetailResponse;
 }) {
-  console.log(event);
   const {
     title,
     categories,
