@@ -19,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     params: Promise.resolve({
-      id: '6',
+      id: '74a89fe6-25b7-4288-8606-006c0639cef1',
     }),
   },
 };
