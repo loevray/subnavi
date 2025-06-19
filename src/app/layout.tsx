@@ -24,7 +24,7 @@ export function MainLayout({
 }>) {
   return (
     <div
-      className={`${geistSans.variable} ${geistMono.variable} antialiased min-w-screen min-h-screen flex justify-center items-center`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased min-w-full min-h-screen flex justify-center items-center`}
     >
       {children}
     </div>

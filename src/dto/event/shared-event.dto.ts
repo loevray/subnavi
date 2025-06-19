@@ -55,7 +55,7 @@ export const BaseEventDto = z.object({
   regionId: z.number(),
   snsLinks: SnsLinkDto.nullish(),
   startDatetime: z.string(),
-  status: EventStatusDto,
+  status: EventStatusDto.nullish(),
   title: z.string(),
   updatedAt: z.string().nullish(),
 });

@@ -4,7 +4,10 @@ import { BaseEventDto, CateogryNameDto } from './shared-event.dto';
 export const UpdateEventRequestDto = BaseEventDto.omit({
   createdAt: true,
   updatedAt: true,
-}).extend({ categories: z.array(CateogryNameDto) });
+})
+  .extend({ categories: z.array(CateogryNameDto) })
+  .partial()
+  .nullish();
 
 export type UpdateEventRequest = z.infer<typeof UpdateEventRequestDto>;
 
