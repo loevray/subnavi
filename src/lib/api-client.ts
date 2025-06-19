@@ -154,6 +154,7 @@ export interface QueryParams {
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  category?: EventCategory['name'];
 }
 
 export const EventsApi = {

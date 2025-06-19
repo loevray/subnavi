@@ -3,20 +3,22 @@ import { EventsApi } from '@/lib/api-client';
 import EventFilter from '@/components/event/EventFilter';
 import EventListLayoutToggleButtons from '@/components/event/EventListLayoutToggleButtons';
 import EventList from '@/components/event/EventList';
+import { EventCategory } from '@/dto/event/shared-event.dto';
 
 export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
     page?: string;
-    category?: string;
+    category?: EventCategory['name'];
   }>;
 }) {
   const { page, category } = await searchParams;
-  console.log(category);
+
   const { events, pagination } = await EventsApi.getAll({
     page: parseInt(page ?? '1'),
     pageSize: 5, //기본 페이지 사이즈
+    category, //category는 전체일때 없음
   });
   const categories = await EventsApi.Categories.getAll();
   return (
