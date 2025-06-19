@@ -29,13 +29,17 @@ export async function GET(
     }
     const { event_categories, regions, ...rest } = event;
 
-    const newEvent = camelcaseKeys({
-      ...rest,
-      region: regions.name,
-      categories: event_categories.map((ec) => ec.categories),
-    });
+    const newEvent = camelcaseKeys(
+      {
+        ...rest,
+        region: regions.name,
+        categories: event_categories.map((ec) => ec.categories),
+      },
+      { deep: true }
+    );
 
     const parsed = EventDetailResponseDto.safeParse(newEvent);
+
     if (!parsed.success) {
       return Response.json({ error: parsed.error.flatten() }, { status: 400 });
     }

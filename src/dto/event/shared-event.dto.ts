@@ -5,10 +5,7 @@ export const AgeRatingDto = z.enum(Constants.public.Enums.age_rating);
 export const EventStatusDto = z.enum(Constants.public.Enums.event_status);
 export const CateogryNameDto = z.enum(Constants.public.Enums.category_name);
 export const RegionNameDto = z.enum(Constants.public.Enums.region_name);
-export const SnsLinkDto = z.object({
-  platform: z.string(), // 예: "instagram", "twitter"
-  url: z.string(),
-});
+export const SnsLinkDto = z.record(z.string(), z.string());
 
 export const EventCateogryDto = z.object({
   id: z.number().int(),
@@ -56,7 +53,7 @@ export const BaseEventDto = z.object({
   participationFee: z.string().nullish(),
   posterImageUrl: z.string().nullish(),
   regionId: z.number(),
-  snsLinks: z.array(SnsLinkDto).nullish(),
+  snsLinks: SnsLinkDto.nullish(),
   startDatetime: z.string(),
   status: EventStatusDto,
   title: z.string(),
