@@ -5,6 +5,8 @@ export const AgeRatingDto = z.enum(Constants.public.Enums.age_rating);
 export const EventStatusDto = z.enum(Constants.public.Enums.event_status);
 export const CateogryNameDto = z.enum(Constants.public.Enums.category_name);
 export const RegionNameDto = z.enum(Constants.public.Enums.region_name);
+export type RegionName = z.infer<typeof RegionNameDto>;
+
 export const SnsLinkDto = z.record(z.string(), z.string());
 
 export const EventCateogryDto = z.object({
