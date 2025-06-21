@@ -1,53 +1,29 @@
 import { createClient } from '@/utils/supabase/server';
-import { EVENTS_CATEGORIES_QUERY, EVENTS_REGION_QUERY } from '../route';
-import { EventDetailResponseDto } from '@/dto/event/event-detail.dto';
-import camelcaseKeys from 'camelcase-keys';
+import { eventService } from '@/services/Event';
+import { isCustomError } from '@/lib/errors/serviceErrors.server';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  //특정 행사 정보
-
-  const { id } = await params;
-
   try {
-    const supabase = await createClient();
-    const { data: event, error } = await supabase
-      .from('events')
-      .select(`*,${EVENTS_CATEGORIES_QUERY},${EVENTS_REGION_QUERY}`)
-      .eq('id', id)
-      .single();
+    const id = (await params).id;
+    const data = await eventService.getEventById({ id });
+    return Response.json(data);
+  } catch (error) {
+    console.error('Error in GET /api/events/[id]:', error);
 
-    if (error) {
-      console.error('Error fetching event by ID:', error);
-      return Response.json({ error: error.message }, { status: 500 });
+    if (isCustomError(error)) {
+      return Response.json(
+        {
+          error: error.message,
+          details: error.details,
+        },
+        { status: error.statusCode }
+      );
     }
 
-    if (!event) {
-      return Response.json({ error: 'Event not found' }, { status: 404 });
-    }
-    const { event_categories, regions, ...rest } = event;
-
-    const newEvent = camelcaseKeys(
-      {
-        ...rest,
-        region: regions.name,
-        categories: event_categories.map((ec) => ec.categories),
-      },
-      { deep: true }
-    );
-
-    const parsed = EventDetailResponseDto.safeParse(newEvent);
-
-    if (!parsed.success) {
-      return Response.json({ error: parsed.error.flatten() }, { status: 400 });
-    }
-
-    return Response.json(parsed.data);
-  } catch (err) {
-    console.error('Failed to fetch event:', err);
-    return Response.json({ error: 'Failed to fetch event' }, { status: 500 });
+    return Response.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
