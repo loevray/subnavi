@@ -196,6 +196,6 @@ export const EventsApi = {
   },
 
   Categories: {
-    getAll: () => apiClient.get<EventCategory[]>('/events/categories'),
+    getAll: () => apiClient.get<EventCategory[]>('/categories'),
   },
 };

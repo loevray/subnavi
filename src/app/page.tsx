@@ -1,10 +1,11 @@
 import EventPagination from '@/components/event/EventPagination';
-import { EventsApi } from '@/lib/api-client';
 import EventFilter from '@/components/event/EventFilter';
 import EventListLayoutToggleButtons from '@/components/event/EventListLayoutToggleButtons';
 import EventList from '@/components/event/EventList';
 import { EventCategory } from '@/dto/event/shared-event.dto';
 import { Input } from '@/components/ui/input';
+import { eventService } from '@/services/Event';
+import { categoryService } from '@/services/Category';
 
 export default async function Page({
   searchParams,
@@ -16,12 +17,12 @@ export default async function Page({
 }) {
   const { page, category } = await searchParams;
 
-  const { events, pagination } = await EventsApi.getAll({
+  const { events, pagination } = await eventService.getEvents({
     page: parseInt(page ?? '1'),
     pageSize: 5, //기본 페이지 사이즈
     category, //category는 전체일때 없음
   });
-  const categories = await EventsApi.Categories.getAll();
+  const categories = await categoryService.getCateogires();
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
       <header className="flex items-center bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
