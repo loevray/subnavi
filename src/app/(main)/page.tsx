@@ -1,6 +1,5 @@
 import EventPagination from '@/components/event/EventPagination';
 import EventFilter from '@/components/event/EventFilter';
-import EventListLayoutToggleButtons from '@/components/event/EventListLayoutToggleButtons';
 import EventList from '@/components/event/EventList';
 import { EventCategory } from '@/dto/event/shared-event.dto';
 import { eventService } from '@/services/Event';
@@ -48,7 +47,7 @@ export default async function Page({
                 놓치면 후회할 핫한 이벤트들을 확인해보세요
               </p>
             </div>
-            <EventListLayoutToggleButtons />
+            {/* <EventListLayoutToggleButtons />  테스트중인 기능*/}
           </div>
           <div>{/*인기있는 이벤트 리스트 보여줄 자리(4~5개정도)*/}</div>
 

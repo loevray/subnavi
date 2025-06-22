@@ -1,13 +1,21 @@
+'use client';
+
 import { LayoutGridIcon, MenuIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@radix-ui/react-toggle-group';
+import { useState } from 'react';
 
 export default function EventListLayoutToggleButtons() {
+  const [value, setValue] = useState('grid');
+  //전역 상태관리를 활용해서 grid, column값을 상위 컴포넌트로넘겨주자
   return (
     <ToggleGroup
-      defaultValue="grid"
+      value={value}
       className="hidden md:flex gap-2"
       type="single"
+      onValueChange={(value) => {
+        if (value) setValue(value);
+      }}
     >
       <ToggleGroupItem
         className=""
