@@ -3,9 +3,9 @@ import EventFilter from '@/components/event/EventFilter';
 import EventListLayoutToggleButtons from '@/components/event/EventListLayoutToggleButtons';
 import EventList from '@/components/event/EventList';
 import { EventCategory } from '@/dto/event/shared-event.dto';
-import { Input } from '@/components/ui/input';
 import { eventService } from '@/services/Event';
 import { categoryService } from '@/services/Category';
+import Link from 'next/link';
 
 export default async function Page({
   searchParams,
@@ -23,15 +23,18 @@ export default async function Page({
     category, //category는 전체일때 없음
   });
   const categories = await categoryService.getCateogires();
+
+  const isEmptyEvents = events?.length <= 0;
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
       <header className="flex items-center bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img width={180} src="/subnavi-logo.svg" alt="SUBNAVI" />
-        <Input className="max-w-3xl" /> {/* 검색용 인풋 자리 */}
+        <Link href={'/'}>
+          <img width={180} src="/subnavi-logo.svg" alt="SUBNAVI" />
+        </Link>
+        {/* <Input className="max-w-3xl" />  검색용 인풋 자리 */}
       </header>
 
-      <div className="py-6 px-4 sm:px-6 lg:px-8">
+      <main className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="w-full">
           <div className="w-full pb-4 mb-2 overflow-x-auto">
             <EventFilter categories={categories} />
@@ -48,9 +51,17 @@ export default async function Page({
             <EventListLayoutToggleButtons />
           </div>
           <div>{/*인기있는 이벤트 리스트 보여줄 자리(4~5개정도)*/}</div>
-          <EventList events={events} />
 
-          <div className="mt-12">
+          {isEmptyEvents ? (
+            <div className="h-80 flex justify-center items-center text-3xl font-semibold">
+              <span> {category ?? '전체'}</span>
+              <p> 관련 이벤트가 없습니다!😥</p>
+            </div>
+          ) : (
+            <EventList events={events} />
+          )}
+
+          <footer className="mt-12">
             <div className="text-center mb-6">
               <div className="text-sm text-gray-600">
                 총{' '}
@@ -65,9 +76,9 @@ export default async function Page({
               itemsPerPage={pagination.pageSize}
               maxVisiblePages={1}
             />
-          </div>
+          </footer>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
