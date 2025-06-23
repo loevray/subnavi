@@ -202,7 +202,7 @@ export default class EventService {
       throw new ValidationError('Request validation failed', parsed.error);
     }
 
-    const { region_id, categories, ...snakeCasedEventData } = snakecaseKeys(
+    const { region_id, category_ids, ...snakeCasedEventData } = snakecaseKeys(
       parsed.data
     );
 
@@ -221,7 +221,7 @@ export default class EventService {
     }
 
     // 카테고리 관계 생성
-    const categoryRelations = categories.map(({ id: categoryId }) => ({
+    const categoryRelations = category_ids.map((categoryId) => ({
       event_id: event.id,
       category_id: categoryId,
     }));
