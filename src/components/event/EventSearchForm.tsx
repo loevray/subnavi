@@ -82,11 +82,6 @@ export default function EventSearchForm() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">검색</h1>
-        <p className="text-muted-foreground">원하는 내용을 검색해보세요</p>
-      </div>
-
       {/* 검색 폼 */}
       <div className="mb-8">
         <div className="relative">
