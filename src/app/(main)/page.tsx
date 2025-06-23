@@ -5,6 +5,7 @@ import { EventCategory } from '@/dto/event/shared-event.dto';
 import { eventService } from '@/services/Event';
 import { categoryService } from '@/services/Category';
 import Link from 'next/link';
+import EventSearchForm from '@/components/event/EventSearchForm';
 
 export default async function Page({
   searchParams,
@@ -12,14 +13,16 @@ export default async function Page({
   searchParams: Promise<{
     page?: string;
     category?: EventCategory['name'];
+    keyword?: string;
   }>;
 }) {
-  const { page, category } = await searchParams;
+  const { page, category, keyword } = await searchParams;
 
   const { events, pagination } = await eventService.getEvents({
     page: parseInt(page ?? '1'),
     pageSize: 5, //기본 페이지 사이즈
     category, //category는 전체일때 없음
+    keyword,
   });
   const categories = await categoryService.getCateogires();
 
@@ -30,7 +33,7 @@ export default async function Page({
         <Link href={'/'}>
           <img width={180} src="/subnavi-logo.svg" alt="SUBNAVI" />
         </Link>
-        {/* <Input className="max-w-3xl" />  검색용 인풋 자리 */}
+        <EventSearchForm />
       </header>
 
       <main className="py-6 px-4 sm:px-6 lg:px-8">
@@ -54,7 +57,7 @@ export default async function Page({
           {isEmptyEvents ? (
             <div className="h-80 flex justify-center items-center text-3xl font-semibold">
               <span> {category ?? '전체'}</span>
-              <p> 관련 이벤트가 없습니다!😥</p>
+              <p> 관련 {keyword ? `'${keyword}'` : ''} 이벤트가 없습니다!😥</p>
             </div>
           ) : (
             <EventList events={events} />
