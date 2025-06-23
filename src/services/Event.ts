@@ -27,7 +27,7 @@ import { createClient } from '@/utils/supabase/server';
 export interface QueryParams {
   page?: number;
   pageSize?: number;
-  search?: string;
+  keyword?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   category?: EventCategory['name'];
@@ -78,7 +78,7 @@ export default class EventService {
 
   // 이벤트 목록 조회 - 성공하면 데이터 반환, 실패하면 에러 throw
   public async getEvents(params: QueryParams = {}): Promise<EventListResponse> {
-    const { page = 1, pageSize = 5, category } = params;
+    const { page = 1, pageSize = 5, keyword, category } = params;
 
     this.validatePaginationParams(page, pageSize);
 
@@ -98,6 +98,12 @@ export default class EventService {
 
     if (category) {
       query = query.eq('event_categories.categories.name', category);
+    }
+
+    if (keyword) {
+      query = query.or(
+        `title.ilike.%${keyword}%, description.ilike.%${keyword}%`
+      );
     }
 
     query = query.range(from, to).order('created_at', { ascending: false });
