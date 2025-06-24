@@ -62,6 +62,20 @@ export const BaseEventDto = z.object({
   updatedAt: z.string().nullish(),
 });
 
+export const SearchKeywordDto = z.object({
+  query: z
+    .string()
+    .min(1, '검색어를 입력해주세요')
+    .min(2, '검색어는 최소 2글자 이상 입력해주세요')
+    .max(50, '검색어는 50글자를 초과할 수 없습니다')
+    .regex(
+      /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s]*$/,
+      '한글, 영문, 숫자만 입력 가능합니다'
+    ),
+});
+
+export type SearchKeyword = z.infer<typeof SearchKeywordDto>;
+
 export type BaseEvent = z.infer<typeof BaseEventDto>;
 
 export type Event = Database['public']['Tables']['events']['Row'];

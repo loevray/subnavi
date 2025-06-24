@@ -3,23 +3,13 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { SearchKeyword, SearchKeywordDto } from '@/dto/event/shared-event.dto';
 
 // Zod 스키마 정의
-const searchSchema = z.object({
-  query: z
-    .string()
-    .min(1, '검색어를 입력해주세요')
-    .min(2, '검색어는 최소 2글자 이상 입력해주세요')
-    .max(100, '검색어는 100글자를 초과할 수 없습니다')
-    .regex(/^[가-힣a-zA-Z0-9\s]+$/, '한글, 영문, 숫자만 입력 가능합니다'),
-});
-
-type SearchFormData = z.infer<typeof searchSchema>;
 
 export default function EventSearchForm() {
   const {
@@ -28,8 +18,8 @@ export default function EventSearchForm() {
     formState: { errors, isValid },
     watch,
     reset,
-  } = useForm<SearchFormData>({
-    resolver: zodResolver(searchSchema),
+  } = useForm<SearchKeyword>({
+    resolver: zodResolver(SearchKeywordDto),
     mode: 'onChange', // 실시간 검증
   });
 
@@ -38,7 +28,7 @@ export default function EventSearchForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const onSubmit = async (data: SearchFormData) => {
+  const onSubmit = async (data: SearchKeyword) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('keyword', data.query);
     router.push(`?${params.toString()}`);
