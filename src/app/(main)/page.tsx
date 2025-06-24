@@ -80,10 +80,16 @@ export default async function Page({
             <div className="text-center mb-6">
               <div className="text-sm text-gray-600">
                 총{' '}
-                <span className="font-semibold text-indigo-600">1,247개</span>{' '}
+                <span className="font-semibold text-indigo-600">
+                  {pagination.total}개
+                </span>{' '}
                 이벤트 중
-                <span className="font-semibold text-indigo-600"> 1-10개</span>{' '}
-                표시
+                <span className="font-semibold text-indigo-600">
+                  {' '}
+                  {(pagination.page - 1) * pagination.pageSize || 1}-
+                  {pagination.page * pagination.pageSize}
+                </span>{' '}
+                번째
               </div>
             </div>
             <EventPagination
