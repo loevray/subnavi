@@ -1,0 +1,51 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 그라디언트 정의 -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 네온 효과용 필터 -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.8" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- 나침반 컨테이너 -->
+  <g transform="translate(50,50)">
+    <!-- 나침반 외곽 링 -->
+    <circle cx="0" cy="0" r="30" fill="none" stroke="url(#mainGradient)" stroke-width="3" opacity="0.8"/>
+    <circle cx="0" cy="0" r="25" fill="none" stroke="url(#mainGradient)" stroke-width="1" opacity="0.4"/>
+    
+    <!-- 방향 표시 (N, E, S, W) -->
+    <text x="0" y="-20" text-anchor="middle" font-family="monospace" font-size="8" font-weight="bold" fill="url(#mainGradient)">N</text>
+    <text x="20" y="3" text-anchor="middle" font-family="monospace" font-size="8" font-weight="bold" fill="url(#mainGradient)">E</text>
+    <text x="0" y="26" text-anchor="middle" font-family="monospace" font-size="8" font-weight="bold" fill="url(#mainGradient)">S</text>
+    <text x="-20" y="3" text-anchor="middle" font-family="monospace" font-size="8" font-weight="bold" fill="url(#mainGradient)">W</text>
+    
+    <!-- 나침반 바늘 -->
+    <g filter="url(#neonGlow)">
+      <!-- 북쪽 바늘 (빨간색) -->
+      <polygon points="0,-18 -3,-5 3,-5" fill="#ef4444"/>
+      <!-- 남쪽 바늘 (흰색) -->
+      <polygon points="0,18 -3,5 3,5" fill="#f8fafc"/>
+      <!-- 중심점 -->
+      <circle cx="0" cy="0" r="3" fill="url(#mainGradient)"/>
+    </g>
+    
+    <!-- 장식 별들 -->
+    <g opacity="0.7">
+      <polygon points="-35,-15 -33,-13 -31,-15 -33,-17" fill="url(#mainGradient)" transform="rotate(45)">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="8s" repeatCount="indefinite"/>
+      </polygon>
+      <polygon points="35,15 37,17 39,15 37,13" fill="url(#mainGradient)" transform="rotate(-45)">
+        <animateTransform attributeName="transform" type="rotate" values="0;-360" dur="6s" repeatCount="indefinite"/>
+      </polygon>
+    </g>
+  </g>
+</svg>
