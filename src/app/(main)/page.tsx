@@ -31,7 +31,18 @@ export default async function Page({
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
       <header className="flex items-center bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
         <Link href={'/'}>
-          <img width={180} src="/subnavi-logo.svg" alt="SUBNAVI" />
+          <img
+            width={160}
+            className="hidden md:block"
+            src="/subnavi-logo.svg"
+            alt="go to home logo"
+          />
+          <img
+            width={70}
+            className="block md:hidden"
+            src="/subnavi-compass-logo.svg"
+            alt="go to home logo"
+          />
         </Link>
         <EventSearchForm />
       </header>
@@ -56,8 +67,10 @@ export default async function Page({
 
           {isEmptyEvents ? (
             <div className="h-80 flex justify-center items-center text-3xl font-semibold">
-              <span> {category ?? '전체'}</span>
-              <p> 관련 {keyword ? `'${keyword}'` : ''} 이벤트가 없습니다!😥</p>
+              <p>
+                {category ?? '전체'} 관련 {keyword ? `'${keyword}'` : ''}
+                이벤트가 없습니다!😥
+              </p>
             </div>
           ) : (
             <EventList events={events} />
