@@ -15,7 +15,7 @@ export default function EventSearchForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { isValid },
     watch,
     reset,
   } = useForm<SearchKeyword>({
@@ -29,10 +29,14 @@ export default function EventSearchForm() {
   const searchParams = useSearchParams();
 
   const onSubmit = async (data: SearchKeyword) => {
+    const keyword = preprocessSearch(data.query);
     const params = new URLSearchParams(searchParams.toString());
-    params.set('keyword', data.query);
+    params.set('keyword', keyword);
     router.push(`?${params.toString()}`);
   };
+
+  const preprocessSearch = (keyword: string) =>
+    keyword.trim().replace(/\s+/g, ' ').slice(0, 50); //최대길이 제한
 
   const handleClear = () => {
     reset();
@@ -57,11 +61,7 @@ export default function EventSearchForm() {
               {...register('query')}
               type="text"
               placeholder="검색어를 입력하세요 (한글, 영문, 숫자)"
-              className={`pl-10 pr-20 h-12 w-md text-base ${
-                errors.query
-                  ? 'border-destructive focus-visible:ring-destructive'
-                  : ''
-              }`}
+              className={`pl-10 pr-20 h-12 w-md text-base `}
               onKeyDown={handleKeyDown}
             />
 
@@ -88,14 +88,6 @@ export default function EventSearchForm() {
               검색
             </Button>
           </div>
-
-          {/* 에러 메시지 */}
-          {errors.query && (
-            <p className="mt-2 text-sm text-destructive flex items-center">
-              <span className="mr-1">⚠️</span>
-              {errors.query.message}
-            </p>
-          )}
         </div>
       </div>
     </div>
