@@ -1,6 +1,6 @@
 import { JSX, ReactNode, Suspense } from 'react';
 import { ReactRenderer, type Decorator } from '@storybook/nextjs-vite';
-import { MainLayout } from '../src/app/layout';
+import MainLayout from '../src/components/MainLayout';
 import { PartialStoryFn } from 'storybook/internal/csf';
 
 /**

@@ -141,9 +141,8 @@ class ApiClient {
   }
 }
 
-// 서버 사이드 전용 설정
 const getApiBaseUrl = () => {
-  return process.env.API_BASE_URL || 'http://localhost:3000/api';
+  return process.env.NEXT_PUBLIC_API_BASE_URL;
 };
 
 export const apiClient = new ApiClient(getApiBaseUrl());
