@@ -6,6 +6,7 @@ import { eventService } from '@/services/Event';
 import { categoryService } from '@/services/Category';
 import Link from 'next/link';
 import EventSearchForm from '@/components/event/EventSearchForm';
+import ScrollHeader from './ScrollHeader';
 
 export default async function Page({
   searchParams,
@@ -29,29 +30,31 @@ export default async function Page({
   const isEmptyEvents = events?.length <= 0;
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
-      <header className="flex items-center bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
-        <Link href={'/'}>
-          <img
-            width={160}
-            className="hidden md:block"
-            src="/subnavi-logo.svg"
-            alt="go to home logo"
-          />
-          <img
-            width={70}
-            className="block md:hidden"
-            src="/subnavi-compass-logo.svg"
-            alt="go to home logo"
-          />
-        </Link>
-        <EventSearchForm />
-      </header>
+      <ScrollHeader className="flex-col  bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
+        <div className="flex items-center">
+          <Link href="/">
+            <img
+              width={140}
+              className="hidden md:block"
+              src="/subnavi-logo.svg"
+              alt="go to home logo"
+            />
+            <img
+              width={60}
+              className="block md:hidden"
+              src="/subnavi-compass-logo.svg"
+              alt="go to home logo"
+            />
+          </Link>
+          <EventSearchForm />
+        </div>
+        <div className="w-full py-2 mb-2 overflow-x-auto">
+          <EventFilter categories={categories} />
+        </div>
+      </ScrollHeader>
 
       <main className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="w-full">
-          <div className="w-full pb-4 mb-2 overflow-x-auto">
-            <EventFilter categories={categories} />
-          </div>
           <div className="flex items-center justify-center md:justify-between mb-8">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
