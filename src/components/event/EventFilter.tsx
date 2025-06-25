@@ -4,18 +4,6 @@ import { EventCategory } from '@/dto/event/shared-event.dto';
 import { Button } from '../ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const cateogriesWithEmojis: Partial<{
-  [key in ExtendedCategoryName]: string;
-}> = {
-  전체: '🎁',
-  장르무관: '🔥',
-  게임: '🎮',
-  만화: '📚',
-  코스프레: '🎭',
-  VTuber: '✨',
-  기타: '🎸',
-};
-
 export type ExtendedCategoryName = EventCategory['name'] | '전체';
 
 export type ExtendedEventCategoriesResponse = {
@@ -65,10 +53,10 @@ export default function EventFilter({
                       : 'bg-white text-gray-70 hover:bg-gray-50'
                   }`}
             key={`${id}${name}`}
-            size="lg"
+            size="sm"
             onClick={() => handleCategoryClick(name)}
           >
-            {`${cateogriesWithEmojis[name] ?? '🎈'}  ${name}`}
+            {name}
           </Button>
         );
       })}
