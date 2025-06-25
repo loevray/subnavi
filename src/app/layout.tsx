@@ -1,15 +1,5 @@
-import { Geist, Geist_Mono } from 'next/font/google';
+import MainLayout from '@/components/MainLayout';
 import './globals.css';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 export const metadata = {
   title: {
@@ -92,20 +82,6 @@ export const metadata = {
     naver: 'naver-site-verification-code', // 네이버 웹마스터 인증 코드
   },
 };
-
-export function MainLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} antialiased min-w-full min-h-screen flex justify-center items-center`}
-    >
-      {children}
-    </div>
-  );
-}
 
 export default function RootLayout({
   children,

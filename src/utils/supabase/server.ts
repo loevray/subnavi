@@ -2,12 +2,14 @@ import { createServerClient /* type CookieOptions */ } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '../../../database.types';
 
-export const createClient = async (useServiceRole = true) => {
+export const createClient = async (
+  useServiceRole = process.env.NODE_ENV === 'development'
+) => {
   const cookieStore = await cookies();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseUrl = process.env.SUPABASE_URL!;
   const supabaseKey = useServiceRole
     ? process.env.SUPABASE_SERVICE_ROLE_KEY!
-    : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    : process.env.SUPABASE_ANON_KEY!;
 
   return createServerClient<Database>(supabaseUrl, supabaseKey, {
     cookies: {
