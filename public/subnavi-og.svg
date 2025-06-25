@@ -1,0 +1,123 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 그라디언트 정의 -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#1e1b4b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0a2e;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- 네온 효과용 필터 -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 별 패턴 -->
+    <pattern id="starPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="2" fill="url(#mainGradient)" opacity="0.3">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+      </circle>
+    </pattern>
+  </defs>
+  
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  <rect width="1200" height="630" fill="url(#starPattern)" opacity="0.1"/>
+  
+  <!-- 장식 원들 -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="url(#mainGradient)" stroke-width="2" opacity="0.2"/>
+  <circle cx="1100" cy="530" r="60" fill="none" stroke="url(#mainGradient)" stroke-width="2" opacity="0.2"/>
+  
+  <!-- 나침반 컨테이너 (왼쪽) -->
+  <g transform="translate(200,315)">
+    <!-- 나침반 외곽 링 -->
+    <circle cx="0" cy="0" r="80" fill="none" stroke="url(#mainGradient)" stroke-width="6" opacity="0.8"/>
+    <circle cx="0" cy="0" r="65" fill="none" stroke="url(#mainGradient)" stroke-width="2" opacity="0.4"/>
+    
+    <!-- 방향 표시 -->
+    <text x="0" y="-50" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="url(#mainGradient)">N</text>
+    <text x="50" y="8" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="url(#mainGradient)">E</text>
+    <text x="0" y="65" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="url(#mainGradient)">S</text>
+    <text x="-50" y="8" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="url(#mainGradient)">W</text>
+    
+    <!-- 나침반 바늘 -->
+    <g filter="url(#neonGlow)">
+      <!-- 북쪽 바늘 -->
+      <polygon points="0,-45 -8,-15 8,-15" fill="#ef4444"/>
+      <!-- 남쪽 바늘 -->
+      <polygon points="0,45 -8,15 8,15" fill="#f8fafc"/>
+      <!-- 중심점 -->
+      <circle cx="0" cy="0" r="8" fill="url(#mainGradient)"/>
+    </g>
+    
+    <!-- 오타쿠 장식 요소들 -->
+    <g opacity="0.7">
+      <!-- 별들 -->
+      <polygon points="-100,-40 -95,-35 -90,-40 -95,-45" fill="url(#mainGradient)" transform="rotate(45)">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="8s" repeatCount="indefinite"/>
+      </polygon>
+      <polygon points="100,40 105,45 110,40 105,35" fill="url(#mainGradient)" transform="rotate(-45)">
+        <animateTransform attributeName="transform" type="rotate" values="0;-360" dur="6s" repeatCount="indefinite"/>
+      </polygon>
+      
+      <!-- 다이아몬드 -->
+      <polygon points="-110,0 -105,-5 -100,0 -105,5" fill="url(#mainGradient)" opacity="0.8"/>
+      <polygon points="110,0 115,-5 120,0 115,5" fill="url(#mainGradient)" opacity="0.8"/>
+    </g>
+  </g>
+  
+  <!-- SUBNAVI 텍스트 (중앙) -->
+  <g transform="translate(600,315)">
+    <!-- 메인 텍스트 -->
+    <text x="0" y="0" text-anchor="middle" font-family="'Courier New', monospace" font-size="90" font-weight="bold" fill="url(#mainGradient)" filter="url(#neonGlow)">
+      SUBNAVI
+    </text>
+    
+    <!-- 하위 텍스트 -->
+    <text x="0" y="40" text-anchor="middle" font-family="'Courier New', monospace" font-size="24" fill="url(#mainGradient)" opacity="0.8">
+      서브컬쳐 행사 정보
+    </text>
+    
+    <!-- 일본어 텍스트 -->
+    <text x="0" y="70" text-anchor="middle" font-family="'Courier New', monospace" font-size="18" fill="url(#mainGradient)" opacity="0.6">
+      サブカルナビ
+    </text>
+  </g>
+  
+  <!-- 우측 장식 요소들 -->
+  <g transform="translate(1000,315)">
+    <!-- 기하학적 패턴 -->
+    <polygon points="0,-60 -20,-20 0,20 20,-20" fill="none" stroke="url(#mainGradient)" stroke-width="2" opacity="0.6"/>
+    <circle cx="0" cy="0" r="30" fill="none" stroke="url(#mainGradient)" stroke-width="1" opacity="0.4"/>
+    
+    <!-- 작은 별들 -->
+    <g opacity="0.8">
+      <polygon points="-40,-80 -38,-78 -36,-80 -38,-82" fill="url(#mainGradient)"/>
+      <polygon points="40,80 42,82 44,80 42,78" fill="url(#mainGradient)"/>
+      <polygon points="-60,60 -58,62 -56,60 -58,58" fill="url(#mainGradient)"/>
+      <polygon points="60,-60 62,-58 64,-60 62,-62" fill="url(#mainGradient)"/>
+    </g>
+  </g>
+  
+  <!-- 하단 장식 라인 -->
+  <line x1="150" y1="520" x2="1050" y2="520" stroke="url(#mainGradient)" stroke-width="2" opacity="0.4"/>
+  
+  <!-- 추가 장식 요소들 -->
+  <g opacity="0.3">
+    <!-- 좌측 상단 -->
+    <circle cx="80" cy="80" r="3" fill="url(#mainGradient)"/>
+    <circle cx="120" cy="60" r="2" fill="url(#mainGradient)"/>
+    
+    <!-- 우측 하단 -->
+    <circle cx="1120" cy="550" r="3" fill="url(#mainGradient)"/>
+    <circle cx="1080" cy="570" r="2" fill="url(#mainGradient)"/>
+  </g>
+</svg>
