@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import useYouTubeHeader from './useYoutubeHeader';
+import useYouTubeHeader from '../../hooks/useYoutubeHeader';
 
 interface HeaderProps {
   className?: string;
