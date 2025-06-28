@@ -7,7 +7,7 @@ export const UpdateEventRequestDto = BaseEventDto.omit({
 })
   .extend({ categories: z.array(CateogryNameDto) })
   .partial()
-  .nullish();
+  .required({ id: true });
 
 export type UpdateEventRequest = z.infer<typeof UpdateEventRequestDto>;
 
