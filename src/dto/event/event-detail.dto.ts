@@ -9,5 +9,7 @@ export const EventDetailResponseDto = BaseEventDto.omit({
 export type EventDetailResponse = z.infer<typeof EventDetailResponseDto>;
 
 export const EventDetailRequestDto = z.object({
-  id: z.uuid(),
+  id: z.uuidv4().nonoptional(),
 });
+
+export type EventDetailRequest = z.infer<typeof EventDetailRequestDto>;
