@@ -1,28 +1,24 @@
-// services/EventService.ts
+import { DatabaseError, ValidationError, NotFoundError } from '@/lib/errors/serviceErrors.server';
+import { createClient } from '@/utils/supabase/server';
+import camelcaseKeys from 'camelcase-keys';
+import snakecaseKeys from 'snakecase-keys';
+import type { PostgrestError } from '@supabase/supabase-js';
+
 import {
-  DatabaseError,
-  ValidationError,
-  NotFoundError,
-} from '@/lib/errors/serviceErrors.server';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '../../database.types';
-import {
+  EventListRequest,
+  EventListRequestDto,
   EventListResponse,
   EventListResponseDto,
 } from '@/dto/event/event-list.dto';
-import { EventCategory, RegionName } from '@/dto/event/shared-event.dto';
-import camelcaseKeys from 'camelcase-keys';
 import {
+  EventDetailRequest,
+  EventDetailRequestDto,
   EventDetailResponse,
   EventDetailResponseDto,
 } from '@/dto/event/event-detail.dto';
-import {
-  CreateEventRequest,
-  CreateEventRequestDto,
-  CreateEventResponse,
-} from '@/dto/event/create-event.dto';
-import snakecaseKeys from 'snakecase-keys';
-import { createClient } from '@/utils/supabase/server';
+import { CreateEventRequest, CreateEventRequestDto, CreateEventResponse } from '@/dto/event/create-event.dto';
+import { EventCategory, RegionName } from '@/dto/event/shared-event.dto';
+import { UpdateEventRequest, UpdateEventRequestDto, UpdateEventResponse } from '@/dto/event/update-event.dto';
 
 export interface QueryParams {
   page?: number;
@@ -32,12 +28,6 @@ export interface QueryParams {
   sortOrder?: 'asc' | 'desc';
   category?: EventCategory['name'];
 }
-
-const calculatePaginationRange = (page: number, pageSize: number) => {
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-  return { from, to };
-};
 
 type EventWithOptionalRelations = {
   event_categories: {
@@ -49,12 +39,8 @@ type EventWithOptionalRelations = {
 } & Record<string, unknown>;
 
 export default class EventService {
-  private static instance: EventService;
-  private supabaseClient: SupabaseClient<Database> | null = null;
-
-  // 상수들
-  private readonly EVENTS_TABLE = 'events';
-  private readonly EVENTS_LIST_QUERY = `
+  private static readonly EVENTS_TABLE = 'events';
+  private static readonly EVENTS_LIST_QUERY = `
     id,
     title,
     poster_image_url,
@@ -62,68 +48,101 @@ export default class EventService {
     end_datetime,
     location
   `;
-  private readonly EVENTS_DETAIL_QUERY = `*`;
-  private readonly EVENTS_REGION_QUERY = `regions(name)`;
-  private readonly EVENTS_CATEGORIES_LEFT_JOIN = `event_categories(categories(id, name))`;
-  private readonly EVENT_CATEGORIES_INNER_JOIN = `event_categories!inner(categories!inner(id, name))`;
+  private static readonly EVENTS_DETAIL_QUERY = `*`;
+  private static readonly EVENTS_REGION_QUERY = `regions(name)`;
+  private static readonly EVENTS_CATEGORIES_LEFT_JOIN = `event_categories(categories(id, name))`;
+  private static readonly EVENT_CATEGORIES_INNER_JOIN = `event_categories!inner(categories!inner(id, name))`;
 
-  private validatePaginationParams(page: number, pageSize: number): void {
-    if (page < 1) {
-      throw new ValidationError('Page must be greater than 0');
-    }
-    if (pageSize < 1 || pageSize > 100) {
-      throw new ValidationError('Page size must be between 1 and 100');
-    }
+  private async getSupabaseClient() {
+    return await createClient();
   }
 
-  // 이벤트 목록 조회 - 성공하면 데이터 반환, 실패하면 에러 throw
-  public async getEvents(params: QueryParams = {}): Promise<EventListResponse> {
-    const { page = 1, pageSize = 5, keyword, category } = params;
+  private static calculatePaginationRange(page: number, pageSize: number) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    return { from, to };
+  }
 
-    this.validatePaginationParams(page, pageSize);
+  private handleDatabaseError(error: PostgrestError, operation: string): never {
+    if (error.code === 'PGRST116') {
+      //Postgres has now row error
+      throw new NotFoundError('Event not found', error);
+    }
+    throw new DatabaseError(`Failed to ${operation}: ${error.message}`, error);
+  }
 
-    const supabase = await createClient();
-    const { from, to } = calculatePaginationRange(page, pageSize);
+  private transformSingleEventData<T extends EventWithOptionalRelations>(event: T) {
+    const { event_categories, regions, ...rest } = event;
+    return {
+      ...rest,
+      region: regions.name,
+      categories: event_categories.map((ec) => ec.categories) ?? [],
+    };
+  }
 
-    let query = supabase.from(this.EVENTS_TABLE).select(
-      `${this.EVENTS_LIST_QUERY},
-       ${
-         category
-           ? this.EVENT_CATEGORIES_INNER_JOIN
-           : this.EVENTS_CATEGORIES_LEFT_JOIN
-       },
-       ${this.EVENTS_REGION_QUERY}`,
-      { count: 'exact' }
-    );
+  private async fetchEventsQuery(
+    params: Pick<EventListRequest, 'category' | 'keyword'> & { from: number; to: number }
+  ) {
+    const supabase = await this.getSupabaseClient();
+    const { from, to, keyword, category } = params;
+
+    let query = supabase
+      .from(EventService.EVENTS_TABLE)
+      .select(this.buildEventsListQuery(category), { count: 'exact' });
 
     if (category) {
       query = query.eq('event_categories.categories.name', category);
     }
 
     if (keyword) {
-      query = query.or(
-        `title.ilike.%${keyword}%, description.ilike.%${keyword}%`
-      );
+      query = query.or(`title.ilike.%${keyword}%,description.ilike.%${keyword}%`);
     }
 
-    query = query.range(from, to).order('created_at', { ascending: false });
+    return query.range(from, to).order('created_at', { ascending: false });
+  }
 
-    const { data: events, error, count } = await query;
+  private async fetchEventByIdQuery(id: string) {
+    const supabase = await this.getSupabaseClient();
+    return supabase.from(EventService.EVENTS_TABLE).select(this.buildEventDetailQuery()).eq('id', id).single();
+  }
 
-    if (error) {
-      throw new DatabaseError(
-        `Failed to fetch events: ${error.message}`,
-        error
-      );
+  private buildEventsListQuery(category?: string) {
+    return `${EventService.EVENTS_LIST_QUERY},
+      ${category ? EventService.EVENT_CATEGORIES_INNER_JOIN : EventService.EVENTS_CATEGORIES_LEFT_JOIN},
+      ${EventService.EVENTS_REGION_QUERY}` as const;
+  }
+
+  private buildEventDetailQuery() {
+    return `${EventService.EVENTS_DETAIL_QUERY},
+      ${EventService.EVENTS_CATEGORIES_LEFT_JOIN},
+      ${EventService.EVENTS_REGION_QUERY}` as const;
+  }
+
+  public async getEvents(params?: EventListRequest): Promise<EventListResponse> {
+    const pasredParams = EventListRequestDto.safeParse(params);
+    if (!pasredParams.success) {
+      throw new ValidationError('Request Validation Failed', pasredParams.error);
     }
 
-    const transformedEvents =
-      events.map((event) =>
-        this.transformSingleEventData<typeof event>(event)
-      ) || [];
+    const { page = 1, pageSize = 5, category, keyword } = pasredParams.data;
+
+    const { from, to } = EventService.calculatePaginationRange(page, pageSize);
+
+    const {
+      data: events,
+      error,
+      count,
+    } = await this.fetchEventsQuery({
+      from,
+      to,
+      category,
+      keyword,
+    });
+
+    if (error) this.handleDatabaseError(error, 'fetch events');
 
     const response: EventListResponse = {
-      events: camelcaseKeys(transformedEvents),
+      events: camelcaseKeys(events.map((e) => this.transformSingleEventData(e))),
       pagination: {
         page,
         pageSize,
@@ -134,6 +153,26 @@ export default class EventService {
     };
 
     const parsed = EventListResponseDto.safeParse(response);
+    if (!parsed.success) {
+      throw new ValidationError('Response validation failed', parsed.error);
+    }
+
+    return parsed.data;
+  }
+
+  public async getEventById({ id }: EventDetailRequest): Promise<EventDetailResponse> {
+    const parsedRequest = EventDetailRequestDto.safeParse({ id });
+    if (!parsedRequest.success) {
+      throw new ValidationError('Reqeust validation failed', parsedRequest.error);
+    }
+
+    const eventId = parsedRequest.data.id;
+
+    const { data: event, error } = await this.fetchEventByIdQuery(eventId);
+    if (error) this.handleDatabaseError(error, 'fetch event');
+
+    const transformed = this.transformSingleEventData(event);
+    const parsed = EventDetailResponseDto.safeParse(camelcaseKeys(transformed));
 
     if (!parsed.success) {
       throw new ValidationError('Response validation failed', parsed.error);
@@ -142,170 +181,61 @@ export default class EventService {
     return parsed.data;
   }
 
-  private transformSingleEventData<T extends EventWithOptionalRelations>(
-    event: T
-  ) {
-    const { event_categories, regions, ...rest } = event;
-    return {
-      ...rest,
-      region: regions.name,
-      categories: event_categories?.map((ec) => ec.categories) ?? [],
-    };
-  }
-
-  // 단일 이벤트 조회
-  public async getEventById(params: {
-    id: string;
-  }): Promise<EventDetailResponse> {
-    const { id } = params;
-
-    if (!id) {
-      throw new ValidationError('Event ID is required');
-    }
-
-    const supabase = await createClient();
-
-    const { data: event, error } = await supabase
-      .from(this.EVENTS_TABLE)
-      .select(
-        `
-        ${this.EVENTS_DETAIL_QUERY},
-        ${this.EVENTS_CATEGORIES_LEFT_JOIN},
-        ${this.EVENTS_REGION_QUERY}
-      `
-      )
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        throw new NotFoundError('Event not found', error);
-      }
-      throw new DatabaseError(`Failed to fetch event: ${error.message}`, error);
-    }
-
-    const transformedEvent = this.transformSingleEventData(event);
-
-    const parsed = EventDetailResponseDto.safeParse(
-      camelcaseKeys(transformedEvent)
-    );
-
-    if (!parsed.success) {
-      throw new ValidationError('Response validation failed', parsed.error);
-    }
-
-    return parsed.data;
-  }
-
-  // 이벤트 생성
-  public async createEvent(
-    eventData: CreateEventRequest
-  ): Promise<CreateEventResponse> {
-    const supabase = await createClient();
+  public async createEvent(eventData: CreateEventRequest): Promise<CreateEventResponse> {
     const parsed = CreateEventRequestDto.safeParse(eventData);
-
     if (!parsed.success) {
       throw new ValidationError('Request validation failed', parsed.error);
     }
 
-    const { region_id, category_ids, ...snakeCasedEventData } = snakecaseKeys(
-      parsed.data
-    );
+    const supabase = await this.getSupabaseClient();
+    const { region_id, category_ids, ...snakeCased } = snakecaseKeys(parsed.data);
 
-    // 트랜잭션으로 이벤트와 카테고리 관계 생성
-    const { data: event, error: eventError } = await supabase
-      .from(this.EVENTS_TABLE)
-      .insert([{ ...snakeCasedEventData, region_id }])
+    //event 추가와 관계 추가 작업은 하나의 트랜잭션으로 묶여야함
+    const { data: event, error } = await supabase
+      .from(EventService.EVENTS_TABLE)
+      .insert([{ ...snakeCased, region_id }])
       .select()
       .single();
 
-    if (eventError) {
-      throw new DatabaseError(
-        `Failed to create event: ${eventError.message}`,
-        eventError
-      );
-    }
+    if (error) this.handleDatabaseError(error, 'create event');
 
-    // 카테고리 관계 생성
-    const categoryRelations = category_ids.map((categoryId) => ({
+    const relations = category_ids.map((categoryId) => ({
       event_id: event.id,
       category_id: categoryId,
     }));
 
-    const { error: categoryError } = await supabase
-      .from('event_categories')
-      .insert(categoryRelations);
+    const { error: relError } = await supabase.from('event_categories').insert(relations);
+    if (relError) this.handleDatabaseError(relError, 'create event categories');
 
-    if (categoryError) {
-      throw new DatabaseError(
-        `Failed to create event categories: ${categoryError.message}`,
-        categoryError
-      );
-    }
-
-    return camelcaseKeys(event);
+    return { id: event.id };
   }
 
-  // 업데이트 메서드 (예시)
-  public async updateEvent(
-    id: string,
-    updateData: Partial<CreateEventRequest>
-  ): Promise<CreateEventResponse> {
-    if (!id) {
-      throw new ValidationError('Event ID is required');
+  public async updateEvent(updateData: UpdateEventRequest): Promise<UpdateEventResponse> {
+    const parsedUpdateData = UpdateEventRequestDto.safeParse(updateData);
+    if (!parsedUpdateData.success) {
+      throw new ValidationError('Request validation failed', parsedUpdateData.error);
     }
+    const snakeCased = snakecaseKeys(parsedUpdateData.data);
 
-    if (!updateData || Object.keys(updateData).length === 0) {
-      throw new ValidationError('Update data is required');
-    }
-
-    const supabase = await createClient();
-    const snakeCasedUpdateData = snakecaseKeys(updateData);
-
+    const supabase = await this.getSupabaseClient();
     const { data: event, error } = await supabase
-      .from(this.EVENTS_TABLE)
-      .update(snakeCasedUpdateData)
-      .eq('id', id)
+      .from(EventService.EVENTS_TABLE)
+      .update(snakeCased)
+      .eq('id', snakeCased.id)
       .select()
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        throw new NotFoundError('Event not found');
-      }
-      throw new DatabaseError(
-        `Failed to update event: ${error.message}`,
-        error
-      );
-    }
+    if (error) this.handleDatabaseError(error, 'update event');
 
-    return camelcaseKeys(event);
+    return { id: event.id };
   }
 
-  // 삭제 메서드 (예시)
   public async deleteEvent(id: string): Promise<void> {
-    if (!id) {
-      throw new ValidationError('Event ID is required');
-    }
+    const supabase = await this.getSupabaseClient();
+    const { error } = await supabase.from(EventService.EVENTS_TABLE).delete().eq('id', id);
 
-    const supabase = await createClient();
-
-    const { error } = await supabase
-      .from(this.EVENTS_TABLE)
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        throw new NotFoundError('Event not found');
-      }
-      throw new DatabaseError(
-        `Failed to delete event: ${error.message}`,
-        error
-      );
-    }
+    if (error) this.handleDatabaseError(error, 'delete event');
   }
 }
 
-// 싱글톤 인스턴스 내보내기
 export const eventService = new EventService();
