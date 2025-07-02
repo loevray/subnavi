@@ -1,7 +1,7 @@
 'use client';
 
 import { EventCategory } from '@/dto/event/shared-event.dto';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export type ExtendedCategoryName = EventCategory['name'] | '전체';
@@ -11,11 +11,9 @@ export type ExtendedEventCategoriesResponse = {
   name: ExtendedCategoryName;
 }[];
 
-export default function EventFilter({
-  categories,
-}: {
-  categories: ExtendedEventCategoriesResponse;
-}) {
+export const eventFilterWrapperStyle = `flex gap-3 w-full justify-center-safe px-4 sm:px-6 lg:px-8`;
+
+export default function EventFilter({ categories }: { categories: ExtendedEventCategoriesResponse }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -34,13 +32,10 @@ export default function EventFilter({
     router.push(`?${params.toString()}`);
   };
 
-  const extendedCategories: ExtendedEventCategoriesResponse = [
-    { id: 999, name: '전체' },
-    ...categories,
-  ];
+  const extendedCategories: ExtendedEventCategoriesResponse = [{ id: 999, name: '전체' }, ...categories];
 
   return (
-    <div className="flex  gap-3 w-full xl:justify-center px-4 sm:px-6 lg:px-8 ">
+    <div className={eventFilterWrapperStyle}>
       {extendedCategories.map(({ id, name }) => {
         const isSelected = selectedCategory === name;
         return (

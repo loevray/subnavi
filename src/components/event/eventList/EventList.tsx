@@ -1,5 +1,5 @@
 import { EventListItem, EventListResponse } from '@/dto/event/event-list.dto';
-import EventCard from './EventCard';
+import EventCard from '../eventCard/EventCard';
 import formatUtcToKst from '@/utils/formatUtcToKst';
 import Link from 'next/link';
 
@@ -31,14 +31,9 @@ export const GRID_STYLES =
 
 export const DEFAULT_THUMBNAIL = 'https://picsum.photos/600/400';
 
-const createEventUrl = (id: string) =>
-  `${process.env.NEXT_PUBLIC_API_BASE_URL}/event/${id}`;
+const createEventUrl = (id: string) => `${process.env.NEXT_PUBLIC_API_BASE_URL}/event/${id}`;
 
-export default function EventList({
-  events,
-}: {
-  events: EventListResponse['events'];
-}) {
+export default function EventList({ events }: { events: EventListResponse['events'] }) {
   return (
     <div className={GRID_STYLES}>
       {events.map((event) => {

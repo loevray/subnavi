@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from '../ui/card';
-import EventTag, { EventTagType } from './EventTag';
+import { Card, CardContent, CardHeader } from '../../ui/card';
+import EventTag, { EventTagType } from '../EventTag';
 export interface I_EventCard {
   title: string;
   posterImageUrl: string;
@@ -25,8 +25,7 @@ export const DUMMY_EVENT_CARD_DATA: I_EventCard[] = [
     title: '코믹월드 SUMMER 2025',
     dateRange: { start: '2025.07.19', end: '2025.07.20' },
     address: '일산 킨텍스 제1전시장',
-    posterImageUrl:
-      'https://comicw.co.kr/data/item/1748337413/11_7J6E7Iuc7Ys7Iqk7YSw_6riw67O4.png',
+    posterImageUrl: 'https://comicw.co.kr/data/item/1748337413/11_7J6E7Iuc7Ys7Iqk7YSw_6riw67O4.png',
     tagData: DUMMY_TAG_DATA,
   },
   {
@@ -38,13 +37,7 @@ export const DUMMY_EVENT_CARD_DATA: I_EventCard[] = [
   },
 ];
 
-export default function EventCard({
-  title,
-  posterImageUrl,
-  dateRange,
-  address,
-  tagData,
-}: I_EventCard) {
+export default function EventCard({ title, posterImageUrl, dateRange, address, tagData }: I_EventCard) {
   return (
     <Card className="py-0 hover:scale-[1.02] transition-all duration-200 shadow-md hover:shadow-lg w-full overflow-hidden cursor-pointer group gap-0">
       <CardHeader className="p-0">
@@ -69,9 +62,7 @@ export default function EventCard({
         </h1>
 
         {/* 날짜 */}
-        <time className="text-xs sm:text-sm text-gray-600 font-medium">
-          {`${dateRange.start} ~ ${dateRange.end}`}
-        </time>
+        <time className="text-xs sm:text-sm text-gray-600 font-medium">{`${dateRange.start} ~ ${dateRange.end}`}</time>
 
         {/* 주소와 태그 */}
         <section className="flex items-start justify-between gap-2 mt-1">
@@ -87,11 +78,7 @@ export default function EventCard({
             {tagData.slice(0, 2).map(({ key, label, color }) => (
               <EventTag key={key} label={label} color={color} />
             ))}
-            {tagData.length > 2 && (
-              <span className="text-xs text-gray-400 mt-1">
-                +{tagData.length - 2}
-              </span>
-            )}
+            {tagData.length > 2 && <span className="text-xs text-gray-400 mt-1">+{tagData.length - 2}</span>}
           </div>
         </section>
       </CardContent>
