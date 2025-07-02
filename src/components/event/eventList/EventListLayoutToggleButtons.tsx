@@ -1,7 +1,7 @@
 'use client';
 
 import { LayoutGridIcon, MenuIcon } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@radix-ui/react-toggle-group';
 import { useState } from 'react';
 
@@ -17,12 +17,7 @@ export default function EventListLayoutToggleButtons() {
         if (value) setValue(value);
       }}
     >
-      <ToggleGroupItem
-        className=""
-        asChild
-        value="column"
-        aria-label="Column Layout"
-      >
+      <ToggleGroupItem className="" asChild value="column" aria-label="Column Layout">
         <Button
           size="icon"
           className="data-[state=on]:bg-indigo-600 data-[state=on]:hover:bg-indigo-700 data-[state=on]:text-white text-black p-2 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -30,12 +25,7 @@ export default function EventListLayoutToggleButtons() {
           <MenuIcon />
         </Button>
       </ToggleGroupItem>
-      <ToggleGroupItem
-        className=""
-        asChild
-        value="grid"
-        aria-label="Grid Layout"
-      >
+      <ToggleGroupItem className="" asChild value="grid" aria-label="Grid Layout">
         <Button
           size="icon"
           className="data-[state=on]:bg-indigo-600 data-[state=on]:hover:bg-indigo-700 data-[state=on]:text-white text-black p-2 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
