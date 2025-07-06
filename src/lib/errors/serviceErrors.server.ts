@@ -6,12 +6,54 @@ export abstract class CustomError extends Error {
     super(message);
     this.statusCode = statusCode;
     this.details = details;
+    this.name = 'CustomError';
     // Error.captureStackTrace가 있으면 사용 (Node.js 환경)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }
   }
+
+  toResponse(): CustomErrorSerialized {
+    return {
+      error: {
+        message: this.message,
+        statusCode: this.statusCode,
+        //객체인지 체크...
+        ...(this.details !== undefined ? { details: this.details } : undefined),
+        ...(process.env.NODE_ENV === 'development' && { stack: this.stack }),
+      },
+    };
+  }
+
+  //추후 as const로 타입 대체 필요
+  //db 에러는 client에서 불필요함
+  static fromCode(code: number, message: string, details?: unknown) {
+    switch (code) {
+      case 400:
+        return new ValidationError(message, details);
+      case 404:
+        return new NotFoundError(message, details);
+      default:
+        return new InternalError(message, details);
+    }
+  }
 }
+
+export type CustomErrorSerialized = {
+  error: {
+    message: string;
+    statusCode: number;
+    details?: unknown;
+    stack?: string;
+  };
+};
+
+/* 
+  - 내부에서만 다뤄야 하는 Validation에러와 유저에게 보여줘야하는 에러가 나뉨
+  - db column명 <=> be property명 매핑 문제는 client에게 x
+  - 클라이언트에게 요청 받은 데이터의 validation 에러는 o
+  - 클라이언트에게 응답하는 데이터의 validation 에러는?
+*/
 
 export class ValidationError extends CustomError {
   constructor(message: string, details?: unknown, statusCode: number = 400) {
@@ -55,39 +97,14 @@ export class ConflictError extends CustomError {
   }
 }
 
+export class InternalError extends CustomError {
+  constructor(message: string = 'Internal server error', details?: unknown) {
+    super(message, 500, details);
+    this.name = 'InternalError';
+  }
+}
+
 // 에러 타입 가드 헬퍼 함수들
 export const isCustomError = (error: unknown): error is CustomError => {
-  return error instanceof CustomError;
+  return error instanceof CustomError || (error instanceof Error && error.name === 'CustomError');
 };
-
-export const isValidationError = (error: unknown): error is ValidationError => {
-  return error instanceof ValidationError;
-};
-
-export const isDatabaseError = (error: unknown): error is DatabaseError => {
-  return error instanceof DatabaseError;
-};
-
-export const isNotFoundError = (error: unknown): error is NotFoundError => {
-  return error instanceof NotFoundError;
-};
-
-// 에러 코드 상수
-export const ERROR_CODES = {
-  VALIDATION_ERROR: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  INTERNAL_SERVER_ERROR: 500,
-} as const;
-
-// 에러 생성 팩토리 함수들 (선택적)
-export const createValidationError = (message: string, details?: unknown) =>
-  new ValidationError(message, details);
-
-export const createDatabaseError = (message: string, details?: unknown) =>
-  new DatabaseError(message, details);
-
-export const createNotFoundError = (message?: string, details?: unknown) =>
-  new NotFoundError(message, details);
