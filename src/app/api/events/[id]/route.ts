@@ -1,45 +1,22 @@
 import { createClient } from '@/utils/supabase/server';
 import { eventService } from '@/services/Event';
-import { isCustomError } from '@/lib/errors/serviceErrors.server';
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const id = (await params).id;
-    const data = await eventService.getEventById({ id });
-    return Response.json(data);
-  } catch (error) {
-    console.error('Error in GET /api/events/[id]:', error);
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const id = (await params).id;
+  const serviceResponse = await eventService.getEventById({ id });
+  if (serviceResponse.success) return Response.json(serviceResponse.data);
+  const { error } = serviceResponse;
+  console.error('Error in GET /api/events/[id]:', error);
 
-    if (isCustomError(error)) {
-      return Response.json(
-        {
-          error: error.message,
-          details: error.details,
-        },
-        { status: error.statusCode }
-      );
-    }
-
-    return Response.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+  return Response.json({ error }, { status: error.statusCode });
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await request.json();
   try {
     const supabase = await createClient();
-    const { data: event, error } = await supabase
-      .from('events')
-      .update(body)
-      .eq('id', id)
-      .select();
+    const { data: event, error } = await supabase.from('events').update(body).eq('id', id).select();
 
     if (error) {
       console.error('Error update event by ID:', error);
@@ -58,10 +35,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   //특정 행사 삭제
   const { id } = await params;
 
