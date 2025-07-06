@@ -3,12 +3,7 @@ import Link from 'next/link';
 import EventSearchForm from '@/components/event/EventSearchForm';
 import ScrollHeader from './ScrollHeader';
 import EventListSection from '@/components/event/eventList/EventListSection';
-import EventListSectionError from '@/components/event/eventList/EventListSectionError';
 import EventFilterContainer from '@/components/event/eventFilter/EventFilterContainer';
-import EventFilterContainerError from '@/components/event/eventFilter/EventFilterConatinerError';
-import AsyncBoundary from '@/components/common/AsyncBoundary';
-import EventFilterFallback from '@/components/event/eventFilter/EventFilterFallback';
-import EventListSectionFallback from '@/components/event/eventList/EventListSectionFallback';
 
 export type MainSerachParamsType = {
   page?: string;
@@ -28,9 +23,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Mai
           <EventSearchForm />
         </div>
         <div className="w-full py-2 mb-2 overflow-x-auto">
-          <AsyncBoundary errorComponent={EventFilterContainerError} fallback={<EventFilterFallback />}>
-            <EventFilterContainer />
-          </AsyncBoundary>
+          <EventFilterContainer />
         </div>
       </ScrollHeader>
 
@@ -44,9 +37,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Mai
             {/* <EventListLayoutToggleButtons />  테스트중인 기능*/}
           </div>
           <div>{/*인기있는 이벤트 리스트 보여줄 자리(4~5개정도)*/}</div>
-          <AsyncBoundary errorComponent={EventListSectionError} fallback={<EventListSectionFallback />}>
-            <EventListSection {...await searchParams} />
-          </AsyncBoundary>
+          <EventListSection {...await searchParams} />
         </div>
       </main>
     </div>
