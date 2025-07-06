@@ -6,12 +6,16 @@ import EventPagination from '../EventPagination';
 export default async function EventListSection(params: MainSerachParamsType) {
   const { page, category, keyword } = params;
 
-  const { events, pagination } = await eventService.getEvents({
+  const response = await eventService.getEvents({
     page: parseInt(page ?? '1'),
     pageSize: 5, //기본 페이지 사이즈
     category, //category는 전체일때 없음
     keyword,
   });
+
+  if (!response.success) return <div>이벤트 리스트 fetching 실패</div>;
+
+  const { events, pagination } = response.data;
 
   const isEmptyEvents = events?.length <= 0;
 
