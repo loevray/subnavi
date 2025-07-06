@@ -16,6 +16,8 @@ export const EventCateogryDto = z.object({
 
 export type EventCategory = z.infer<typeof EventCateogryDto>;
 
+export type EventCategoryListResponse = EventCategory[];
+
 export const RegionListResponseDto = z.array(
   z.object({
     name: RegionNameDto,

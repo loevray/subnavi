@@ -1,4 +1,10 @@
-import { DatabaseError, ValidationError, NotFoundError } from '@/lib/errors/serviceErrors.server';
+import {
+  DatabaseError,
+  ValidationError,
+  NotFoundError,
+  isCustomError,
+  InternalError,
+} from '@/lib/errors/serviceErrors.server';
 import { createClient } from '@/utils/supabase/server';
 import camelcaseKeys from 'camelcase-keys';
 import snakecaseKeys from 'snakecase-keys';
@@ -19,6 +25,7 @@ import {
 import { CreateEventRequest, CreateEventRequestDto, CreateEventResponse } from '@/dto/event/create-event.dto';
 import { EventCategory, RegionName } from '@/dto/event/shared-event.dto';
 import { UpdateEventRequest, UpdateEventRequestDto, UpdateEventResponse } from '@/dto/event/update-event.dto';
+import { ServiceResult } from './type';
 
 export interface QueryParams {
   page?: number;
@@ -61,6 +68,15 @@ export default class EventService {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
     return { from, to };
+  }
+
+  //handleCustomError와 중복되는 로직 혼재
+  private handleServiceError(error: unknown) {
+    if (isCustomError(error)) {
+      return { success: false as const, ...error.toResponse() };
+    }
+    const internalError = new InternalError('unknown service error', error);
+    return { success: false as const, ...internalError.toResponse() };
   }
 
   private handleDatabaseError(error: PostgrestError, operation: string): never {
@@ -118,116 +134,132 @@ export default class EventService {
       ${EventService.EVENTS_REGION_QUERY}` as const;
   }
 
-  public async getEvents(params?: EventListRequest): Promise<EventListResponse> {
-    const pasredParams = EventListRequestDto.safeParse(params);
-    if (!pasredParams.success) {
-      throw new ValidationError('Request Validation Failed', pasredParams.error);
+  public async getEvents(params?: EventListRequest): Promise<ServiceResult<EventListResponse>> {
+    try {
+      const pasredParams = EventListRequestDto.safeParse(params);
+      if (!pasredParams.success) {
+        throw new ValidationError('Request Validation Failed', pasredParams.error);
+      }
+
+      const { page = 1, pageSize = 5, category, keyword } = pasredParams.data;
+
+      const { from, to } = EventService.calculatePaginationRange(page, pageSize);
+
+      const {
+        data: events,
+        error,
+        count,
+      } = await this.fetchEventsQuery({
+        from,
+        to,
+        category,
+        keyword,
+      });
+
+      if (error) this.handleDatabaseError(error, 'fetch events');
+
+      const response: EventListResponse = {
+        events: camelcaseKeys(events.map((e) => this.transformSingleEventData(e))),
+        pagination: {
+          page,
+          pageSize,
+          hasMore: (count ?? 0) > page * pageSize,
+          total: count ?? 0,
+          totalPages: Math.ceil((count ?? 0) / pageSize),
+        },
+      };
+
+      const parsed = EventListResponseDto.safeParse(response);
+      if (!parsed.success) {
+        throw new ValidationError('Response validation failed', parsed.error);
+      }
+
+      return { success: true, data: parsed.data };
+    } catch (e) {
+      return this.handleServiceError(e);
     }
-
-    const { page = 1, pageSize = 5, category, keyword } = pasredParams.data;
-
-    const { from, to } = EventService.calculatePaginationRange(page, pageSize);
-
-    const {
-      data: events,
-      error,
-      count,
-    } = await this.fetchEventsQuery({
-      from,
-      to,
-      category,
-      keyword,
-    });
-
-    if (error) this.handleDatabaseError(error, 'fetch events');
-
-    const response: EventListResponse = {
-      events: camelcaseKeys(events.map((e) => this.transformSingleEventData(e))),
-      pagination: {
-        page,
-        pageSize,
-        hasMore: (count ?? 0) > page * pageSize,
-        total: count ?? 0,
-        totalPages: Math.ceil((count ?? 0) / pageSize),
-      },
-    };
-
-    const parsed = EventListResponseDto.safeParse(response);
-    if (!parsed.success) {
-      throw new ValidationError('Response validation failed', parsed.error);
-    }
-
-    return parsed.data;
   }
 
-  public async getEventById({ id }: EventDetailRequest): Promise<EventDetailResponse> {
-    const parsedRequest = EventDetailRequestDto.safeParse({ id });
-    if (!parsedRequest.success) {
-      throw new ValidationError('Reqeust validation failed', parsedRequest.error);
+  public async getEventById({ id }: EventDetailRequest): Promise<ServiceResult<EventDetailResponse>> {
+    try {
+      const parsedRequest = EventDetailRequestDto.safeParse({ id });
+      if (!parsedRequest.success) {
+        throw new ValidationError('Reqeust validation failed', parsedRequest.error);
+      }
+
+      const eventId = parsedRequest.data.id;
+
+      const { data: event, error } = await this.fetchEventByIdQuery(eventId);
+      if (error) this.handleDatabaseError(error, 'fetch event');
+
+      const transformed = this.transformSingleEventData(event);
+      const parsed = EventDetailResponseDto.safeParse(camelcaseKeys(transformed));
+
+      if (!parsed.success) {
+        throw new ValidationError('Response validation failed', parsed.error);
+      }
+
+      return { success: true, data: parsed.data };
+    } catch (e) {
+      return this.handleServiceError(e);
     }
-
-    const eventId = parsedRequest.data.id;
-
-    const { data: event, error } = await this.fetchEventByIdQuery(eventId);
-    if (error) this.handleDatabaseError(error, 'fetch event');
-
-    const transformed = this.transformSingleEventData(event);
-    const parsed = EventDetailResponseDto.safeParse(camelcaseKeys(transformed));
-
-    if (!parsed.success) {
-      throw new ValidationError('Response validation failed', parsed.error);
-    }
-
-    return parsed.data;
   }
 
-  public async createEvent(eventData: CreateEventRequest): Promise<CreateEventResponse> {
-    const parsed = CreateEventRequestDto.safeParse(eventData);
-    if (!parsed.success) {
-      throw new ValidationError('Request validation failed', parsed.error);
+  public async createEvent(eventData: CreateEventRequest): Promise<ServiceResult<CreateEventResponse>> {
+    try {
+      const parsed = CreateEventRequestDto.safeParse(eventData);
+      if (!parsed.success) {
+        throw new ValidationError('Request validation failed', parsed.error);
+      }
+
+      const supabase = await this.getSupabaseClient();
+      const { region_id, category_ids, ...snakeCased } = snakecaseKeys(parsed.data);
+
+      //event 추가와 관계 추가 작업은 하나의 트랜잭션으로 묶여야함
+      const { data: event, error } = await supabase
+        .from(EventService.EVENTS_TABLE)
+        .insert([{ ...snakeCased, region_id }])
+        .select()
+        .single();
+
+      if (error) this.handleDatabaseError(error, 'create event');
+
+      const relations = category_ids.map((categoryId) => ({
+        event_id: event.id,
+        category_id: categoryId,
+      }));
+
+      const { error: relError } = await supabase.from('event_categories').insert(relations);
+      if (relError) this.handleDatabaseError(relError, 'create event categories');
+
+      return { success: true, data: { id: event.id } };
+    } catch (e) {
+      return this.handleServiceError(e);
     }
-
-    const supabase = await this.getSupabaseClient();
-    const { region_id, category_ids, ...snakeCased } = snakecaseKeys(parsed.data);
-
-    //event 추가와 관계 추가 작업은 하나의 트랜잭션으로 묶여야함
-    const { data: event, error } = await supabase
-      .from(EventService.EVENTS_TABLE)
-      .insert([{ ...snakeCased, region_id }])
-      .select()
-      .single();
-
-    if (error) this.handleDatabaseError(error, 'create event');
-
-    const relations = category_ids.map((categoryId) => ({
-      event_id: event.id,
-      category_id: categoryId,
-    }));
-
-    const { error: relError } = await supabase.from('event_categories').insert(relations);
-    if (relError) this.handleDatabaseError(relError, 'create event categories');
-
-    return { id: event.id };
   }
 
-  public async updateEvent(updateData: UpdateEventRequest): Promise<UpdateEventResponse> {
-    const parsedUpdateData = UpdateEventRequestDto.safeParse(updateData);
-    if (!parsedUpdateData.success) {
-      throw new ValidationError('Request validation failed', parsedUpdateData.error);
+  public async updateEvent(updateData: UpdateEventRequest): Promise<ServiceResult<UpdateEventResponse>> {
+    try {
+      const parsedUpdateData = UpdateEventRequestDto.safeParse(updateData);
+      if (!parsedUpdateData.success) {
+        throw new ValidationError('Request validation failed', parsedUpdateData.error);
+      }
+      const snakeCased = snakecaseKeys(parsedUpdateData.data);
+
+      const supabase = await this.getSupabaseClient();
+      const { data: event, error } = await supabase
+        .from(EventService.EVENTS_TABLE)
+        .update(snakeCased)
+        .eq('id', snakeCased.id)
+        .select()
+        .single();
+
+      if (error) this.handleDatabaseError(error, 'update event');
+
+      return { success: true, data: { id: event.id } };
+    } catch (e) {
+      return this.handleServiceError(e);
     }
-    const snakeCased = snakecaseKeys(parsedUpdateData.data);
-
-    const supabase = await this.getSupabaseClient();
-    const { data: event, error } = await supabase
-      .from(EventService.EVENTS_TABLE)
-      .update(snakeCased)
-      .eq('id', snakeCased.id)
-      .select()
-      .single();
-
-    if (error) this.handleDatabaseError(error, 'update event');
-
-    return { id: event.id };
   }
 
   public async deleteEvent(id: string): Promise<void> {
