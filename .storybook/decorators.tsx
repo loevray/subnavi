@@ -1,6 +1,6 @@
 import { JSX, ReactNode, Suspense } from 'react';
 import { ReactRenderer, type Decorator } from '@storybook/nextjs-vite';
-import MainLayout from '../src/components/MainLayout';
+import MainLayout from '../src/components/layout/MainLayout';
 import { PartialStoryFn } from 'storybook/internal/csf';
 
 /**
@@ -16,11 +16,7 @@ let PrevStory: PartialStoryFn<ReactRenderer, object> | null = null;
 let StoryPromise: ReactNode = null;
 let promised = false;
 
-const StoryPromiseWrapper = ({
-  Story,
-}: {
-  Story: Parameters<Decorator<object>>[0];
-}): ReactNode => {
+const StoryPromiseWrapper = ({ Story }: { Story: Parameters<Decorator<object>>[0] }): ReactNode => {
   if (PrevStory !== Story) {
     promised = false;
     PrevStory = Story;
@@ -61,7 +57,7 @@ export const rscDecorator: Decorator<object> = (Story) => {
 
 export const withMainLayout: Decorator = (Story) => {
   return (
-    <MainLayout>
+    <MainLayout isStory={true}>
       <Story />
     </MainLayout>
   );
