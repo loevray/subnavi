@@ -43,9 +43,3 @@ export const Default: Story = {
     ...DUMMY_EVENT_CARD_DATA[0],
   },
 };
-
-export const Truncated: Story = {
-  args: {
-    ...DUMMY_EVENT_CARD_DATA[1], //long text
-  },
-};
