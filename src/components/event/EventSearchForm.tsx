@@ -24,7 +24,6 @@ export default function EventSearchForm() {
   });
 
   const watchedQuery = watch('query');
-
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -32,11 +31,10 @@ export default function EventSearchForm() {
     const keyword = preprocessSearch(data.query);
     const params = new URLSearchParams(searchParams.toString());
     params.set('keyword', keyword);
-    router.push(`?${params.toString()}`);
+    return router.push(`/?${params.toString()}`);
   };
 
-  const preprocessSearch = (keyword: string) =>
-    keyword.trim().replace(/\s+/g, ' ').slice(0, 50); //최대길이 제한
+  const preprocessSearch = (keyword: string) => keyword.trim().replace(/\s+/g, ' ').slice(0, 50); //최대길이 제한
 
   const handleClear = () => {
     reset();
