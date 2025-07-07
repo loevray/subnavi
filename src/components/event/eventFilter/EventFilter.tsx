@@ -11,7 +11,7 @@ export type ExtendedEventCategoriesResponse = {
   name: ExtendedCategoryName;
 }[];
 
-export const eventFilterWrapperStyle = `flex gap-3 w-full justify-center-safe px-4 sm:px-6 lg:px-8`;
+export const eventFilterWrapperStyle = `py-3 overflow-x-auto flex gap-3 w-full justify-center-safe px-4 sm:px-6 lg:px-8`;
 
 export default function EventFilter({ categories }: { categories: ExtendedEventCategoriesResponse }) {
   const router = useRouter();

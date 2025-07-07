@@ -13,7 +13,7 @@ export type MainSerachParamsType = {
 
 export default async function Page({ searchParams }: { searchParams: Promise<MainSerachParamsType> }) {
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+    <div className="w-full min-h-screen">
       <ScrollHeader className="flex-col  bg-white/50 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100">
         <div className="flex items-center">
           <Link href="/">
@@ -22,12 +22,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Mai
           </Link>
           <EventSearchForm />
         </div>
-        <div className="w-full py-2 mb-2 overflow-x-auto">
-          <EventFilterContainer />
-        </div>
+        <EventFilterContainer />
       </ScrollHeader>
 
-      <main className="py-6 px-4 sm:px-6 lg:px-8">
+      <main className="py-6 px-4 sm:px-6 lg:px-8 ">
         <div className="w-full">
           <div className="flex items-center justify-center md:justify-between mb-8">
             <div>
