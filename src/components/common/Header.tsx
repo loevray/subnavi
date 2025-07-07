@@ -2,6 +2,7 @@ import ScrollHeader from '@/app/(main)/ScrollHeader';
 import EventSearchForm from '../event/EventSearchForm';
 import Link from 'next/link';
 import EventFilterContainer from '../event/eventFilter/EventFilterContainer';
+import RenderChildrenByPath from './RenderChildrenByPath';
 
 export default async function Header() {
   return (
@@ -13,7 +14,9 @@ export default async function Header() {
         </Link>
         <EventSearchForm />
       </div>
-      <EventFilterContainer />
+      <RenderChildrenByPath>
+        <EventFilterContainer />
+      </RenderChildrenByPath>
     </ScrollHeader>
   );
 }
