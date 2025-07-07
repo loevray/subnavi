@@ -30,7 +30,7 @@ export default async function EventDetailView({ event }: { event: EventDetailRes
 
   const dateRange = formatDateRange(startDatetime, endDatetime);
   return (
-    <main className="container  max-w-4xl p-6 space-y-6">
+    <main className="container max-w-4xl p-6 space-y-6 mx-auto">
       {/* 헤더 */}
       <section className="flex flex-col md:flex-row gap-6">
         {/* 이미지 */}

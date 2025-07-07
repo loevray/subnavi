@@ -1,4 +1,4 @@
-import MainLayout from '@/components/MainLayout';
+import MainLayout from '@/components/layout/MainLayout';
 import './globals.css';
 
 export const metadata = {
@@ -58,8 +58,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Subnavi - 서브컬쳐 행사 정보',
-    description:
-      '애니메이션, 게임, 만화, 코스프레 등 서브컬쳐 행사 정보를 한눈에!',
+    description: '애니메이션, 게임, 만화, 코스프레 등 서브컬쳐 행사 정보를 한눈에!',
     site: '', // 실제 트위터 계정으로 변경
     creator: '',
     images: ['/subnavi-og.svg'], // 1200x600 크기 권장
