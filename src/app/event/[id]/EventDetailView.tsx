@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import ShareButtons from '@/components/ui/shareButtons';
 import Link from 'next/link';
+import HoverOverlay from '@/components/common/HoverOverlay';
 
 export default async function EventDetailView({ event }: { event: EventDetailResponse }) {
   const {
@@ -34,8 +35,10 @@ export default async function EventDetailView({ event }: { event: EventDetailRes
       {/* 헤더 */}
       <section className="flex flex-col md:flex-row gap-6">
         {/* 이미지 */}
-        <div className="md:w-1/2 rounded-lg overflow-hidden">
-          <img src={posterImageUrl ?? '/placeholder.jpg'} alt="poster" className="w-full h-full object-cover" />
+        <div className="md:w-1/2 max-h-[450px] rounded-lg overflow-hidden relative">
+          <HoverOverlay src={posterImageUrl ?? ''}>
+            <img src={posterImageUrl ?? '/placeholder.jpg'} alt="poster" className="w-full h-full object-cover" />
+          </HoverOverlay>
         </div>
 
         {/* 텍스트 */}
