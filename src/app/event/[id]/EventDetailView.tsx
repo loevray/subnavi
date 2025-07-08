@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import ShareButtons from '@/components/ui/shareButtons';
 import Link from 'next/link';
 import HoverOverlay from '@/components/common/HoverOverlay';
+import getEventStatusLabel from '@/utils/getEventStatusLabel';
 
 export default async function EventDetailView({ event }: { event: EventDetailResponse }) {
   const {
@@ -59,7 +60,7 @@ export default async function EventDetailView({ event }: { event: EventDetailRes
             <InfoItem icon={Calendar} text={`${dateRange.start} ~ ${dateRange.end}`} />
             <InfoItem icon={MapPin} text={location} />
             <InfoItem icon={ShieldCheck} text={ageRating ?? '연령제한 없음'} />
-            <InfoItem icon={Activity} text={status ?? '진행 상태 없음'} />
+            <InfoItem icon={Activity} text={getEventStatusLabel(status)} />
             <InfoItem icon={Wallet} text={participationFee ?? '무료'} />
           </div>
 
