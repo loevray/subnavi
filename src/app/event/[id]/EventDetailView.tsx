@@ -35,9 +35,13 @@ export default async function EventDetailView({ event }: { event: EventDetailRes
       {/* 헤더 */}
       <section className="flex flex-col md:flex-row gap-6">
         {/* 이미지 */}
-        <div className="md:w-1/2 max-h-[450px] rounded-lg overflow-hidden relative">
+        <div className="md:w-1/2 max-h-[450px] overflow-hidden relative">
           <HoverOverlay src={posterImageUrl ?? ''}>
-            <img src={posterImageUrl ?? '/placeholder.jpg'} alt="poster" className="w-full h-full object-cover" />
+            <img
+              src={posterImageUrl ?? '/placeholder.jpg'}
+              alt="poster"
+              className="w-full h-full object-cover rounded-md"
+            />
           </HoverOverlay>
         </div>
 
@@ -51,7 +55,7 @@ export default async function EventDetailView({ event }: { event: EventDetailRes
             ))}
           </div>
 
-          <div className="text-sm  space-y-1.5 pt-2">
+          <div className="text-sm space-y-3 pt-2">
             <InfoItem icon={Calendar} text={`${dateRange.start} ~ ${dateRange.end}`} />
             <InfoItem icon={MapPin} text={location} />
             <InfoItem icon={ShieldCheck} text={ageRating ?? '연령제한 없음'} />
@@ -132,8 +136,8 @@ export default async function EventDetailView({ event }: { event: EventDetailRes
 function InfoItem({ icon: Icon, text, href }: { icon: React.ElementType; text: string; href?: string }) {
   const content = (
     <>
-      <Icon className="w-4 h-4" />
-      <span>{text}</span>
+      <Icon className="size-4.5" />
+      <span className="text-sm">{text}</span>
     </>
   );
   return (

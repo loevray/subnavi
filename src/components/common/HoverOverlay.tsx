@@ -19,7 +19,7 @@ export default function HoverOverlay({ children, src }: HoverOverlayProps) {
 
   return (
     <div
-      className="relative w-fit group"
+      className="relative w-full h-full group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -27,7 +27,7 @@ export default function HoverOverlay({ children, src }: HoverOverlayProps) {
 
       <div
         className={cn(
-          'absolute inset-0 flex items-center justify-center bg-black/20 rounded-md transition-opacity',
+          'absolute inset-0 flex items-center justify-center bg-black/20 rounded-md transition-opacity h-full',
           isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
         )}
       >
