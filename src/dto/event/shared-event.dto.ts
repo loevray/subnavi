@@ -3,6 +3,7 @@ import { Constants, Database } from '../../../database.types';
 
 export const AgeRatingDto = z.enum(Constants.public.Enums.age_rating);
 export const EventStatusDto = z.enum(Constants.public.Enums.event_status);
+export type EventStatus = z.infer<typeof EventStatusDto>;
 export const CateogryNameDto = z.enum(Constants.public.Enums.category_name);
 export const RegionNameDto = z.enum(Constants.public.Enums.region_name);
 export type RegionName = z.infer<typeof RegionNameDto>;
@@ -59,7 +60,7 @@ export const BaseEventDto = z.object({
   regionId: z.number(),
   snsLinks: SnsLinkDto.nullish(),
   startDatetime: z.string(),
-  status: EventStatusDto.optional(),
+  status: EventStatusDto,
   title: z.string(),
   updatedAt: z.string().nullish(),
 });
