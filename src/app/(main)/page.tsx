@@ -1,6 +1,8 @@
 import { EventCategory } from '@/dto/event/shared-event.dto';
 
 import EventListSection from '@/components/event/eventList/EventListSection';
+import { Suspense } from 'react';
+import EventListSectionFallback from '@/components/event/eventList/EventListSectionFallback';
 
 export type MainSerachParamsType = {
   page?: string;
@@ -21,7 +23,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<Mai
             {/* <EventListLayoutToggleButtons />  테스트중인 기능*/}
           </div>
           <div>{/*인기있는 이벤트 리스트 보여줄 자리(4~5개정도)*/}</div>
-          <EventListSection {...await searchParams} />
+          <Suspense fallback={<EventListSectionFallback />}>
+            <EventListSection {...await searchParams} />
+          </Suspense>
         </div>
       </main>
     </div>

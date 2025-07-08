@@ -4,6 +4,7 @@ import Link from 'next/link';
 import EventFilterContainer from '../event/eventFilter/EventFilterContainer';
 import RenderChildrenByPath from './RenderChildrenByPath';
 import { Suspense } from 'react';
+import EventFilterFallback from '../event/eventFilter/EventFilterFallback';
 
 export default async function Header() {
   return (
@@ -18,7 +19,7 @@ export default async function Header() {
         </Suspense>
       </div>
       <RenderChildrenByPath>
-        <Suspense>
+        <Suspense fallback={<EventFilterFallback />}>
           <EventFilterContainer />
         </Suspense>
       </RenderChildrenByPath>
