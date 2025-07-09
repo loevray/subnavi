@@ -1,14 +1,8 @@
-import {
-  CreateEventRequest,
-  CreateEventResponse,
-} from '@/dto/event/create-event.dto';
+import { CreateEventRequest, CreateEventResponse } from '@/dto/event/create-event.dto';
 import { EventDetailResponse } from '@/dto/event/event-detail.dto';
 import { EventListResponse } from '@/dto/event/event-list.dto';
-import { EventCategory } from '@/dto/event/shared-event.dto';
-import {
-  UpdateEventRequest,
-  UpdateEventResponse,
-} from '@/dto/event/update-event.dto';
+import { EventCategory, RegionListResponse } from '@/dto/event/shared-event.dto';
+import { UpdateEventRequest, UpdateEventResponse } from '@/dto/event/update-event.dto';
 
 export class ApiError extends Error {
   constructor(message: string, public status: number, public endpoint: string) {
@@ -25,10 +19,7 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     try {
       const url = `${this.baseUrl}${endpoint}`;
       const config: RequestInit = {
@@ -76,11 +67,7 @@ class ApiClient {
       }
 
       // 네트워크 에러 등은 ApiError로 래핑
-      throw new ApiError(
-        error instanceof Error ? error.message : 'Unknown error',
-        500,
-        endpoint
-      );
+      throw new ApiError(error instanceof Error ? error.message : 'Unknown error', 500, endpoint);
     }
   }
 
@@ -88,11 +75,7 @@ class ApiClient {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  async post<T>(
-    endpoint: string,
-    body?: unknown,
-    options?: RequestInit
-  ): Promise<T> {
+  async post<T>(endpoint: string, body?: unknown, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
@@ -100,11 +83,7 @@ class ApiClient {
     });
   }
 
-  async put<T>(
-    endpoint: string,
-    body?: unknown,
-    options?: RequestInit
-  ): Promise<T> {
+  async put<T>(endpoint: string, body?: unknown, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',
@@ -112,11 +91,7 @@ class ApiClient {
     });
   }
 
-  async patch<T>(
-    endpoint: string,
-    body?: unknown,
-    options?: RequestInit
-  ): Promise<T> {
+  async patch<T>(endpoint: string, body?: unknown, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PATCH',
@@ -179,10 +154,7 @@ export const EventsApi = {
     return apiClient.post<CreateEventResponse>('/events', event);
   },
 
-  update: async (
-    id: string,
-    event: UpdateEventRequest
-  ): Promise<UpdateEventResponse> => {
+  update: async (id: string, event: UpdateEventRequest): Promise<UpdateEventResponse> => {
     return apiClient.patch<UpdateEventResponse>(`/events/${id}`, event);
   },
 
@@ -196,5 +168,8 @@ export const EventsApi = {
 
   Categories: {
     getAll: () => apiClient.get<EventCategory[]>('/categories'),
+  },
+  Regions: {
+    getAll: () => apiClient.get<RegionListResponse>('/regions'),
   },
 };
