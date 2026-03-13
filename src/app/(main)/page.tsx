@@ -10,19 +10,27 @@ export type MainSerachParamsType = {
   keyword?: string;
 };
 
+const paletteDots = ['#b8a8d8', '#cc3333', '#f0a898', '#c8963c', '#d0e4f8', '#f0eef8'];
+
 export default async function Page({ searchParams }: { searchParams: Promise<MainSerachParamsType> }) {
   return (
     <div className="w-full min-h-screen">
-      <main className="py-6 px-4 sm:px-6 lg:px-8 ">
-        <div className="w-full">
-          <div className="flex items-center justify-center md:justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-primary mb-2">🎉 지금 인기 있는 이벤트</h2>
-              <p className="text-muted-foreground">놓치면 후회할 핫한 이벤트들을 확인해보세요</p>
+      <main className="px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-[1320px]">
+          <div className="mb-8">
+            <div className="mb-6 flex items-center gap-3 text-xs font-semibold tracking-[0.14em] text-muted-foreground">
+              <span>COLOR FROM</span>
+              <div className="flex items-center gap-2.5">
+                {paletteDots.map((color) => (
+                  <span key={color} className="size-5 rounded-full border border-white/20" style={{ backgroundColor: color }} />
+                ))}
+              </div>
             </div>
-            {/* <EventListLayoutToggleButtons />  테스트중인 기능*/}
+
+            <h2 className="mb-2 text-4xl font-black tracking-tight text-[#f6f0ff]">🎉 지금 인기 있는 이벤트</h2>
+            <p className="text-muted-foreground">놓치면 후회할 핫한 이벤트들을 확인해보세요</p>
           </div>
-          <div>{/*인기있는 이벤트 리스트 보여줄 자리(4~5개정도)*/}</div>
+
           <Suspense fallback={<EventListSectionFallback />}>
             <EventListSection {...await searchParams} />
           </Suspense>

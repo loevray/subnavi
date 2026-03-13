@@ -7,43 +7,33 @@ export default function EventListSectionFallback() {
       <div className={GRID_STYLES}>
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="w-full">
-            {/* EventCard skeleton */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-              {/* Poster image skeleton */}
-              <Skeleton className="h-[200px] w-full" />
+            <div className="overflow-hidden rounded-2xl border border-primary/20 bg-card/70 shadow-lg shadow-black/10">
+              <Skeleton className="h-[210px] w-full bg-muted/60" />
 
-              {/* Card content skeleton */}
-              <div className="p-4 space-y-3">
-                {/* Title skeleton */}
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-4/5" />
+              <div className="space-y-3 p-4">
+                <Skeleton className="h-5 w-full bg-muted/60" />
+                <Skeleton className="h-5 w-4/5 bg-muted/60" />
+                <Skeleton className="h-4 w-36 bg-muted/60" />
+                <Skeleton className="h-4 w-28 bg-muted/60" />
 
-                {/* Date range skeleton */}
-                <Skeleton className="h-4 w-32" />
-
-                {/* Address skeleton */}
-                <Skeleton className="h-4 w-24" />
-
-                {/* Tags skeleton */}
-                <div className="flex gap-2 flex-wrap">
-                  <Skeleton className="h-6 w-16 rounded-full" />
-                  <Skeleton className="h-6 w-20 rounded-full" />
+                <div className="flex flex-wrap gap-2">
+                  <Skeleton className="h-6 w-16 rounded-full bg-muted/60" />
+                  <Skeleton className="h-6 w-20 rounded-full bg-muted/60" />
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+
       <div className="mt-12">
-        <div className="text-center mb-6">
-          <Skeleton className="h-4 w-48 mx-auto" />
+        <div className="mb-6 text-center">
+          <Skeleton className="mx-auto h-4 w-48 bg-muted/60" />
         </div>
         <div className="flex justify-center gap-2">
-          <Skeleton className="h-10 w-10" />
-          <Skeleton className="h-10 w-10" />
-          <Skeleton className="h-10 w-10" />
-          <Skeleton className="h-10 w-10" />
-          <Skeleton className="h-10 w-10" />
+          <Skeleton className="h-10 w-10 rounded-xl bg-muted/60" />
+          <Skeleton className="h-10 w-10 rounded-xl bg-muted/60" />
+          <Skeleton className="h-10 w-10 rounded-xl bg-muted/60" />
         </div>
       </div>
     </>

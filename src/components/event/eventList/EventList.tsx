@@ -3,7 +3,7 @@ import EventCard from '../eventCard/EventCard';
 import formatUtcToKst from '@/utils/formatUtcToKst';
 import Link from 'next/link';
 
-export const DEFAULT_TAG_BG = 'bg-gradient-to-r from-[#7a6aaa] via-[#b8a8d8] to-[#d0e4f8]';
+export const DEFAULT_TAG_BG = 'bg-gradient-to-r from-[#6e60a8] via-[#8a7fc4] to-[#b8a8d8]';
 
 function formatEventData(event: EventListItem) {
   const { startDatetime, endDatetime, categories } = event;

@@ -11,7 +11,7 @@ export type ExtendedEventCategoriesResponse = {
   name: ExtendedCategoryName;
 }[];
 
-export const eventFilterWrapperStyle = `py-3 overflow-x-auto flex gap-3 w-full justify-center-safe px-4 sm:px-6 lg:px-8`;
+export const eventFilterWrapperStyle = `py-4 overflow-x-auto flex gap-2.5 w-full justify-start lg:justify-center px-4 sm:px-6 lg:px-8`;
 
 export default function EventFilter({ categories }: { categories: ExtendedEventCategoriesResponse }) {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function EventFilter({ categories }: { categories: ExtendedEventC
 
   const handleCategoryClick = (category: ExtendedCategoryName) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1'); //카테고리 변경시 1페이지로 초기화
+    params.set('page', '1');
 
     if (category === '전체') {
       params.delete('category');
@@ -38,14 +38,14 @@ export default function EventFilter({ categories }: { categories: ExtendedEventC
     <div className={eventFilterWrapperStyle}>
       {extendedCategories.map(({ id, name }) => {
         const isSelected = selectedCategory === name;
+
         return (
           <Button
-            className={`
-                  px-6 py-2  border border-primary/20 rounded-full font-medium transition-all duration-300
+            className={`h-10 rounded-full border px-5 text-sm font-semibold transition-all duration-300
                   ${
                     isSelected
-                      ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm'
-                      : 'bg-card text-foreground hover:bg-accent/40'
+                      ? 'border-primary/70 bg-gradient-to-r from-[#f06b93] to-[#b8a8d8] text-white shadow-[0_0_18px_rgba(240,107,147,0.35)]'
+                      : 'border-primary/25 bg-transparent text-muted-foreground hover:border-primary/50 hover:bg-accent/40 hover:text-foreground'
                   }`}
             key={`${id}${name}`}
             size="sm"

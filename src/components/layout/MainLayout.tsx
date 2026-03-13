@@ -19,7 +19,7 @@ export default function MainLayout({
 }> & { isStory?: boolean }) {
   return (
     <div
-      className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-h-screen bg-background text-foreground`}
     >
       {!isStory && <Header />}
       {children}

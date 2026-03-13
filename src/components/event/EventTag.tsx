@@ -13,10 +13,7 @@ export default function EventTag({
   ...props
 }: Omit<EventTagType, 'key'> & React.ComponentProps<'span'>) {
   return (
-    <Badge
-      className={cn(`px-2 hover:brightness-90 cursor-pointer ${color}`)}
-      {...props}
-    >
+    <Badge className={cn('rounded-full border border-white/15 px-2.5 py-1 text-[11px] font-semibold text-white', color)} {...props}>
       {label}
     </Badge>
   );

@@ -22,7 +22,7 @@ export default async function EventListSection(params: MainSerachParamsType) {
   return (
     <>
       {isEmptyEvents ? (
-        <div className="h-80 flex justify-center items-center text-3xl font-semibold">
+        <div className="flex h-80 items-center justify-center text-2xl font-semibold text-muted-foreground">
           <p>
             {category ?? '전체'} 관련 {keyword ? `'${keyword}'` : ''}
             이벤트가 없습니다!😥
@@ -34,9 +34,9 @@ export default async function EventListSection(params: MainSerachParamsType) {
 
       <footer className="mt-12">
         <div className="text-center mb-6">
-          <div className="text-sm text-muted-foreground">
-            총 <span className="font-semibold text-primary">{pagination.total}개</span> 이벤트 중
-            <span className="font-semibold text-primary">
+          <div className="text-sm text-muted-foreground/90">
+            총 <span className="font-semibold text-[#f190af]">{pagination.total}개</span> 이벤트 중
+            <span className="font-semibold text-[#f190af]">
               {' '}
               {(pagination.page - 1) * pagination.pageSize || 1}-{pagination.page * pagination.pageSize}
             </span>{' '}

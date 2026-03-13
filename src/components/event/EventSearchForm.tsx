@@ -9,8 +9,6 @@ import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchKeyword, SearchKeywordDto } from '@/dto/event/shared-event.dto';
 
-// Zod 스키마 정의
-
 export default function EventSearchForm() {
   const {
     register,
@@ -20,7 +18,7 @@ export default function EventSearchForm() {
     reset,
   } = useForm<SearchKeyword>({
     resolver: zodResolver(SearchKeywordDto),
-    mode: 'onChange', // 실시간 검증
+    mode: 'onChange',
   });
 
   const watchedQuery = watch('query');
@@ -34,7 +32,7 @@ export default function EventSearchForm() {
     return router.push(`/?${params.toString()}`);
   };
 
-  const preprocessSearch = (keyword: string) => keyword.trim().replace(/\s+/g, ' ').slice(0, 50); //최대길이 제한
+  const preprocessSearch = (keyword: string) => keyword.trim().replace(/\s+/g, ' ').slice(0, 50);
 
   const handleClear = () => {
     reset();
@@ -48,44 +46,38 @@ export default function EventSearchForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4">
-      {/* 검색 폼 */}
-
+    <div className="w-full max-w-xl px-2">
       <div className="relative">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            {...register('query')}
-            type="text"
-            placeholder="검색"
-            className={`pl-10 pr-20 h-10 sm:w-sm text-base `}
-            onKeyDown={handleKeyDown}
-          />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          {...register('query')}
+          type="text"
+          placeholder="행사명, 장소를 검색해보세요"
+          className="h-12 rounded-xl border-primary/25 bg-card/55 pl-11 pr-24 text-base text-foreground placeholder:text-muted-foreground/90"
+          onKeyDown={handleKeyDown}
+        />
 
-          {/* 클리어 버튼 */}
-          {watchedQuery && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleClear}
-              className="absolute right-16 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-
-          {/* 검색 버튼 */}
+        {watchedQuery && (
           <Button
             type="button"
-            onClick={handleSubmit(onSubmit)}
-            disabled={!isValid}
-            size="icon"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8"
+            variant="ghost"
+            size="sm"
+            onClick={handleClear}
+            className="absolute right-14 top-1/2 h-8 w-8 -translate-y-1/2 p-0 hover:bg-accent"
           >
-            <SearchIcon />
+            <X className="h-4 w-4" />
           </Button>
-        </div>
+        )}
+
+        <Button
+          type="button"
+          onClick={handleSubmit(onSubmit)}
+          disabled={!isValid}
+          size="icon"
+          className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 rounded-lg"
+        >
+          <SearchIcon />
+        </Button>
       </div>
     </div>
   );
