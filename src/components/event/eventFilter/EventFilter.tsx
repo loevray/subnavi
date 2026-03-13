@@ -41,11 +41,11 @@ export default function EventFilter({ categories }: { categories: ExtendedEventC
         return (
           <Button
             className={`
-                  px-6 py-2  border border-gray-200 rounded-full font-medium transition-all duration-300
+                  px-6 py-2  border border-primary/20 rounded-full font-medium transition-all duration-300
                   ${
                     isSelected
-                      ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                      : 'bg-white text-gray-70 hover:bg-gray-50'
+                      ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm'
+                      : 'bg-card text-foreground hover:bg-accent/40'
                   }`}
             key={`${id}${name}`}
             size="sm"

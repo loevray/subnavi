@@ -34,9 +34,9 @@ export default async function EventListSection(params: MainSerachParamsType) {
 
       <footer className="mt-12">
         <div className="text-center mb-6">
-          <div className="text-sm text-gray-600">
-            총 <span className="font-semibold text-indigo-600">{pagination.total}개</span> 이벤트 중
-            <span className="font-semibold text-indigo-600">
+          <div className="text-sm text-muted-foreground">
+            총 <span className="font-semibold text-primary">{pagination.total}개</span> 이벤트 중
+            <span className="font-semibold text-primary">
               {' '}
               {(pagination.page - 1) * pagination.pageSize || 1}-{pagination.page * pagination.pageSize}
             </span>{' '}

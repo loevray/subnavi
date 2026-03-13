@@ -17,8 +17,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<Mai
         <div className="w-full">
           <div className="flex items-center justify-center md:justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">🎉 지금 인기 있는 이벤트</h2>
-              <p className="text-gray-600">놓치면 후회할 핫한 이벤트들을 확인해보세요</p>
+              <h2 className="text-3xl font-bold text-primary mb-2">🎉 지금 인기 있는 이벤트</h2>
+              <p className="text-muted-foreground">놓치면 후회할 핫한 이벤트들을 확인해보세요</p>
             </div>
             {/* <EventListLayoutToggleButtons />  테스트중인 기능*/}
           </div>

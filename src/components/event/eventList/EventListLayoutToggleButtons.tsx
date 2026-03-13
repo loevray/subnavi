@@ -20,7 +20,7 @@ export default function EventListLayoutToggleButtons() {
       <ToggleGroupItem className="" asChild value="column" aria-label="Column Layout">
         <Button
           size="icon"
-          className="data-[state=on]:bg-indigo-600 data-[state=on]:hover:bg-indigo-700 data-[state=on]:text-white text-black p-2 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+          className="data-[state=on]:bg-primary data-[state=on]:hover:bg-primary/90 data-[state=on]:text-primary-foreground text-foreground p-2 rounded-full bg-card border border-primary/20 hover:bg-accent/40 transition-colors"
         >
           <MenuIcon />
         </Button>
@@ -28,7 +28,7 @@ export default function EventListLayoutToggleButtons() {
       <ToggleGroupItem className="" asChild value="grid" aria-label="Grid Layout">
         <Button
           size="icon"
-          className="data-[state=on]:bg-indigo-600 data-[state=on]:hover:bg-indigo-700 data-[state=on]:text-white text-black p-2 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+          className="data-[state=on]:bg-primary data-[state=on]:hover:bg-primary/90 data-[state=on]:text-primary-foreground text-foreground p-2 rounded-full bg-card border border-primary/20 hover:bg-accent/40 transition-colors"
         >
           <LayoutGridIcon />
         </Button>

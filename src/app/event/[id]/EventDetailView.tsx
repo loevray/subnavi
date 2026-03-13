@@ -148,7 +148,7 @@ function InfoItem({ icon: Icon, text, href }: { icon: React.ElementType; text: s
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-blue-600 hover:underline"
+          className="flex items-center gap-2 text-primary hover:text-[#8b78bf] hover:underline"
         >
           {content}
         </a>

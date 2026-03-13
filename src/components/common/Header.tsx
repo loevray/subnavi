@@ -8,7 +8,7 @@ import EventFilterFallback from '../event/eventFilter/EventFilterFallback';
 
 export default async function Header() {
   return (
-    <ScrollHeader className="flex-col  bg-white/50 backdrop-blur-sm border-b border-gray-100">
+    <ScrollHeader className="flex-col  bg-background/80 backdrop-blur-md border-b border-primary/15">
       <div className="flex items-center">
         <Link href="/">
           <img width={140} className="hidden md:block" src="/subnavi-logo.svg" alt="go to home logo" />
