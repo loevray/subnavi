@@ -8,14 +8,16 @@ import HeaderTopBar from './HeaderTopBar';
 export default function Header() {
   return (
     <ScrollHeader className="flex-col items-center bg-white/50 backdrop-blur-sm border-b border-gray-100">
-      <Suspense>
+      <Suspense fallback={<div className="h-16 w-full" />}>
         <HeaderTopBar />
       </Suspense>
-      <RenderChildrenByPath>
-        <Suspense fallback={<EventFilterFallback />}>
-          <EventFilterContainer />
-        </Suspense>
-      </RenderChildrenByPath>
+      <Suspense fallback={null}>
+        <RenderChildrenByPath>
+          <Suspense fallback={<EventFilterFallback />}>
+            <EventFilterContainer />
+          </Suspense>
+        </RenderChildrenByPath>
+      </Suspense>
     </ScrollHeader>
   );
 }
