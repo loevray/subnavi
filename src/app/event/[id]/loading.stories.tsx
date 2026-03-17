@@ -7,6 +7,13 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
+  decorators: [
+    (Story) => (
+      <div style={{ minHeight: '100vh', background: '#f6f4fb', padding: '24px' }}>
+        <Story />
+      </div>
+    ),
+  ],
   tags: ['autodocs'],
   argTypes: {},
 } satisfies Meta<typeof EventDetailSkeleton>;
