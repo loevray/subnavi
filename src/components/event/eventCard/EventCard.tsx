@@ -56,12 +56,13 @@ export default function EventCard({ title, posterImageUrl, dateRange, address, t
   return (
     <article
       className="
-        group relative w-full overflow-visible rounded-[24px] bg-transparent text-slate-900
-        transition-all duration-300 hover:-translate-y-1
+        group relative w-full min-w-0 overflow-hidden rounded-[24px] border border-slate-200/80 bg-white text-slate-900
+        shadow-[0_16px_40px_rgba(15,23,42,0.10)] transition-all duration-300 hover:-translate-y-1
+        sm:overflow-visible sm:border-none sm:bg-transparent sm:shadow-none
       "
     >
-      <div className="overflow-hidden rounded-[24px] bg-slate-100">
-        <div className="relative aspect-[5/4] overflow-hidden sm:aspect-[4/3]">
+      <div className="overflow-hidden rounded-t-[24px] bg-slate-100 sm:rounded-[24px]">
+        <div className="relative aspect-[2/1] overflow-hidden sm:aspect-[4/3]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -72,13 +73,13 @@ export default function EventCard({ title, posterImageUrl, dateRange, address, t
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/28 via-transparent to-slate-950/8" />
 
           {tagData.length > 0 && (
-            <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 sm:left-4 sm:top-4">
+            <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-24px)] flex-wrap gap-1.5 sm:left-4 sm:top-4 sm:max-w-[calc(100%-32px)]">
               {tagData.slice(0, 2).map(({ key, label, color }) => (
                 <EventTag
                   key={key}
                   label={label}
                   color={color}
-                  className="rounded-full border border-white/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-none backdrop-blur-sm"
+                  className="max-w-full rounded-full border border-white/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-none backdrop-blur-sm"
                 />
               ))}
             </div>
@@ -88,26 +89,26 @@ export default function EventCard({ title, posterImageUrl, dateRange, address, t
 
       <div
         className="
-          relative z-10 mx-3 -mt-6 rounded-[20px] bg-transparent px-4 pb-4 pt-3
+          relative z-10 min-w-0 bg-white px-4 pb-4 pt-3
           sm:mx-0 sm:mt-0 sm:rounded-none sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-3 sm:shadow-none
         "
       >
         <h3
           title={title}
-          className="line-clamp-2 text-[1.05rem] font-extrabold leading-tight tracking-[-0.02em] text-slate-900 sm:min-h-[3.25rem] sm:text-[1.45rem]"
+          className="line-clamp-2 text-[1rem] font-extrabold leading-tight tracking-[-0.02em] text-slate-900 sm:min-h-[3.25rem] sm:text-[1.45rem]"
         >
           {title}
         </h3>
 
-        <div className="mt-3 flex flex-col gap-2 text-sm text-slate-500 sm:mt-3.5">
-          <div className="flex items-start gap-2">
+        <div className="mt-3 flex min-w-0 flex-col gap-2 text-[13px] text-slate-500 sm:mt-3.5 sm:text-sm">
+          <div className="flex min-w-0 items-start gap-2">
             <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-            <time className="line-clamp-1 font-medium text-slate-500">{formatDateRange(dateRange)}</time>
+            <time className="min-w-0 line-clamp-1 font-medium text-slate-500">{formatDateRange(dateRange)}</time>
           </div>
 
-          <div className="flex items-start gap-2">
+          <div className="flex min-w-0 items-start gap-2">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-            <address className="line-clamp-2 not-italic font-medium text-slate-500">{address}</address>
+            <address className="min-w-0 line-clamp-2 not-italic font-medium text-slate-500">{address}</address>
           </div>
         </div>
       </div>
