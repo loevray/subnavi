@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Constants } from '../../../../database.types';
 import EventFilter from './EventFilter';
 
 const meta = {
@@ -23,10 +24,10 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     categories: [
-      { id: 1, name: '공연' },
-      { id: 2, name: '전시' },
-      { id: 3, name: '게임' },
-      { id: 4, name: '페스티벌' },
+      { id: 1, name: Constants.public.Enums.category_name[0] },
+      { id: 2, name: Constants.public.Enums.category_name[1] },
+      { id: 3, name: Constants.public.Enums.category_name[2] },
+      { id: 4, name: Constants.public.Enums.category_name[7] },
     ],
   },
 };

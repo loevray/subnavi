@@ -57,6 +57,10 @@ export const WithExtraClassName: Story = {
 };
 
 export const Gallery: Story = {
+  args: {
+    label: '공연',
+    color: 'bg-rose-500',
+  },
   render: () => (
     <div className="flex flex-wrap gap-3">
       <EventTag label="공연" color="bg-rose-500" />
