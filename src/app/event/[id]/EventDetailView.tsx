@@ -1,7 +1,7 @@
 import { DEFAULT_TAG_BG } from '@/components/event/eventList/EventList';
 import EventTag from '@/components/event/EventTag';
 import { Button } from '@/components/ui/button';
-import { EventDetailResponse } from '@/dto/event/event-detail.dto';
+import type { EventDetailResponse } from '@/dto/event/event-detail.dto';
 import formatDateRange from '@/utils/formatDateRange';
 import getEventStatusLabel from '@/utils/getEventStatusLabel';
 import {
