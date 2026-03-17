@@ -7,7 +7,7 @@ import HeaderTopBar from './HeaderTopBar';
 
 export default function Header() {
   return (
-    <ScrollHeader className="flex-col  bg-white/50 backdrop-blur-sm border-b border-gray-100">
+    <ScrollHeader className="flex-col items-center bg-white/50 backdrop-blur-sm border-b border-gray-100">
       <Suspense>
         <HeaderTopBar />
       </Suspense>
