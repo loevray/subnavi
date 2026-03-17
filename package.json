@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "external": "next dev -H 0.0.0.0 -p 3000",
     "lint": "eslint .",
     "test": "vitest run --config vitest.config.mts --project=unit",
     "test-with-story": "vitest --config vitest.config.mts --project=storybook",
