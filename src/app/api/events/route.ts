@@ -1,6 +1,6 @@
 import { eventService } from '@/services/Event';
 import { Constants } from '../../../../database.types';
-import { EventCategory, EventDateFilter, RegionName } from '@/dto/event/shared-event.dto';
+import { EventCategory, EventDateFilterDto, RegionName } from '@/dto/event/shared-event.dto';
 import handleCustomError from '@/utils/handleCustomError';
 
 export async function GET(request: Request) {
@@ -12,9 +12,11 @@ export async function GET(request: Request) {
   const category = Constants.public.Enums.category_name.includes(rawCategory as EventCategory['name'])
     ? (rawCategory as EventCategory['name'])
     : undefined;
-  const region = Constants.public.Enums.region_name.includes(rawRegion as RegionName) ? (rawRegion as RegionName) : undefined;
-  const date =
-    rawDate === 'today' || rawDate === 'weekend' || rawDate === 'month' ? (rawDate as EventDateFilter) : undefined;
+  const region = Constants.public.Enums.region_name.includes(rawRegion as RegionName)
+    ? (rawRegion as RegionName)
+    : undefined;
+  const parsedDate = EventDateFilterDto.safeParse(rawDate);
+  const date = parsedDate.success ? parsedDate.data : undefined;
 
   const queryParams = {
     page: Number(searchParams.get('page')) || 1,
