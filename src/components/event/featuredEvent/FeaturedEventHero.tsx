@@ -86,40 +86,8 @@ export default function FeaturedEventHero({ event }: FeaturedEventHeroProps) {
               행사 자세히 보기
               <ArrowRight className="h-4 w-4" />
             </Link>
-
-            <a
-              href="#event-list"
-              className="inline-flex items-center justify-center rounded-full border border-white/18 bg-white/8 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/16"
-            >
-              최근 행사 둘러보기
-            </a>
           </div>
         </div>
-
-        <aside className="hidden w-full max-w-sm rounded-[28px] border border-white/12 bg-white/10 p-6 text-sm text-slate-100 backdrop-blur-md lg:block">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300">Quick Peek</p>
-          <p className="mt-3 text-2xl font-bold tracking-[-0.03em] text-white">{event.region}</p>
-          <p className="mt-2 text-sm leading-6 text-slate-200">
-            대표 행사 한 건을 먼저 띄워서 메인 페이지 첫 화면에서 분위기를 바로 느낄 수 있게 구성했어요.
-          </p>
-
-          <dl className="mt-6 space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-slate-300">카테고리</dt>
-              <dd className="text-right font-semibold text-white">
-                {categoryLabels.length > 0 ? categoryLabels.slice(0, 3).join(' · ') : '미정'}
-              </dd>
-            </div>
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-slate-300">이용 연령</dt>
-              <dd className="text-right font-semibold text-white">{ageRatingLabel}</dd>
-            </div>
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-slate-300">상세 이동</dt>
-              <dd className="text-right font-semibold text-white">/event/{event.id.slice(0, 8)}</dd>
-            </div>
-          </dl>
-        </aside>
       </div>
     </article>
   );
