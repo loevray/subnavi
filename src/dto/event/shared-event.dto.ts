@@ -7,7 +7,24 @@ export type EventStatus = z.infer<typeof EventStatusDto>;
 export const CateogryNameDto = z.enum(Constants.public.Enums.category_name);
 export const RegionNameDto = z.enum(Constants.public.Enums.region_name);
 export type RegionName = z.infer<typeof RegionNameDto>;
-export const EventDateFilterDto = z.enum(['today', 'weekend', 'month']);
+export const EventDatePresetDto = z.enum(['today', 'weekend', 'month']);
+export type EventDatePreset = z.infer<typeof EventDatePresetDto>;
+export const EventDateFilterDto = z.union([
+  EventDatePresetDto,
+  z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .refine((value) => {
+      const [year, month, day] = value.split('-').map(Number);
+      const parsedDate = new Date(Date.UTC(year, month - 1, day));
+
+      return (
+        parsedDate.getUTCFullYear() === year &&
+        parsedDate.getUTCMonth() === month - 1 &&
+        parsedDate.getUTCDate() === day
+      );
+    }, '유효한 날짜 형식이 아닙니다'),
+]);
 export type EventDateFilter = z.infer<typeof EventDateFilterDto>;
 
 export const SnsLinkDto = z.record(z.string(), z.string());
