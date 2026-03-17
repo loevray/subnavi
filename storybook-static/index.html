@@ -83,7 +83,9 @@
   "actions": true,
   "backgrounds": true,
   "outline": true,
-  "measure": true
+  "measure": true,
+  "sidebarOnboardingChecklist": true,
+  "experimentalRSC": true
 };
         
       
@@ -110,30 +112,21 @@
         
       
         
-          window['TAGS_OPTIONS'] = {
-  "dev-only": {
-    "excludeFromDocsStories": true
-  },
-  "docs-only": {
-    "excludeFromSidebar": true
-  },
-  "test-only": {
-    "excludeFromSidebar": true,
-    "excludeFromDocsStories": true
-  }
-};
+          window['TAGS_OPTIONS'] = {};
+        
+      
+        
+          window['STORYBOOK_BUILDER'] = "vite";
+        
+      
+        
+          window['STORYBOOK_FRAMEWORK'] = "nextjs-vite";
         
       
         
           window['STORYBOOK_RENDERER'] = "react";
         
       
-        
-          window['STORYBOOK_BUILDER'] = "@storybook/nextjs-vite/node_modules/@storybook/builder-vite";
-        
-      
-        
-          window['STORYBOOK_FRAMEWORK'] = "@storybook/nextjs-vite";
         
       
     </script>
