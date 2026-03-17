@@ -16,12 +16,12 @@ export const DUMMY_TAG_DATA = [
   {
     key: 'electronic',
     label: 'Electronic',
-    color: 'bg-violet-500/90',
+    color: 'bg-violet-500/75',
   },
   {
     key: 'indoor',
     label: 'Indoor',
-    color: 'bg-sky-500/90',
+    color: 'bg-sky-500/75',
   },
 ];
 
@@ -30,16 +30,14 @@ export const DUMMY_EVENT_CARD_DATA: I_EventCard[] = [
     title: 'Neon Pulse: Underground Sessions',
     dateRange: { start: '2025.07.19', end: '2025.07.20' },
     address: 'Berlin Industrial District 4',
-    posterImageUrl:
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80',
+    posterImageUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80',
     tagData: DUMMY_TAG_DATA,
   },
   {
     title: 'Echo Chamber Sessions',
     dateRange: { start: '2025.10.25', end: '2025.10.26' },
     address: 'London - The Vault',
-    posterImageUrl:
-      'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80',
+    posterImageUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80',
     tagData: DUMMY_TAG_DATA,
   },
 ];
@@ -79,7 +77,7 @@ export default function EventCard({ title, posterImageUrl, dateRange, address, t
                   key={key}
                   label={label}
                   color={color}
-                  className="max-w-full rounded-full border border-white/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-none backdrop-blur-sm"
+                  className="max-w-full rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-none backdrop-blur-sm"
                 />
               ))}
             </div>
