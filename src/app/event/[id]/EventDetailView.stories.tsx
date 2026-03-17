@@ -1,14 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import type { EventDetailResponse } from '@/dto/event/event-detail.dto';
 import { Constants } from '../../../../database.types';
-import { rscDecorator } from '../../../../.storybook/decorators';
 import EventDetailView from './EventDetailView';
 
 const meta = {
   title: 'Event/EventDetailView',
   component: EventDetailView,
   decorators: [
-    rscDecorator,
     (Story) => (
       <div style={{ width: 'min(100vw - 32px, 1320px)', background: '#f6f4fb', padding: '24px' }}>
         <Story />
@@ -71,7 +69,6 @@ export const Mobile: Story = {
     event: detailEventStoryData,
   },
   decorators: [
-    rscDecorator,
     (Story) => (
       <div style={{ width: '390px', margin: '0 auto', background: '#f6f4fb', padding: '16px' }}>
         <Story />
