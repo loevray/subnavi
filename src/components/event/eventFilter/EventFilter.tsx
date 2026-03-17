@@ -1,10 +1,12 @@
 'use client';
 
-import { CalendarDays, MapPin, Shapes } from 'lucide-react';
+import { MapPin, Shapes } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+
 import { EventCategory, EventDateFilter, RegionNameDto } from '@/dto/event/shared-event.dto';
-import EventFilterDropdown, { EventFilterDropdownOption } from './EventFilterDropdown';
 import scrollToEventList from '@/utils/scrollToEventList';
+import EventDateFilterControl from './EventDateFilter';
+import EventFilterDropdown, { EventFilterDropdownOption } from './EventFilterDropdown';
 
 export type ExtendedCategoryName = EventCategory['name'] | '전체';
 
@@ -19,12 +21,6 @@ export const eventFilterWrapperStyle = `
 `
   .replace(/\s+/g, ' ')
   .trim();
-
-const DATE_OPTIONS: EventFilterDropdownOption[] = [
-  { value: 'today', label: '오늘' },
-  { value: 'weekend', label: '이번 주말' },
-  { value: 'month', label: '이번 달' },
-];
 
 const LOCATION_OPTIONS: EventFilterDropdownOption[] = [
   { value: 'all', label: '전체 지역' },
@@ -87,20 +83,14 @@ export default function EventFilter({ categories }: { categories: ExtendedEventC
     updateFilters({ category: currentCategory, region: value, date: currentDate });
   };
 
-  const handleDateChange = (value: string) => {
-    updateFilters({ category: currentCategory, region: currentRegion, date: value as EventDateFilter | 'all' });
+  const handleDateChange = (value: EventDateFilter | 'all') => {
+    updateFilters({ category: currentCategory, region: currentRegion, date: value });
   };
 
   return (
     <div className={eventFilterWrapperStyle}>
       <div className="flex min-w-max items-center gap-3 pr-2 sm:mx-auto sm:pr-0">
-        <EventFilterDropdown
-          icon={<CalendarDays />}
-          placeholder="날짜"
-          options={[{ value: 'all', label: '전체 날짜' }, ...DATE_OPTIONS]}
-          value={currentDate}
-          onValueChange={handleDateChange}
-        />
+        <EventDateFilterControl value={currentDate as EventDateFilter | 'all'} onValueChange={handleDateChange} />
         <EventFilterDropdown
           icon={<MapPin />}
           placeholder="위치"

@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import type { EventListResponse } from '@/dto/event/event-list.dto';
 import type { EventDateFilter, EventCategory, RegionName } from '@/dto/event/shared-event.dto';
 import ExploreFeedSection, { ExploreSectionBadge, ExploreSectionCopy } from '@/components/event/explore/ExploreFeedSection';
+import { formatEventDateFilterLabel } from '@/utils/eventDateFilter';
 import EventList from './EventList';
 import EventPagination from '../EventPagination';
 import EventListSectionFallback from './EventListSectionFallback';
@@ -82,13 +83,7 @@ function getExploreSectionBadges(params: EventListQueryState): ExploreSectionBad
   }
 
   if (params.date) {
-    const dateLabelMap: Record<EventDateFilter, string> = {
-      today: '오늘',
-      weekend: '이번 주말',
-      month: '이번 달',
-    };
-
-    badges.push({ label: `날짜: ${dateLabelMap[params.date]}` });
+    badges.push({ label: `날짜: ${formatEventDateFilterLabel(params.date)}` });
   }
 
   return badges;
@@ -219,9 +214,8 @@ function EventListSectionContent({
               조건에 맞는 행사를 아직 찾지 못했어요.
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-500 sm:text-base">
-              {queryState.category ?? '전체'} 범위에서{' '}
-              {queryState.keyword ? `'${queryState.keyword}'` : '입력한 조건'} 기준으로 검색했지만 결과가
-              없었습니다. 다른 키워드나 카테고리로 다시 좁혀보세요.
+              {queryState.category ?? '전체'} 범위에서 {queryState.keyword ? `'${queryState.keyword}'` : '입력한 조건'} 기준으로
+              검색했지만 결과가 없었습니다. 다른 키워드나 카테고리로 다시 좁혀보세요.
             </p>
           </div>
         </div>
