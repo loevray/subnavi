@@ -5,7 +5,6 @@ import { EventDetailResponse } from '@/dto/event/event-detail.dto';
 import formatDateRange from '@/utils/formatDateRange';
 import getEventStatusLabel from '@/utils/getEventStatusLabel';
 import {
-  Activity,
   Bookmark,
   CalendarDays,
   ExternalLink,
@@ -55,6 +54,7 @@ export default function EventDetailView({ event }: { event: EventDetailResponse 
       icon: CalendarDays,
       label: '일정',
       value: `${dateRange.start} - ${dateRange.end}`,
+      helper: getEventStatusLabel(status),
     },
     {
       icon: Wallet,
@@ -71,11 +71,6 @@ export default function EventDetailView({ event }: { event: EventDetailResponse 
       label: '주소',
       value: location,
       helper: '서울 시 어쩌구',
-    },
-    {
-      icon: Activity,
-      label: '행사 상태',
-      value: getEventStatusLabel(status),
     },
   ];
 
@@ -307,7 +302,7 @@ function DesktopDetailLayout({
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_320px]">
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_320px] lg:items-stretch">
         <div className="space-y-6">
           <ContentCard title="행사에 관하여" icon={Info}>
             <div className="space-y-4 text-[15px] leading-8 text-slate-600">
@@ -338,73 +333,77 @@ function DesktopDetailLayout({
           </ContentCard>
         </div>
 
-        <aside className="space-y-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_50px_rgba(15,23,42,0.08)]">
-          <MainInfoSectionDesktop items={mainInfoItems} />
+        <aside className="flex h-full min-h-full flex-col justify-between rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_50px_rgba(15,23,42,0.08)]">
+          <div className="space-y-5">
+            <MainInfoSectionDesktop items={mainInfoItems} />
 
-          <div className="space-y-3 pt-2">
-            {bookingLink && (
-              <Button
-                asChild
-                className="h-12 w-full rounded-full bg-violet-500 text-base font-semibold text-white shadow-[0_18px_30px_rgba(124,58,237,0.24)] hover:bg-violet-600"
-              >
-                <Link href={bookingLink} target="_blank" rel="noopener noreferrer">
-                  <Ticket className="size-4.5" />
-                  예매하기
-                </Link>
-              </Button>
-            )}
-
-            {officialWebsite && (
-              <Button
-                asChild
-                variant="outline"
-                className="h-12 w-full rounded-full border-slate-200 text-base font-semibold text-violet-500"
-              >
-                <Link href={officialWebsite} target="_blank" rel="noopener noreferrer">
-                  <Globe className="size-4.5" />
-                  공식 웹사이트
-                </Link>
-              </Button>
-            )}
-          </div>
-
-          <div className="rounded-[24px] bg-slate-50 px-4 py-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Organized By</p>
-            <div className="mt-4 flex items-start gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-semibold text-violet-500 shadow-sm">
-                {organizerName.slice(0, 1)}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-base font-bold text-slate-900">{organizerName}</p>
-                <p className="mt-1 text-sm text-slate-500">{organizerContact ?? 'Contact details coming soon'}</p>
-                <p className="mt-3 text-sm font-semibold text-violet-500">Follow Organizer</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <ActionButton icon={Share2} label="Share" />
-            <ActionButton icon={Bookmark} label="Save" />
-          </div>
-
-          {snsLinks && (
-            <div className="rounded-[24px] border border-slate-200 px-4 py-4 text-sm text-slate-600">
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(snsLinks).map(([platform, url]) => (
-                  <Link
-                    key={platform}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200"
-                  >
-                    {platform}
-                    <ExternalLink className="size-3.5" />
+            <div className="space-y-3 pt-2">
+              {bookingLink && (
+                <Button
+                  asChild
+                  className="h-12 w-full rounded-full bg-violet-500 text-base font-semibold text-white shadow-[0_18px_30px_rgba(124,58,237,0.24)] hover:bg-violet-600"
+                >
+                  <Link href={bookingLink} target="_blank" rel="noopener noreferrer">
+                    <Ticket className="size-4.5" />
+                    예매하기
                   </Link>
-                ))}
+                </Button>
+              )}
+
+              {officialWebsite && (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-12 w-full rounded-full border-slate-200 text-base font-semibold text-violet-500"
+                >
+                  <Link href={officialWebsite} target="_blank" rel="noopener noreferrer">
+                    <Globe className="size-4.5" />
+                    공식 웹사이트
+                  </Link>
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-5">
+            <div className="rounded-[24px] bg-slate-50 px-4 py-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Organized By</p>
+              <div className="mt-4 flex items-start gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-semibold text-violet-500 shadow-sm">
+                  {organizerName.slice(0, 1)}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-base font-bold text-slate-900">{organizerName}</p>
+                  <p className="mt-1 text-sm text-slate-500">{organizerContact ?? 'Contact details coming soon'}</p>
+                  <p className="mt-3 text-sm font-semibold text-violet-500">Follow Organizer</p>
+                </div>
               </div>
             </div>
-          )}
+
+            {snsLinks && (
+              <div className="rounded-[24px] border border-slate-200 px-4 py-4 text-sm text-slate-600">
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(snsLinks).map(([platform, url]) => (
+                    <Link
+                      key={platform}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200"
+                    >
+                      {platform}
+                      <ExternalLink className="size-3.5" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <ActionButton icon={Share2} label="Share" />
+              <ActionButton icon={Bookmark} label="Save" />
+            </div>
+          </div>
         </aside>
       </section>
     </div>
@@ -446,7 +445,7 @@ function ContentCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_22px_50px_rgba(15,23,42,0.06)] md:p-8">
+    <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_22px_50px_rgba(15,23,42,0.06)] md:p-8 min-h-80">
       <div className="mb-6 flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-violet-500">
           <Icon className="size-4.5" />
