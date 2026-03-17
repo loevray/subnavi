@@ -9,7 +9,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '400px', height: '300px' }}>
+      <div style={{ width: 'min(100vw - 32px, 360px)' }}>
         <Story />
       </div>
     ),
@@ -42,4 +42,17 @@ export const Default: Story = {
   args: {
     ...DUMMY_EVENT_CARD_DATA[0],
   },
+};
+
+export const DesktopCard: Story = {
+  args: {
+    ...DUMMY_EVENT_CARD_DATA[1],
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: '420px' }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
