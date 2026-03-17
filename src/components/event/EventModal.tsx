@@ -16,8 +16,8 @@ import EventForm from './eventForm/EventForm';
 const EventModal = () => {
   const [open, setOpen] = useState(false);
   const { Categories, Regions } = EventsApi;
-  const regionPromise = useMemo(Regions.getAll, []);
-  const categoriesPromise = useMemo(Categories.getAll, []);
+  const regionPromise = useMemo(() => Regions.getAll(), [Regions]);
+  const categoriesPromise = useMemo(() => Categories.getAll(), [Categories]);
   return (
     <div className="p-8 bg-background min-h-screen">
       <Dialog open={open} onOpenChange={setOpen}>

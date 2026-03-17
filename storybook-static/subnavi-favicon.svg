@@ -1,0 +1,54 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 그라디언트 정의 -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 네온 효과용 필터 -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="0.8" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 별 패턴 -->
+    <pattern id="starPattern" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="0.5" fill="url(#mainGradient)" opacity="0.3"/>
+    </pattern>
+  </defs>
+  
+  <!-- 배경 -->
+  <rect width="32" height="32" fill="#1e1b4b" rx="6"/>
+  <rect width="32" height="32" fill="url(#starPattern)" opacity="0.1"/>
+  
+  <!-- 나침반 컨테이너 -->
+  <g transform="translate(16,16)">
+    <!-- 나침반 외곽 링 -->
+    <circle cx="0" cy="0" r="12" fill="none" stroke="url(#mainGradient)" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="0" cy="0" r="9" fill="none" stroke="url(#mainGradient)" stroke-width="0.5" opacity="0.4"/>
+    
+    <!-- 방향 표시 -->
+    <text x="0" y="-7" text-anchor="middle" font-family="monospace" font-size="4" font-weight="bold" fill="url(#mainGradient)">N</text>
+    <text x="7" y="2" text-anchor="middle" font-family="monospace" font-size="4" font-weight="bold" fill="url(#mainGradient)">E</text>
+    <text x="0" y="9" text-anchor="middle" font-family="monospace" font-size="4" font-weight="bold" fill="url(#mainGradient)">S</text>
+    <text x="-7" y="2" text-anchor="middle" font-family="monospace" font-size="4" font-weight="bold" fill="url(#mainGradient)">W</text>
+    
+    <!-- 나침반 바늘 -->
+    <g filter="url(#neonGlow)">
+      <!-- 북쪽 바늘 (빨간색) -->
+      <polygon points="0,-7 -1.5,-2 1.5,-2" fill="#ef4444"/>
+      <!-- 남쪽 바늘 (흰색) -->
+      <polygon points="0,7 -1.5,2 1.5,2" fill="#f8fafc"/>
+      <!-- 중심점 -->
+      <circle cx="0" cy="0" r="1.5" fill="url(#mainGradient)"/>
+    </g>
+    
+    <!-- 장식 별들 -->
+    <polygon points="-13,-6 -12,-5 -11,-6 -12,-7" fill="url(#mainGradient)" opacity="0.7"/>
+    <polygon points="13,6 14,7 15,6 14,5" fill="url(#mainGradient)" opacity="0.7"/>
+  </g>
+</svg>

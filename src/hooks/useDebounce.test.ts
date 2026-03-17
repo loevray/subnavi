@@ -3,17 +3,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import useDebounce from './useDebounce';
 
 // 타이머 모킹
-vi.useFakeTimers();
-
 describe('useDebounce', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllTimers();
   });
 
   afterEach(() => {
-    vi.runOnlyPendingTimers();
+    vi.clearAllTimers();
     vi.useRealTimers();
-    vi.useFakeTimers();
   });
 
   it('초기값을 즉시 반환해야 한다', () => {
