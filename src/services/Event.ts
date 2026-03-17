@@ -26,6 +26,7 @@ import { CreateEventRequest, CreateEventRequestDto, CreateEventResponse } from '
 import { EventCategory, EventDateFilter, RegionName } from '@/dto/event/shared-event.dto';
 import { UpdateEventRequest, UpdateEventRequestDto, UpdateEventResponse } from '@/dto/event/update-event.dto';
 import { ServiceResult } from './type';
+import { isEventDatePreset, isEventDateString } from '@/utils/eventDateFilter';
 
 export interface QueryParams {
   page?: number;
@@ -148,6 +149,21 @@ export default class EventService {
   private static readonly KST_OFFSET_HOURS = 9;
 
   private static getDateFilterRange(dateFilter: EventDateFilter) {
+    if (isEventDateString(dateFilter)) {
+      const [year, month, day] = dateFilter.split('-').map(Number);
+
+      return {
+        startIso: EventService.createUtcIsoFromKstDate(year, month - 1, day, 0, 0, 0, 0),
+        endIso: EventService.createUtcIsoFromKstDate(year, month - 1, day, 23, 59, 59, 999),
+      };
+    }
+
+    if (!isEventDatePreset(dateFilter)) {
+      throw new ValidationError('Request Validation Failed', {
+        message: 'Unsupported date filter',
+      });
+    }
+
     const now = new Date();
     const kstNow = new Date(now.getTime() + EventService.KST_OFFSET_HOURS * 60 * 60 * 1000);
     const year = kstNow.getUTCFullYear();
