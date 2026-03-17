@@ -1,116 +1,181 @@
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 
 export default function EventDetailSkeleton() {
   return (
-    <main className="container max-w-4xl p-6 space-y-6 mx-auto">
-      {/* 헤더 */}
-      <section className="flex flex-col md:flex-row gap-6">
-        {/* 이미지 */}
-        <div className="md:w-1/2 rounded-lg overflow-hidden">
-          <Skeleton className="w-full h-64 md:h-80" />
+    <main className="mx-auto max-w-[1280px] bg-[#f6f4fb] px-4 py-6 pb-24 sm:px-6 lg:px-10 lg:py-8 lg:pb-8">
+      <MobileDetailSkeleton />
+      <DesktopDetailSkeleton />
+    </main>
+  );
+}
+
+function MobileDetailSkeleton() {
+  return (
+    <div className="space-y-7 lg:hidden">
+      <Skeleton className="h-[265px] w-full rounded-[28px]" />
+
+      <section>
+        <div className="mb-4 flex flex-wrap gap-2">
+          <Skeleton className="h-7 w-24 rounded-full" />
+          <Skeleton className="h-7 w-28 rounded-full" />
         </div>
+        <div className="space-y-3">
+          <Skeleton className="h-11 w-4/5" />
+          <Skeleton className="h-11 w-3/5" />
+        </div>
+        <Skeleton className="mt-5 h-13 w-full rounded-full" />
+      </section>
 
-        {/* 텍스트 */}
-        <div className="md:w-1/2 space-y-3">
-          {/* 제목 */}
-          <Skeleton className="h-8 w-3/4" />
+      <section className="space-y-3 rounded-[28px] bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+        <MobileInfoRowSkeleton />
+        <MobileInfoRowSkeleton />
+      </section>
 
-          {/* 태그들 */}
-          <div className="flex flex-wrap gap-2">
-            <Skeleton className="h-6 w-16 rounded-full" />
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-6 w-14 rounded-full" />
-          </div>
-
-          {/* 정보 아이템들 */}
-          <div className="text-sm space-y-1.5 pt-2">
-            <div className="flex items-center gap-2">
-              <Skeleton className="w-4 h-4" />
-              <Skeleton className="h-4 w-48" />
-            </div>
-            <div className="flex items-center gap-2">
-              <Skeleton className="w-4 h-4" />
+      <section>
+        <Skeleton className="mb-4 h-10 w-44" />
+        <div className="rounded-[28px] bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-14 w-14 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-6 w-40" />
               <Skeleton className="h-4 w-32" />
             </div>
-            <div className="flex items-center gap-2">
-              <Skeleton className="w-4 h-4" />
-              <Skeleton className="h-4 w-24" />
-            </div>
-            <div className="flex items-center gap-2">
-              <Skeleton className="w-4 h-4" />
-              <Skeleton className="h-4 w-20" />
-            </div>
-            <div className="flex items-center gap-2">
-              <Skeleton className="w-4 h-4" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-          </div>
-
-          {/* 버튼들 */}
-          <div className="flex gap-2 pt-3">
-            <Skeleton className="h-10 w-24" />
-            <Skeleton className="h-10 w-10" />
+            <Skeleton className="h-10 w-20 rounded-full" />
           </div>
         </div>
       </section>
 
-      <Separator />
-
-      {/* 설명 / 규칙 */}
       <section>
-        <Skeleton className="h-6 w-24 mb-3" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-5/6" />
-        </div>
-        <Skeleton className="h-6 w-20 mt-4 mb-2" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-4/5" />
+        <Skeleton className="h-10 w-48" />
+        <div className="mt-4 space-y-3">
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-11/12" />
+          <Skeleton className="h-5 w-5/6" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-10/12" />
         </div>
       </section>
 
-      {/* 지도 */}
       <section>
-        <Skeleton className="h-6 w-20 mb-2" />
-        <div className="rounded-lg overflow-hidden">
-          <Skeleton className="w-full h-[250px] rounded-lg" />
+        <div className="mb-4 flex items-center justify-between">
+          <Skeleton className="h-10 w-32" />
+          <Skeleton className="h-5 w-28" />
+        </div>
+        <Skeleton className="h-[260px] w-full rounded-[24px]" />
+        <div className="mt-4 space-y-2">
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-4/5" />
         </div>
       </section>
 
-      {/* 주최 & 채널 */}
-      <section className="grid md:grid-cols-2 gap-4 text-sm">
-        <div className="space-y-1">
-          <Skeleton className="h-5 w-24 mb-2" />
-          <div className="flex items-center gap-2">
-            <Skeleton className="w-4 h-4" />
-            <Skeleton className="h-4 w-32" />
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur">
+        <Skeleton className="h-11 w-full rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+function DesktopDetailSkeleton() {
+  return (
+    <div className="hidden space-y-6 lg:block">
+      <Skeleton className="h-[400px] w-full rounded-[32px]" />
+
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_320px]">
+        <div className="space-y-6">
+          <ContentCardSkeleton />
+          <ContentCardSkeleton map />
+        </div>
+
+        <aside className="space-y-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_50px_rgba(15,23,42,0.08)]">
+          <div className="space-y-4">
+            <DesktopInfoBlockSkeleton />
+            <DesktopInfoBlockSkeleton />
           </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="w-4 h-4" />
+
+          <div className="space-y-3 pt-2">
+            <Skeleton className="h-12 w-full rounded-full" />
+            <Skeleton className="h-12 w-full rounded-full" />
+          </div>
+
+          <div className="rounded-[24px] bg-slate-50 px-4 py-5">
+            <Skeleton className="h-3 w-24" />
+            <div className="mt-4 flex items-start gap-3">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-36" />
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Skeleton className="h-14 rounded-2xl" />
+            <Skeleton className="h-14 rounded-2xl" />
+          </div>
+
+          <div className="rounded-[24px] border border-slate-200 px-4 py-4">
             <Skeleton className="h-4 w-28" />
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Skeleton className="h-8 w-20 rounded-full" />
+              <Skeleton className="h-8 w-16 rounded-full" />
+            </div>
           </div>
-        </div>
-
-        <div className="space-y-1">
-          <Skeleton className="h-5 w-20 mb-2" />
-          <div className="flex items-center gap-2">
-            <Skeleton className="w-4 h-4" />
-            <Skeleton className="h-4 w-20" />
-          </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="w-4 h-4" />
-            <Skeleton className="h-4 w-16" />
-          </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="w-4 h-4" />
-            <Skeleton className="h-4 w-18" />
-          </div>
-        </div>
+        </aside>
       </section>
-    </main>
+    </div>
+  );
+}
+
+function MobileInfoRowSkeleton() {
+  return (
+    <div className="flex items-center gap-4">
+      <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <Skeleton className="h-5 w-3/5" />
+        <Skeleton className="h-4 w-4/5" />
+      </div>
+    </div>
+  );
+}
+
+function ContentCardSkeleton({ map = false }: { map?: boolean }) {
+  return (
+    <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_22px_50px_rgba(15,23,42,0.06)] md:p-8">
+      <div className="mb-6 flex items-center gap-3">
+        <Skeleton className="h-9 w-9 rounded-full" />
+        <Skeleton className="h-8 w-48" />
+      </div>
+
+      {map ? (
+        <>
+          <Skeleton className="mb-5 h-5 w-2/5" />
+          <Skeleton className="h-[320px] w-full rounded-[24px]" />
+        </>
+      ) : (
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-11/12" />
+          <Skeleton className="h-5 w-10/12" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-4/5" />
+        </div>
+      )}
+    </section>
+  );
+}
+
+function DesktopInfoBlockSkeleton() {
+  return (
+    <div className="flex gap-3">
+      <Skeleton className="h-11 w-11 rounded-2xl" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <Skeleton className="h-3 w-20" />
+        <Skeleton className="h-6 w-4/5" />
+        <Skeleton className="h-4 w-3/5" />
+      </div>
+    </div>
   );
 }
