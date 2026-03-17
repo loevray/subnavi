@@ -38,12 +38,15 @@ export default function HeaderTopBar() {
   }
 
   return (
-    <div className="flex items-center px-4 sm:px-6 lg:px-8">
-      <Link href="/">
+    <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6 lg:px-8">
+      <Link href="/" className="justify-self-start">
         <img width={140} className="hidden md:block" src="/subnavi-logo.svg" alt="go to home logo" />
         <img width={60} className="block md:hidden" src="/subnavi-compass-logo.svg" alt="go to home logo" />
       </Link>
-      <EventSearchForm />
+      <div className="min-w-0 justify-self-center">
+        <EventSearchForm />
+      </div>
+      <div className="hidden sm:block sm:w-[140px]" aria-hidden />
     </div>
   );
 }

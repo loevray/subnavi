@@ -21,6 +21,8 @@ interface UseYoutubeHeaderOptions {
   minDelta?: number;
   /** 모바일에서만 동작 여부 (기본값: true) */
   mobileOnly?: boolean;
+  /** 강제로 헤더를 노출할지 여부 */
+  forceVisible?: boolean;
 }
 
 interface ScrollState {
@@ -44,6 +46,7 @@ export default function useYoutubeHeader(
     immediate: false,
     minDelta: 5,
     mobileOnly: true,
+    forceVisible: false,
     ...options,
   };
 
@@ -162,6 +165,11 @@ export default function useYoutubeHeader(
    * 메인 로직 처리
    */
   useEffect(() => {
+    if (config.forceVisible) {
+      resetScrollState();
+      return;
+    }
+
     // 모바일에서만 동작하도록 제한
     if (config.mobileOnly && !isMobile) {
       return;
@@ -182,6 +190,7 @@ export default function useYoutubeHeader(
   }, [
     config.mobileOnly,
     config.immediate,
+    config.forceVisible,
     isMobile,
     scrollPosition.scrollY,
     scrollDirection,

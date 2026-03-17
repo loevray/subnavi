@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useSearchParams } from 'next/navigation';
 import useYouTubeHeader from '../../hooks/useYoutubeHeader';
 
 interface HeaderProps {
@@ -9,10 +10,19 @@ interface HeaderProps {
 }
 
 const ScrollHeader: React.FC<HeaderProps> = ({ className = '', children }) => {
+  const searchParams = useSearchParams();
+  const hasActiveSearchOrFilter =
+    Boolean(searchParams.get('keyword')) ||
+    Boolean(searchParams.get('category')) ||
+    Boolean(searchParams.get('region')) ||
+    Boolean(searchParams.get('date'));
+
   const { isVisible } = useYouTubeHeader({
     immediate: true,
-    topOffset: 20, // 페이지 상단 20px까지는 항상 보이게
+    topOffset: 20,
+    forceVisible: hasActiveSearchOrFilter,
   });
+
   return (
     <header
       className={`

@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactElement, cloneElement } from 'react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -10,7 +10,7 @@ export type EventFilterDropdownOption = {
 };
 
 type EventFilterDropdownProps = {
-  icon: ReactNode;
+  icon: ReactElement<{ className?: string }>;
   placeholder: string;
   value?: string;
   options: EventFilterDropdownOption[];
@@ -26,7 +26,10 @@ export default function EventFilterDropdown({
   onValueChange,
   className,
 }: EventFilterDropdownProps) {
-  const isSelected = Boolean(value);
+  const isSelected = Boolean(value && value !== 'all');
+  const renderedIcon = cloneElement(icon, {
+    className: cn('h-4 w-4 text-current', icon.props.className),
+  });
 
   return (
     <Select value={value} onValueChange={onValueChange}>
@@ -40,19 +43,19 @@ export default function EventFilterDropdown({
             data-[placeholder]:text-slate-700
             sm:h-10 sm:min-w-[148px] sm:px-4 sm:text-[15px]
           `,
-          isSelected && 'border-violet-500 bg-violet-500 text-white hover:bg-violet-500 data-[placeholder]:text-white',
+          isSelected &&
+            `
+              border-violet-500 bg-violet-500 text-white hover:bg-violet-500
+              data-[placeholder]:text-white
+              [&_svg]:text-white
+              [&>svg]:text-white
+              [&>svg]:opacity-100
+            `,
           className
         )}
       >
         <span className="flex min-w-0 items-center gap-1.5 sm:gap-2">
-          <span
-            className={cn(
-              'shrink-0 text-slate-500',
-              isSelected && 'text-white'
-            )}
-          >
-            {icon}
-          </span>
+          <span className={cn('shrink-0 text-slate-500', isSelected && 'text-white')}>{renderedIcon}</span>
           <SelectValue placeholder={placeholder} />
         </span>
       </SelectTrigger>
