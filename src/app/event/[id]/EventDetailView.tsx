@@ -4,8 +4,27 @@ import { Button } from '@/components/ui/button';
 import { EventDetailResponse } from '@/dto/event/event-detail.dto';
 import formatDateRange from '@/utils/formatDateRange';
 import getEventStatusLabel from '@/utils/getEventStatusLabel';
-import { Bookmark, CalendarDays, ExternalLink, Globe, Info, MapPin, Share2, Ticket, Wallet } from 'lucide-react';
+import {
+  Activity,
+  Bookmark,
+  CalendarDays,
+  ExternalLink,
+  Globe,
+  Info,
+  MapPin,
+  Share2,
+  ShieldCheck,
+  Ticket,
+  Wallet,
+} from 'lucide-react';
 import Link from 'next/link';
+
+type MainInfoItem = {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  helper?: string;
+};
 
 export default function EventDetailView({ event }: { event: EventDetailResponse }) {
   const {
@@ -28,20 +47,35 @@ export default function EventDetailView({ event }: { event: EventDetailResponse 
   } = event;
 
   const dateRange = formatDateRange(startDatetime, endDatetime);
-  const eventSummary = description ?? 'A detailed description for this event will be added soon.';
+  const eventSummary = description ?? 'Event details will be announced soon.';
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
-  const infoRows = [
+
+  const mainInfoItems: MainInfoItem[] = [
     {
       icon: CalendarDays,
-      label: 'Date & Time',
+      label: '일정',
       value: `${dateRange.start} - ${dateRange.end}`,
-      helper: getEventStatusLabel(status),
     },
     {
       icon: Wallet,
-      label: 'Pricing',
-      value: participationFee ?? 'Free admission',
-      helper: bookingLink ? 'Tickets available online' : 'Ticket details will be announced',
+      label: '가격',
+      value: participationFee ?? '무료',
+    },
+    {
+      icon: ShieldCheck,
+      label: '관람 등급',
+      value: ageRating ?? '제한 없음',
+    },
+    {
+      icon: MapPin,
+      label: '주소',
+      value: location,
+      helper: '서울 시 어쩌구',
+    },
+    {
+      icon: Activity,
+      label: '행사 상태',
+      value: getEventStatusLabel(status),
     },
   ];
 
@@ -53,13 +87,12 @@ export default function EventDetailView({ event }: { event: EventDetailResponse 
         posterImageUrl={posterImageUrl}
         eventSummary={eventSummary}
         officialWebsite={officialWebsite}
-        dateRange={dateRange}
-        location={location}
+        mainInfoItems={mainInfoItems}
         organizerName={organizerName}
         organizerContact={organizerContact}
         directionsUrl={directionsUrl}
         bookingLink={bookingLink}
-        status={status}
+        location={location}
       />
 
       <DesktopDetailLayout
@@ -69,12 +102,11 @@ export default function EventDetailView({ event }: { event: EventDetailResponse 
         eventSummary={eventSummary}
         eventRules={eventRules}
         location={location}
-        infoRows={infoRows}
+        mainInfoItems={mainInfoItems}
         bookingLink={bookingLink}
         officialWebsite={officialWebsite}
         organizerName={organizerName}
         organizerContact={organizerContact}
-        ageRating={ageRating}
         snsLinks={snsLinks}
       />
 
@@ -101,26 +133,24 @@ function MobileDetailLayout({
   posterImageUrl,
   eventSummary,
   officialWebsite,
-  dateRange,
-  location,
+  mainInfoItems,
   organizerName,
   organizerContact,
   directionsUrl,
   bookingLink,
-  status,
+  location,
 }: {
   title: string;
   categories: EventDetailResponse['categories'];
   posterImageUrl: string | null | undefined;
   eventSummary: string;
   officialWebsite: string | null | undefined;
-  dateRange: ReturnType<typeof formatDateRange>;
-  location: string;
+  mainInfoItems: MainInfoItem[];
   organizerName: string;
   organizerContact: string | null | undefined;
   directionsUrl: string;
   bookingLink: string | null | undefined;
-  status: EventDetailResponse['status'];
+  location: string;
 }) {
   return (
     <div className="space-y-7 lg:hidden">
@@ -150,20 +180,13 @@ function MobileDetailLayout({
           >
             <Link href={officialWebsite} target="_blank" rel="noopener noreferrer">
               <Globe className="size-4.5" />
-              공식 페이지
+              공식 웹사이트
             </Link>
           </Button>
         )}
       </section>
 
-      <section className="space-y-3 rounded-[28px] bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-        <MobileInfoRow
-          icon={CalendarDays}
-          title={dateRange.start}
-          subtitle={`${getEventStatusLabel(status)} • ${dateRange.end}`}
-        />
-        <MobileInfoRow icon={MapPin} title={location.split(',')[0] ?? location} subtitle={location} />
-      </section>
+      <MainInfoSectionMobile items={mainInfoItems} />
 
       <section>
         <p className="mb-4 text-3xl font-extrabold tracking-[-0.04em] text-slate-950">Organized by</p>
@@ -187,7 +210,7 @@ function MobileDetailLayout({
       </section>
 
       <section>
-        <h2 className="text-3xl font-extrabold tracking-[-0.04em] text-slate-950">About this event</h2>
+        <h2 className="text-3xl font-extrabold tracking-[-0.04em] text-slate-950">행사에 관하여</h2>
         <div className="mt-4 space-y-5 text-[1.04rem] leading-9 text-slate-700">
           <p>{eventSummary}</p>
           <p>
@@ -235,12 +258,11 @@ function DesktopDetailLayout({
   eventSummary,
   eventRules,
   location,
-  infoRows,
+  mainInfoItems,
   bookingLink,
   officialWebsite,
   organizerName,
   organizerContact,
-  ageRating,
   snsLinks,
 }: {
   title: string;
@@ -249,12 +271,11 @@ function DesktopDetailLayout({
   eventSummary: string;
   eventRules: string | null | undefined;
   location: string;
-  infoRows: { icon: React.ElementType; label: string; value: string; helper: string }[];
+  mainInfoItems: MainInfoItem[];
   bookingLink: string | null | undefined;
   officialWebsite: string | null | undefined;
   organizerName: string;
   organizerContact: string | null | undefined;
-  ageRating: string | null | undefined;
   snsLinks: Record<string, string> | null | undefined;
 }) {
   return (
@@ -288,7 +309,7 @@ function DesktopDetailLayout({
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_320px]">
         <div className="space-y-6">
-          <ContentCard title="About the Event" icon={Info}>
+          <ContentCard title="행사에 관하여" icon={Info}>
             <div className="space-y-4 text-[15px] leading-8 text-slate-600">
               <p>{eventSummary}</p>
               {eventRules && <p>{eventRules}</p>}
@@ -301,7 +322,7 @@ function DesktopDetailLayout({
             </div>
           </ContentCard>
 
-          <ContentCard title="Location & Map" icon={MapPin}>
+          <ContentCard title="위치 & 지도" icon={MapPin}>
             <p className="mb-5 text-[15px] text-slate-600">{location}</p>
             <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-slate-100">
               <iframe
@@ -318,11 +339,7 @@ function DesktopDetailLayout({
         </div>
 
         <aside className="space-y-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_50px_rgba(15,23,42,0.08)]">
-          <div className="space-y-4">
-            {infoRows.map(({ icon, label, value, helper }) => (
-              <DetailInfoBlock key={label} icon={icon} label={label} value={value} helper={helper} />
-            ))}
-          </div>
+          <MainInfoSectionDesktop items={mainInfoItems} />
 
           <div className="space-y-3 pt-2">
             {bookingLink && (
@@ -332,7 +349,7 @@ function DesktopDetailLayout({
               >
                 <Link href={bookingLink} target="_blank" rel="noopener noreferrer">
                   <Ticket className="size-4.5" />
-                  Get Tickets
+                  예매하기
                 </Link>
               </Button>
             )}
@@ -345,7 +362,7 @@ function DesktopDetailLayout({
               >
                 <Link href={officialWebsite} target="_blank" rel="noopener noreferrer">
                   <Globe className="size-4.5" />
-                  Official Website
+                  공식 웹사이트
                 </Link>
               </Button>
             )}
@@ -370,35 +387,52 @@ function DesktopDetailLayout({
             <ActionButton icon={Bookmark} label="Save" />
           </div>
 
-          {(ageRating || snsLinks) && (
+          {snsLinks && (
             <div className="rounded-[24px] border border-slate-200 px-4 py-4 text-sm text-slate-600">
-              {ageRating && (
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-900">Age rating</span>
-                  <span>{ageRating}</span>
-                </div>
-              )}
-              {snsLinks && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {Object.entries(snsLinks).map(([platform, url]) => (
-                    <Link
-                      key={platform}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200"
-                    >
-                      {platform}
-                      <ExternalLink className="size-3.5" />
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(snsLinks).map(([platform, url]) => (
+                  <Link
+                    key={platform}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200"
+                  >
+                    {platform}
+                    <ExternalLink className="size-3.5" />
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </aside>
       </section>
     </div>
+  );
+}
+
+function MainInfoSectionMobile({ items }: { items: MainInfoItem[] }) {
+  return (
+    <section className="rounded-[28px] bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+      <div className="space-y-4">
+        {items.map(({ icon, label, value, helper }) => (
+          <MobileInfoRow key={label} icon={icon} title={value} subtitle={`${label} · ${helper}`} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MainInfoSectionDesktop({ items }: { items: MainInfoItem[] }) {
+  return (
+    <section className="rounded-[24px] bg-slate-50 px-4 py-5">
+      <div className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Main Info</div>
+      <div className="space-y-4">
+        {items.map(({ icon, label, value, helper }) => (
+          <DetailInfoBlock key={label} icon={icon} label={label} value={value} helper={helper} />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -424,17 +458,7 @@ function ContentCard({
   );
 }
 
-function DetailInfoBlock({
-  icon: Icon,
-  label,
-  value,
-  helper,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-  helper: string;
-}) {
+function DetailInfoBlock({ icon: Icon, label, value, helper }: MainInfoItem) {
   return (
     <div className="flex gap-3">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-500">
@@ -442,7 +466,7 @@ function DetailInfoBlock({
       </div>
       <div className="min-w-0">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</p>
-        <p className="text-lg font-extrabold tracking-[-0.02em] text-slate-900">{value}</p>
+        <p className="mt-1 text-base font-extrabold tracking-[-0.02em] text-slate-900">{value}</p>
         <p className="mt-1 text-sm text-slate-500">{helper}</p>
       </div>
     </div>
