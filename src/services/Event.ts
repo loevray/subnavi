@@ -23,7 +23,7 @@ import {
   EventDetailResponseDto,
 } from '@/dto/event/event-detail.dto';
 import { CreateEventRequest, CreateEventRequestDto, CreateEventResponse } from '@/dto/event/create-event.dto';
-import { EventCategory, RegionName } from '@/dto/event/shared-event.dto';
+import { EventCategory, EventDateFilter, RegionName } from '@/dto/event/shared-event.dto';
 import { UpdateEventRequest, UpdateEventRequestDto, UpdateEventResponse } from '@/dto/event/update-event.dto';
 import { ServiceResult } from './type';
 
@@ -34,6 +34,8 @@ export interface QueryParams {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   category?: EventCategory['name'];
+  region?: RegionName;
+  date?: EventDateFilter;
 }
 
 type EventWithOptionalRelations = {
@@ -97,10 +99,10 @@ export default class EventService {
   }
 
   private async fetchEventsQuery(
-    params: Pick<EventListRequest, 'category' | 'keyword'> & { from: number; to: number }
+    params: Pick<EventListRequest, 'category' | 'keyword' | 'region' | 'date'> & { from: number; to: number }
   ) {
     const supabase = await this.getSupabaseClient();
-    const { from, to, keyword, category } = params;
+    const { from, to, keyword, category, region, date } = params;
 
     let query = supabase
       .from(EventService.EVENTS_TABLE)
@@ -112,6 +114,15 @@ export default class EventService {
 
     if (keyword) {
       query = query.or(`title.ilike.%${keyword}%,description.ilike.%${keyword}%`);
+    }
+
+    if (region) {
+      query = query.eq('regions.name', region);
+    }
+
+    if (date) {
+      const { startIso, endIso } = EventService.getDateFilterRange(date);
+      query = query.lte('start_datetime', endIso).gte('end_datetime', startIso);
     }
 
     return query.range(from, to).order('created_at', { ascending: false });
@@ -134,6 +145,89 @@ export default class EventService {
       ${EventService.EVENTS_REGION_QUERY}` as const;
   }
 
+  private static readonly KST_OFFSET_HOURS = 9;
+
+  private static getDateFilterRange(dateFilter: EventDateFilter) {
+    const now = new Date();
+    const kstNow = new Date(now.getTime() + EventService.KST_OFFSET_HOURS * 60 * 60 * 1000);
+    const year = kstNow.getUTCFullYear();
+    const month = kstNow.getUTCMonth();
+    const day = kstNow.getUTCDate();
+    const dayOfWeek = kstNow.getUTCDay();
+
+    if (dateFilter === 'today') {
+      return {
+        startIso: EventService.createUtcIsoFromKstDate(year, month, day, 0, 0, 0, 0),
+        endIso: EventService.createUtcIsoFromKstDate(year, month, day, 23, 59, 59, 999),
+      };
+    }
+
+    if (dateFilter === 'weekend') {
+      const daysUntilSaturday = dayOfWeek === 0 ? 0 : Math.max(0, 6 - dayOfWeek);
+      const saturday = new Date(Date.UTC(year, month, day + daysUntilSaturday));
+      const sunday = new Date(Date.UTC(year, month, day + daysUntilSaturday + 1));
+
+      return {
+        startIso: EventService.createUtcIsoFromKstDate(
+          saturday.getUTCFullYear(),
+          saturday.getUTCMonth(),
+          saturday.getUTCDate(),
+          0,
+          0,
+          0,
+          0
+        ),
+        endIso: EventService.createUtcIsoFromKstDate(
+          sunday.getUTCFullYear(),
+          sunday.getUTCMonth(),
+          sunday.getUTCDate(),
+          23,
+          59,
+          59,
+          999
+        ),
+      };
+    }
+
+    const monthStart = new Date(Date.UTC(year, month, 1));
+    const monthEnd = new Date(Date.UTC(year, month + 1, 0));
+
+    return {
+      startIso: EventService.createUtcIsoFromKstDate(
+        monthStart.getUTCFullYear(),
+        monthStart.getUTCMonth(),
+        monthStart.getUTCDate(),
+        0,
+        0,
+        0,
+        0
+      ),
+      endIso: EventService.createUtcIsoFromKstDate(
+        monthEnd.getUTCFullYear(),
+        monthEnd.getUTCMonth(),
+        monthEnd.getUTCDate(),
+        23,
+        59,
+        59,
+        999
+      ),
+    };
+  }
+
+  private static createUtcIsoFromKstDate(
+    year: number,
+    month: number,
+    day: number,
+    hour: number,
+    minute: number,
+    second: number,
+    millisecond: number
+  ) {
+    return new Date(
+      Date.UTC(year, month, day, hour - EventService.KST_OFFSET_HOURS, minute, second, millisecond)
+    ).toISOString();
+  }
+
   public async getEvents(params?: EventListRequest): Promise<ServiceResult<EventListResponse>> {
     try {
       const pasredParams = EventListRequestDto.safeParse(params);
@@ -141,7 +235,7 @@ export default class EventService {
         throw new ValidationError('Request Validation Failed', pasredParams.error);
       }
 
-      const { page = 1, pageSize = 5, category, keyword } = pasredParams.data;
+      const { page = 1, pageSize = 5, category, keyword, region, date } = pasredParams.data;
 
       const { from, to } = EventService.calculatePaginationRange(page, pageSize);
 
@@ -154,6 +248,8 @@ export default class EventService {
         to,
         category,
         keyword,
+        region,
+        date,
       });
 
       if (error) this.handleDatabaseError(error, 'fetch events');
