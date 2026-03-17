@@ -1,17 +1,19 @@
 'use client';
 
-import React from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Search, SearchIcon, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { SearchKeyword, SearchKeywordDto } from '@/dto/event/shared-event.dto';
+import scrollToEventList from '@/utils/scrollToEventList';
 
 // Zod 스키마 정의
 
 export default function EventSearchForm() {
+  const searchParams = useSearchParams();
   const {
     register,
     handleSubmit,
@@ -21,23 +23,50 @@ export default function EventSearchForm() {
   } = useForm<SearchKeyword>({
     resolver: zodResolver(SearchKeywordDto),
     mode: 'onChange', // 실시간 검증
+    defaultValues: {
+      query: searchParams.get('keyword') ?? '',
+    },
   });
 
   const watchedQuery = watch('query');
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const currentKeyword = searchParams.get('keyword') ?? '';
 
-  const onSubmit = async (data: SearchKeyword) => {
+  useEffect(() => {
+    reset({ query: currentKeyword });
+  }, [currentKeyword, reset]);
+
+  const onSubmit = (data: SearchKeyword) => {
     const keyword = preprocessSearch(data.query);
     const params = new URLSearchParams(searchParams.toString());
-    params.set('keyword', keyword);
-    return router.push(`/?${params.toString()}`);
+    params.delete('page');
+
+    if (keyword) {
+      params.set('keyword', keyword);
+    } else {
+      params.delete('keyword');
+    }
+
+    const nextUrl = params.toString() ? `/?${params.toString()}` : '/';
+    window.history.pushState(null, '', nextUrl);
+    scrollToEventList();
   };
 
   const preprocessSearch = (keyword: string) => keyword.trim().replace(/\s+/g, ' ').slice(0, 50); //최대길이 제한
 
   const handleClear = () => {
-    reset();
+    reset({ query: '' });
+
+    if (!currentKeyword) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
+    params.delete('keyword');
+
+    const nextUrl = params.toString() ? `/?${params.toString()}` : '/';
+    window.history.pushState(null, '', nextUrl);
+    scrollToEventList();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -48,7 +77,7 @@ export default function EventSearchForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4">
+    <div className="mx-auto w-full max-w-2xl">
       {/* 검색 폼 */}
 
       <div className="relative">
@@ -63,12 +92,13 @@ export default function EventSearchForm() {
           />
 
           {/* 클리어 버튼 */}
-          {watchedQuery && (
+          {(watchedQuery || currentKeyword) && (
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={handleClear}
+              aria-label="검색 키워드 초기화"
               className="absolute right-16 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
             >
               <X className="h-4 w-4" />

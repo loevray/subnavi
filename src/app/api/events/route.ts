@@ -1,20 +1,28 @@
 import { eventService } from '@/services/Event';
 import { Constants } from '../../../../database.types';
-import { EventCategory } from '@/dto/event/shared-event.dto';
+import { EventCategory, EventDateFilter, RegionName } from '@/dto/event/shared-event.dto';
 import handleCustomError from '@/utils/handleCustomError';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
   const rawCategory = searchParams.get('category');
+  const rawRegion = searchParams.get('region');
+  const rawDate = searchParams.get('date');
   const category = Constants.public.Enums.category_name.includes(rawCategory as EventCategory['name'])
     ? (rawCategory as EventCategory['name'])
     : undefined;
+  const region = Constants.public.Enums.region_name.includes(rawRegion as RegionName) ? (rawRegion as RegionName) : undefined;
+  const date =
+    rawDate === 'today' || rawDate === 'weekend' || rawDate === 'month' ? (rawDate as EventDateFilter) : undefined;
 
   const queryParams = {
     page: Number(searchParams.get('page')) || 1,
     pageSize: Number(searchParams.get('pageSize')) || 5,
     category,
+    region,
+    date,
+    keyword: searchParams.get('keyword') ?? undefined,
   };
 
   const serviceResponse = await eventService.getEvents(queryParams);
