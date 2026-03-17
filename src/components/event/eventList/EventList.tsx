@@ -1,50 +1,39 @@
-import { EventListItem, EventListResponse } from '@/dto/event/event-list.dto';
+import { EventListResponse } from '@/dto/event/event-list.dto';
 import EventCard from '../eventCard/EventCard';
-import formatUtcToKst from '@/utils/formatUtcToKst';
 import Link from 'next/link';
-
-export const DEFAULT_TAG_BG = 'bg-gradient-to-r from-indigo-500/75 to-purple-500/75';
-
-function formatEventData(event: EventListItem) {
-  const { startDatetime, endDatetime, categories } = event;
-
-  const startDate = formatUtcToKst(startDatetime);
-  const endDate = formatUtcToKst(endDatetime);
-
-  return {
-    dateRange: {
-      start: `${startDate.year}.${startDate.month}.${startDate.day}`,
-      end: `${endDate.year}.${endDate.month}.${endDate.day}`,
-    },
-    tags: categories.map(({ id, name }) => ({
-      key: `${id}`,
-      label: name,
-      color: DEFAULT_TAG_BG,
-    })),
-  };
-}
+import { DEFAULT_EVENT_TAG_BG, DEFAULT_EVENT_THUMBNAIL } from '@/constants/event';
+import formatEventListItemPreview from '@/utils/formatEventListItemPreview';
 
 export const GRID_STYLES =
   `grid gap-4 place-items-center md:place-items-stretch grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5`
     .replace(/\s+/g, ' ')
     .trim();
 
-export const DEFAULT_THUMBNAIL = 'https://picsum.photos/600/400';
-
 const createEventUrl = (id: string) => `${process.env.NEXT_PUBLIC_BASE_URL}/event/${id}`;
 
-export default function EventList({ events }: { events: EventListResponse['events'] }) {
+export default function EventList({
+  events,
+  gridClassName = GRID_STYLES,
+}: {
+  events: EventListResponse['events'];
+  gridClassName?: string;
+}) {
   return (
-    <div className={GRID_STYLES}>
+    <div className={gridClassName}>
       {events.map((event) => {
-        const { dateRange, tags } = formatEventData(event);
-        const { title, id, posterImageUrl, location } = event;
+        const { dateRange } = formatEventListItemPreview(event);
+        const { title, id, posterImageUrl, location, categories } = event;
+        const tags = categories.map(({ id: categoryId, name }) => ({
+          key: `${categoryId}`,
+          label: name,
+          color: DEFAULT_EVENT_TAG_BG,
+        }));
 
         return (
           <Link className="contents" key={id} href={createEventUrl(id)}>
             <EventCard
               title={title}
-              posterImageUrl={posterImageUrl ?? DEFAULT_THUMBNAIL}
+              posterImageUrl={posterImageUrl ?? DEFAULT_EVENT_THUMBNAIL}
               dateRange={dateRange}
               address={location}
               tagData={tags}
