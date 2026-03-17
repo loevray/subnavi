@@ -1,42 +1,212 @@
-import { eventService } from '@/services/Event';
-import EventList from './EventList';
-import { MainSerachParamsType } from '@/app/(main)/page';
-import EventPagination from '../EventPagination';
-import { EventListResponse } from '@/dto/event/event-list.dto';
+'use client';
 
-type EventListSectionProps = MainSerachParamsType & {
-  initialData?: EventListResponse;
-  gridClassName?: string;
-  showPagination?: boolean;
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+import type { EventListResponse } from '@/dto/event/event-list.dto';
+import type { EventDateFilter, EventCategory, RegionName } from '@/dto/event/shared-event.dto';
+import ExploreFeedSection, { ExploreSectionBadge, ExploreSectionCopy } from '@/components/event/explore/ExploreFeedSection';
+import EventList from './EventList';
+import EventPagination from '../EventPagination';
+import EventListSectionFallback from './EventListSectionFallback';
+
+const DEFAULT_EVENT_PAGE_SIZE = 5;
+
+type EventListSectionProps = {
+  initialData?: EventListResponse | null;
+  initialSearchKey: string;
+  latestPageSize: number;
+  latestGridClassName?: string;
 };
 
-export default async function EventListSection({
-  initialData,
-  gridClassName,
-  showPagination = true,
-  ...params
-}: EventListSectionProps) {
-  const { page, category, keyword } = params;
-  let resolvedData = initialData;
+type EventListQueryState = {
+  page: number;
+  keyword?: string;
+  category?: EventCategory['name'];
+  region?: RegionName;
+  date?: EventDateFilter;
+};
 
-  if (!resolvedData) {
-    const response = await eventService.getEvents({
-      page: parseInt(page ?? '1'),
-      pageSize: 5, //기본 페이지 사이즈
-      category, //category는 전체일때 없음
-      keyword,
-    });
+function getQueryState(searchParams: URLSearchParams | ReadonlyURLSearchParamsLike): EventListQueryState {
+  const rawPage = Number(searchParams.get('page') || '1');
 
-    if (!response.success) {
-      return <div>이벤트 리스트 fetching 실패</div>;
-    }
+  return {
+    page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
+    keyword: searchParams.get('keyword') ?? undefined,
+    category: (searchParams.get('category') as EventCategory['name'] | null) ?? undefined,
+    region: (searchParams.get('region') as RegionName | null) ?? undefined,
+    date: (searchParams.get('date') as EventDateFilter | null) ?? undefined,
+  };
+}
 
-    resolvedData = response.data;
+function isLatestEventFeed(params: EventListQueryState) {
+  return !params.category && !params.region && !params.date && !params.keyword;
+}
+
+function getSearchKey(params: EventListQueryState, pageSize: number) {
+  return JSON.stringify({
+    ...params,
+    pageSize,
+  });
+}
+
+function getExploreSectionCopy(params: EventListQueryState): ExploreSectionCopy {
+  if (isLatestEventFeed(params)) {
+    return {
+      eyebrow: 'Latest Events',
+      title: '행사 일정',
+      description: '최근 등록된 행사를 기준으로 둘러보면서 관심 있는 일정을 빠르게 찾아보세요.',
+    };
   }
 
-  const { events, pagination } = resolvedData;
+  return {
+    eyebrow: 'Filtered Events',
+    title: '행사 일정',
+    description: '입력한 검색어와 선택한 조건에 맞는 행사만 모아서 보여드리고 있어요.',
+  };
+}
 
-  const isEmptyEvents = events?.length <= 0;
+function getExploreSectionBadges(params: EventListQueryState): ExploreSectionBadge[] {
+  const badges: ExploreSectionBadge[] = [];
+
+  if (params.keyword) {
+    badges.push({ label: `키워드: ${params.keyword}` });
+  }
+
+  if (params.category) {
+    badges.push({ label: `카테고리: ${params.category}`, tone: 'accent' });
+  }
+
+  if (params.region) {
+    badges.push({ label: `위치: ${params.region}` });
+  }
+
+  if (params.date) {
+    const dateLabelMap: Record<EventDateFilter, string> = {
+      today: '오늘',
+      weekend: '이번 주말',
+      month: '이번 달',
+    };
+
+    badges.push({ label: `날짜: ${dateLabelMap[params.date]}` });
+  }
+
+  return badges;
+}
+
+function buildEventsApiUrl(params: EventListQueryState, pageSize: number) {
+  const nextParams = new URLSearchParams();
+  nextParams.set('page', String(params.page));
+  nextParams.set('pageSize', String(pageSize));
+
+  if (params.keyword) nextParams.set('keyword', params.keyword);
+  if (params.category) nextParams.set('category', params.category);
+  if (params.region) nextParams.set('region', params.region);
+  if (params.date) nextParams.set('date', params.date);
+
+  return `/api/events?${nextParams.toString()}`;
+}
+
+export default function EventListSection({
+  initialData,
+  initialSearchKey,
+  latestPageSize,
+  latestGridClassName,
+}: EventListSectionProps) {
+  const searchParams = useSearchParams();
+  const queryState = useMemo(() => getQueryState(searchParams), [searchParams]);
+  const isLatestFeed = isLatestEventFeed(queryState);
+  const pageSize = isLatestFeed ? latestPageSize : DEFAULT_EVENT_PAGE_SIZE;
+  const currentSearchKey = useMemo(() => getSearchKey(queryState, pageSize), [queryState, pageSize]);
+
+  const [data, setData] = useState<EventListResponse | null>(initialData ?? null);
+  const [isLoading, setIsLoading] = useState(currentSearchKey !== initialSearchKey && !initialData);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (currentSearchKey === initialSearchKey) {
+      setData(initialData ?? null);
+      setErrorMessage(null);
+      setIsLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    async function fetchEvents() {
+      try {
+        setIsLoading(true);
+        setErrorMessage(null);
+
+        const response = await fetch(buildEventsApiUrl(queryState, pageSize), {
+          signal: controller.signal,
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error('이벤트 리스트를 불러오지 못했습니다.');
+        }
+
+        const nextData = (await response.json()) as EventListResponse;
+        setData(nextData);
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setErrorMessage(error instanceof Error ? error.message : '이벤트 리스트를 불러오지 못했습니다.');
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchEvents();
+
+    return () => controller.abort();
+  }, [currentSearchKey, initialData, initialSearchKey, pageSize, queryState]);
+
+  const sectionCopy = getExploreSectionCopy(queryState);
+  const sectionBadges = getExploreSectionBadges(queryState);
+
+  return (
+    <ExploreFeedSection copy={sectionCopy} badges={sectionBadges}>
+      {isLoading ? (
+        <EventListSectionFallback />
+      ) : (
+        <EventListSectionContent
+          data={data}
+          errorMessage={errorMessage}
+          gridClassName={isLatestFeed ? latestGridClassName : undefined}
+          queryState={queryState}
+        />
+      )}
+    </ExploreFeedSection>
+  );
+}
+
+function EventListSectionContent({
+  data,
+  errorMessage,
+  gridClassName,
+  queryState,
+}: {
+  data: EventListResponse | null;
+  errorMessage: string | null;
+  gridClassName?: string;
+  queryState: EventListQueryState;
+}) {
+  if (errorMessage) {
+    return <div>{errorMessage}</div>;
+  }
+
+  if (!data) {
+    return <div>이벤트 리스트 fetching 실패</div>;
+  }
+
+  const { events, pagination } = data;
+  const isEmptyEvents = events.length <= 0;
   const startItem = pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1;
   const endItem = Math.min(pagination.page * pagination.pageSize, pagination.total);
 
@@ -49,7 +219,8 @@ export default async function EventListSection({
               조건에 맞는 행사를 아직 찾지 못했어요.
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-500 sm:text-base">
-              {category ?? '전체'} 범위에서 {keyword ? `'${keyword}'` : '입력한 조건'} 기준으로 검색했지만 결과가
+              {queryState.category ?? '전체'} 범위에서{' '}
+              {queryState.keyword ? `'${queryState.keyword}'` : '입력한 조건'} 기준으로 검색했지만 결과가
               없었습니다. 다른 키워드나 카테고리로 다시 좁혀보세요.
             </p>
           </div>
@@ -58,20 +229,22 @@ export default async function EventListSection({
         <EventList events={events} gridClassName={gridClassName} />
       )}
 
-      {showPagination && (
-        <footer className="mt-12">
-          <div className="mb-6 text-center">
-            <div className="text-sm text-slate-600">
-              총 <span className="font-semibold text-indigo-600">{pagination.total}개</span> 행사 중{' '}
-              <span className="font-semibold text-indigo-600">
-                {startItem}-{endItem}
-              </span>
-              를 보고 있어요
-            </div>
+      <footer className="mt-12">
+        <div className="mb-6 text-center">
+          <div className="text-sm text-slate-600">
+            총 <span className="font-semibold text-indigo-600">{pagination.total}개</span> 행사 중{' '}
+            <span className="font-semibold text-indigo-600">
+              {startItem}-{endItem}
+            </span>
+            를 보고 있어요
           </div>
-          <EventPagination totalItems={pagination.total} itemsPerPage={pagination.pageSize} maxVisiblePages={1} />
-        </footer>
-      )}
+        </div>
+        <EventPagination totalItems={pagination.total} itemsPerPage={pagination.pageSize} maxVisiblePages={1} />
+      </footer>
     </>
   );
 }
+
+type ReadonlyURLSearchParamsLike = {
+  get(name: string): string | null;
+};

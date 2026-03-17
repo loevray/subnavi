@@ -1,5 +1,12 @@
 import { z } from 'zod/v4';
-import { BaseEventDto, CateogryNameDto, EventRelationsDto, PaginationDto } from './shared-event.dto';
+import {
+  BaseEventDto,
+  CateogryNameDto,
+  EventDateFilterDto,
+  EventRelationsDto,
+  PaginationDto,
+  RegionNameDto,
+} from './shared-event.dto';
 
 export const EventListItemDto = BaseEventDto.pick({
   id: true,
@@ -25,6 +32,8 @@ export const EventListRequestDto = z.object({
   pageSize: z.int().positive('need positive number').max(10, 'less than 11').optional(),
   keyword: z.string().optional(),
   category: CateogryNameDto.optional(),
+  region: RegionNameDto.optional(),
+  date: EventDateFilterDto.optional(),
 });
 
 export type EventListRequest = z.infer<typeof EventListRequestDto>;

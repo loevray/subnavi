@@ -7,6 +7,8 @@ export type EventStatus = z.infer<typeof EventStatusDto>;
 export const CateogryNameDto = z.enum(Constants.public.Enums.category_name);
 export const RegionNameDto = z.enum(Constants.public.Enums.region_name);
 export type RegionName = z.infer<typeof RegionNameDto>;
+export const EventDateFilterDto = z.enum(['today', 'weekend', 'month']);
+export type EventDateFilter = z.infer<typeof EventDateFilterDto>;
 
 export const SnsLinkDto = z.record(z.string(), z.string());
 

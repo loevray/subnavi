@@ -20,20 +20,18 @@ function getBadgeClassName(tone: ExploreSectionBadge['tone'] = 'default') {
 export default function ExploreFeedSection({
   copy,
   badges = [],
-  isHomeFeed,
   children,
   footer,
 }: {
   copy: ExploreSectionCopy;
   badges?: ExploreSectionBadge[];
-  isHomeFeed: boolean;
   children: React.ReactNode;
   footer?: React.ReactNode;
 }) {
   return (
     <section
       id="event-list"
-      className="rounded-[32px] border border-slate-200/80 bg-white/90 px-5 py-6 shadow-[0_20px_60px_rgba(15,23,42,0.05)] backdrop-blur-sm sm:px-6 lg:px-8 lg:py-8"
+      className="scroll-mt-28 rounded-[32px] border border-slate-200/80 bg-white/90 px-5 py-6 shadow-[0_20px_60px_rgba(15,23,42,0.05)] backdrop-blur-sm sm:scroll-mt-32 sm:px-6 lg:px-8 lg:py-8"
     >
       <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
@@ -44,7 +42,7 @@ export default function ExploreFeedSection({
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{copy.description}</p>
         </div>
 
-        {!isHomeFeed && badges.length > 0 && (
+        {badges.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {badges.map(({ label, tone = 'default' }) => (
               <span key={label} className={getBadgeClassName(tone)}>
