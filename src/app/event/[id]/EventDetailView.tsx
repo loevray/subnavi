@@ -1,6 +1,6 @@
-import { DEFAULT_TAG_BG } from '@/components/event/eventList/EventList';
 import EventTag from '@/components/event/EventTag';
 import { Button } from '@/components/ui/button';
+import { DEFAULT_EVENT_TAG_BG } from '@/constants/event';
 import type { EventDetailResponse } from '@/dto/event/event-detail.dto';
 import formatDateRange from '@/utils/formatDateRange';
 import getEventStatusLabel from '@/utils/getEventStatusLabel';
@@ -160,7 +160,7 @@ function MobileDetailLayout({
             <EventTag
               key={`${id}-${name}`}
               label={name}
-              color={DEFAULT_TAG_BG}
+              color={DEFAULT_EVENT_TAG_BG}
               className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white"
             />
           ))}
@@ -289,7 +289,7 @@ function DesktopDetailLayout({
               <EventTag
                 key={`${id}-${name}`}
                 label={name}
-                color={DEFAULT_TAG_BG}
+                color={DEFAULT_EVENT_TAG_BG}
                 className="rounded-full border border-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm"
               />
             ))}
