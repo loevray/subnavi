@@ -1,13 +1,25 @@
 import { CreateEventRequest, CreateEventResponse } from '@/dto/event/create-event.dto';
 import { EventDetailResponse } from '@/dto/event/event-detail.dto';
 import { EventListResponse } from '@/dto/event/event-list.dto';
-import { EventCategory, RegionListResponse } from '@/dto/event/shared-event.dto';
+import { EventCategory, EventDateFilter, RegionListResponse, RegionName } from '@/dto/event/shared-event.dto';
 import { UpdateEventRequest, UpdateEventResponse } from '@/dto/event/update-event.dto';
+import { ErrorResponseBody, isSerializedAppError, SerializedAppError } from '@/lib/errors/error-contract';
 
 export class ApiError extends Error {
-  constructor(message: string, public status: number, public endpoint: string) {
+  public readonly code: SerializedAppError['code'];
+  public readonly details?: unknown;
+
+  constructor(
+    message: string,
+    public status: number,
+    public endpoint: string,
+    code: SerializedAppError['code'] = 'INTERNAL',
+    details?: unknown
+  ) {
     super(message);
     this.name = 'ApiError';
+    this.code = code;
+    this.details = details;
   }
 }
 
@@ -17,6 +29,31 @@ class ApiClient {
 
   constructor(baseUrl: string = '') {
     this.baseUrl = baseUrl;
+  }
+
+  private extractSerializedError(errorBody: unknown): SerializedAppError | null {
+    if (!errorBody || typeof errorBody !== 'object') {
+      return null;
+    }
+
+    const body = errorBody as Partial<ErrorResponseBody> & {
+      error?: unknown;
+      message?: unknown;
+    };
+
+    if (isSerializedAppError(body.error)) {
+      return body.error;
+    }
+
+    if (typeof body.message === 'string') {
+      return {
+        code: 'INTERNAL',
+        message: body.message,
+        statusCode: 500,
+      };
+    }
+
+    return null;
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -35,38 +72,47 @@ class ApiClient {
 
       if (!response.ok) {
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        let serializedError: SerializedAppError | null = null;
 
         try {
           const errorBody = await response.json();
-          if (errorBody.message) {
-            errorMessage = errorBody.message;
-          } else if (errorBody.error) {
+          serializedError = this.extractSerializedError(errorBody);
+
+          if (serializedError) {
+            errorMessage = serializedError.message;
+          } else if (
+            errorBody &&
+            typeof errorBody === 'object' &&
+            'error' in errorBody &&
+            typeof errorBody.error === 'string'
+          ) {
             errorMessage = errorBody.error;
           }
         } catch {
-          // JSON 파싱 실패 시 기본 메시지 사용
+          // Keep the default error message when the response body is not JSON.
         }
 
-        // 에러를 throw하여 Error Boundary에서 처리되도록
-        throw new ApiError(errorMessage, response.status, endpoint);
+        throw new ApiError(
+          errorMessage,
+          response.status,
+          endpoint,
+          serializedError?.code ?? 'INTERNAL',
+          serializedError?.details
+        );
       }
 
-      let data: T;
       const contentType = response.headers.get('content-type');
 
       if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        data = (await response.text()) as unknown as T;
+        return (await response.json()) as T;
       }
 
-      return data; // 성공 시 data만 반환
+      return (await response.text()) as unknown as T;
     } catch (error) {
       if (error instanceof ApiError) {
-        throw error; // ApiError는 그대로 재throw
+        throw error;
       }
 
-      // 네트워크 에러 등은 ApiError로 래핑
       throw new ApiError(error instanceof Error ? error.message : 'Unknown error', 500, endpoint);
     }
   }
@@ -125,10 +171,12 @@ export const apiClient = new ApiClient(getApiBaseUrl());
 export interface QueryParams {
   page?: number;
   pageSize?: number;
-  search?: string;
+  keyword?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   category?: EventCategory['name'];
+  region?: RegionName;
+  date?: EventDateFilter;
 }
 
 export const EventsApi = {
@@ -157,10 +205,6 @@ export const EventsApi = {
   update: async (id: string, event: UpdateEventRequest): Promise<UpdateEventResponse> => {
     return apiClient.patch<UpdateEventResponse>(`/events/${id}`, event);
   },
-
-  /*   replace: async (id: string, event: CreateEventRequest): Promise<Event> => {
-    return apiClient.put<Event>(`/events/${id}`, event);
-  }, */
 
   delete: async (id: string): Promise<void> => {
     return apiClient.delete<void>(`/events/${id}`);
