@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import EventCard, { DUMMY_EVENT_CARD_DATA } from './EventCard';
+import { DEFAULT_EVENT_THUMBNAIL } from '@/constants/event';
 
 const meta = {
   title: 'Event/EventCard',
@@ -55,4 +56,11 @@ export const DesktopCard: Story = {
       </div>
     ),
   ],
+};
+
+export const NoThumbnail: Story = {
+  args: {
+    ...DUMMY_EVENT_CARD_DATA[0],
+    posterImageUrl: DEFAULT_EVENT_THUMBNAIL,
+  },
 };

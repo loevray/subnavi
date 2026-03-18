@@ -151,7 +151,7 @@ function MobileDetailLayout({
     <div className="space-y-7 lg:hidden">
       <section className="overflow-hidden rounded-[28px] bg-white shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={posterImageUrl ?? '/placeholder.jpg'} alt={title} className="h-[265px] w-full object-cover" />
+        <img src={posterImageUrl ?? '/event-placeholder.png'} alt={title} className="h-[265px] w-full object-cover" />
       </section>
 
       <section>
@@ -278,7 +278,7 @@ function DesktopDetailLayout({
       <section className="relative overflow-hidden rounded-[32px] bg-slate-900 shadow-[0_28px_60px_rgba(15,23,42,0.18)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={posterImageUrl ?? '/placeholder.jpg'}
+          src={posterImageUrl ?? '/event-placeholder.png'}
           alt={title}
           className="h-[270px] w-full object-cover md:h-[340px] lg:h-[400px]"
         />
