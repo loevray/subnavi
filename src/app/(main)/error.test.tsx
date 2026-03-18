@@ -1,21 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import MainError from './error';
 
-const pushMock = vi.fn();
-
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: pushMock,
-  }),
-}));
-
 describe('app/(main)/error.tsx', () => {
-  beforeEach(() => {
-    pushMock.mockReset();
-  });
-
   afterEach(() => {
     cleanup();
   });
@@ -27,11 +15,9 @@ describe('app/(main)/error.tsx', () => {
     expect(screen.getByText('main-123')).toBeTruthy();
   });
 
-  it('홈 이동 버튼은 루트 경로로 push한다', () => {
+  it('secondary 액션이 없으면 추가 버튼을 렌더링하지 않는다', () => {
     render(<MainError error={new globalThis.Error('boom')} reset={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole('button', { name: '홈으로 돌아가기 →' }));
-
-    expect(pushMock).toHaveBeenCalledWith('/');
+    expect(screen.queryByRole('button', { name: /홈으로 돌아가기/i })).toBeNull();
   });
 });

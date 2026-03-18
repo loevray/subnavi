@@ -1,7 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
 import UnexpectedErrorPage from '@/components/common/UnexpectedErrorPage';
 
 type ErrorProps = {
@@ -10,8 +8,6 @@ type ErrorProps = {
 };
 
 export default function Error({ error, reset }: ErrorProps) {
-  const router = useRouter();
-
   return (
     <UnexpectedErrorPage
       error={error}
@@ -25,15 +21,13 @@ export default function Error({ error, reset }: ErrorProps) {
       }
       description={
         <>
-          저희 쪽 문제예요. 잠시 후 다시 시도하거나
+          저희 쪽 문제예요.
           <br />
-          메인으로 돌아가서 다른 행사를 찾아보세요.
+          잠시 후 다시 시도해 주세요.
         </>
       }
       primaryActionLabel="다시 시도하기"
       onPrimaryAction={reset}
-      secondaryActionLabel="홈으로 돌아가기 →"
-      onSecondaryAction={() => router.push('/')}
     />
   );
 }
