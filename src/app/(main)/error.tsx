@@ -12,6 +12,7 @@ export default function MainError({ error, reset }: MainErrorProps) {
     <UnexpectedErrorPage
       error={error}
       logLabel="Error captured by (main)/error.tsx:"
+      hideHeader
       title={
         <>
           메인 페이지를 불러오는 중
