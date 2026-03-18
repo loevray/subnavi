@@ -13,6 +13,7 @@ describe('app/(main)/error.tsx', () => {
 
     expect(screen.getByRole('heading', { name: '메인 페이지를 불러오는 중 예기치 못한 오류가 발생했어요.' })).toBeTruthy();
     expect(screen.getByText('main-123')).toBeTruthy();
+    expect(screen.getByRole('main').className).toContain('hide-layout-header');
   });
 
   it('secondary 액션이 없으면 추가 버튼을 렌더링하지 않는다', () => {
