@@ -1,15 +1,10 @@
-import {
-  DatabaseError,
-  ValidationError,
-  NotFoundError,
-  isCustomError,
-  InternalError,
-} from '@/lib/errors/serviceErrors.server';
+import 'server-only';
+
+import { InternalError } from '@/lib/errors/serviceErrors.server';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
 import camelcaseKeys from 'camelcase-keys';
 import snakecaseKeys from 'snakecase-keys';
-import type { PostgrestError } from '@supabase/supabase-js';
 
 import {
   EventListRequest,
@@ -28,6 +23,7 @@ import { EventCategory, EventDateFilter, RegionName } from '@/dto/event/shared-e
 import { UpdateEventRequest, UpdateEventRequestDto, UpdateEventResponse } from '@/dto/event/update-event.dto';
 import { ServiceResult } from './type';
 import { isEventDatePreset, isEventDateString } from '@/utils/eventDateFilter';
+import { handleSingleRowPostgrestError, throwUnexpectedPostgrestError, validationFailure } from './serviceError';
 
 export interface QueryParams {
   page?: number;
@@ -63,6 +59,7 @@ export default class EventService {
   private static readonly EVENTS_REGION_QUERY = `regions(name)`;
   private static readonly EVENTS_CATEGORIES_LEFT_JOIN = `event_categories(categories(id, name))`;
   private static readonly EVENT_CATEGORIES_INNER_JOIN = `event_categories!inner(categories!inner(id, name))`;
+  private static readonly KST_OFFSET_HOURS = 9;
 
   private async getSupabaseClient() {
     return await createClient();
@@ -76,23 +73,6 @@ export default class EventService {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
     return { from, to };
-  }
-
-  //handleCustomError와 중복되는 로직 혼재
-  private handleServiceError(error: unknown) {
-    if (isCustomError(error)) {
-      return { success: false as const, ...error.toResponse() };
-    }
-    const internalError = new InternalError('unknown service error', error);
-    return { success: false as const, ...internalError.toResponse() };
-  }
-
-  private handleDatabaseError(error: PostgrestError, operation: string): never {
-    if (error.code === 'PGRST116') {
-      //Postgres has now row error
-      throw new NotFoundError('Event not found', error);
-    }
-    throw new DatabaseError(`Failed to ${operation}: ${error.message}`, error);
   }
 
   private transformSingleEventData<T extends EventWithOptionalRelations>(event: T) {
@@ -151,8 +131,6 @@ export default class EventService {
       ${EventService.EVENTS_REGION_QUERY}` as const;
   }
 
-  private static readonly KST_OFFSET_HOURS = 9;
-
   private static getDateFilterRange(dateFilter: EventDateFilter) {
     if (isEventDateString(dateFilter)) {
       const [year, month, day] = dateFilter.split('-').map(Number);
@@ -164,9 +142,7 @@ export default class EventService {
     }
 
     if (!isEventDatePreset(dateFilter)) {
-      throw new ValidationError('Request Validation Failed', {
-        message: 'Unsupported date filter',
-      });
+      throw new InternalError('Unsupported date filter', { dateFilter });
     }
 
     const now = new Date();
@@ -250,140 +226,134 @@ export default class EventService {
   }
 
   public async getEvents(params?: EventListRequest): Promise<ServiceResult<EventListResponse>> {
-    try {
-      const pasredParams = EventListRequestDto.safeParse(params);
-      if (!pasredParams.success) {
-        throw new ValidationError('Request Validation Failed', pasredParams.error);
-      }
-
-      const { page = 1, pageSize = 5, category, keyword, region, date } = pasredParams.data;
-
-      const { from, to } = EventService.calculatePaginationRange(page, pageSize);
-
-      const {
-        data: events,
-        error,
-        count,
-      } = await this.fetchEventsQuery({
-        from,
-        to,
-        category,
-        keyword,
-        region,
-        date,
-      });
-
-      if (error) this.handleDatabaseError(error, 'fetch events');
-
-      const response: EventListResponse = {
-        events: camelcaseKeys(events.map((e) => this.transformSingleEventData(e))),
-        pagination: {
-          page,
-          pageSize,
-          hasMore: (count ?? 0) > page * pageSize,
-          total: count ?? 0,
-          totalPages: Math.ceil((count ?? 0) / pageSize),
-        },
-      };
-
-      const parsed = EventListResponseDto.safeParse(response);
-      if (!parsed.success) {
-        throw new ValidationError('Response validation failed', parsed.error);
-      }
-
-      return { success: true, data: parsed.data };
-    } catch (e) {
-      return this.handleServiceError(e);
+    const parsedParams = EventListRequestDto.safeParse(params);
+    if (!parsedParams.success) {
+      return validationFailure('Request validation failed', parsedParams.error);
     }
+
+    const { page = 1, pageSize = 5, category, keyword, region, date } = parsedParams.data;
+    const { from, to } = EventService.calculatePaginationRange(page, pageSize);
+
+    const {
+      data: events,
+      error,
+      count,
+    } = await this.fetchEventsQuery({
+      from,
+      to,
+      category,
+      keyword,
+      region,
+      date,
+    });
+
+    if (error) {
+      throwUnexpectedPostgrestError(error, 'fetch events');
+    }
+
+    const response: EventListResponse = {
+      events: camelcaseKeys(events.map((event) => this.transformSingleEventData(event))),
+      pagination: {
+        page,
+        pageSize,
+        hasMore: (count ?? 0) > page * pageSize,
+        total: count ?? 0,
+        totalPages: Math.ceil((count ?? 0) / pageSize),
+      },
+    };
+
+    const parsed = EventListResponseDto.safeParse(response);
+    if (!parsed.success) {
+      throw new InternalError('Response validation failed', parsed.error);
+    }
+
+    return { success: true, data: parsed.data };
   }
 
   public async getEventById({ id }: EventDetailRequest): Promise<ServiceResult<EventDetailResponse>> {
-    try {
-      const parsedRequest = EventDetailRequestDto.safeParse({ id });
-      if (!parsedRequest.success) {
-        throw new ValidationError('Reqeust validation failed', parsedRequest.error);
-      }
-
-      const eventId = parsedRequest.data.id;
-
-      const { data: event, error } = await this.fetchEventByIdQuery(eventId);
-      if (error) this.handleDatabaseError(error, 'fetch event');
-
-      const transformed = this.transformSingleEventData(event);
-      const parsed = EventDetailResponseDto.safeParse(camelcaseKeys(transformed));
-
-      if (!parsed.success) {
-        throw new ValidationError('Response validation failed', parsed.error);
-      }
-
-      return { success: true, data: parsed.data };
-    } catch (e) {
-      return this.handleServiceError(e);
+    const parsedRequest = EventDetailRequestDto.safeParse({ id });
+    if (!parsedRequest.success) {
+      return validationFailure('Request validation failed', parsedRequest.error);
     }
+
+    const eventId = parsedRequest.data.id;
+    const { data: event, error } = await this.fetchEventByIdQuery(eventId);
+
+    if (error) {
+      return handleSingleRowPostgrestError(error, 'fetch event', 'Event not found');
+    }
+
+    const transformed = this.transformSingleEventData(event);
+    const parsed = EventDetailResponseDto.safeParse(camelcaseKeys(transformed));
+
+    if (!parsed.success) {
+      throw new InternalError('Response validation failed', parsed.error);
+    }
+
+    return { success: true, data: parsed.data };
   }
 
   public async createEvent(eventData: CreateEventRequest): Promise<ServiceResult<CreateEventResponse>> {
-    try {
-      const parsed = CreateEventRequestDto.safeParse(eventData);
-      if (!parsed.success) {
-        throw new ValidationError('Request validation failed', parsed.error);
-      }
-
-      const supabase = this.getAdminSupabaseClient();
-      const { region_id, category_ids, ...snakeCased } = snakecaseKeys(parsed.data);
-
-      //event 추가와 관계 추가 작업은 하나의 트랜잭션으로 묶여야함
-      const { data: event, error } = await supabase
-        .from(EventService.EVENTS_TABLE)
-        .insert([{ ...snakeCased, region_id }])
-        .select()
-        .single();
-
-      if (error) this.handleDatabaseError(error, 'create event');
-
-      const relations = category_ids.map((categoryId) => ({
-        event_id: event.id,
-        category_id: categoryId,
-      }));
-
-      const { error: relError } = await supabase.from('event_categories').insert(relations);
-      if (relError) this.handleDatabaseError(relError, 'create event categories');
-
-      return { success: true, data: { id: event.id } };
-    } catch (e) {
-      return this.handleServiceError(e);
+    const parsed = CreateEventRequestDto.safeParse(eventData);
+    if (!parsed.success) {
+      return validationFailure('Request validation failed', parsed.error);
     }
+
+    const supabase = this.getAdminSupabaseClient();
+    const { region_id, category_ids, ...snakeCased } = snakecaseKeys(parsed.data);
+
+    const { data: event, error } = await supabase
+      .from(EventService.EVENTS_TABLE)
+      .insert([{ ...snakeCased, region_id }])
+      .select()
+      .single();
+
+    if (error) {
+      throwUnexpectedPostgrestError(error, 'create event');
+    }
+
+    const relations = category_ids.map((categoryId) => ({
+      event_id: event.id,
+      category_id: categoryId,
+    }));
+
+    const { error: relationError } = await supabase.from('event_categories').insert(relations);
+    if (relationError) {
+      throwUnexpectedPostgrestError(relationError, 'create event categories');
+    }
+
+    return { success: true, data: { id: event.id } };
   }
 
   public async updateEvent(updateData: UpdateEventRequest): Promise<ServiceResult<UpdateEventResponse>> {
-    try {
-      const parsedUpdateData = UpdateEventRequestDto.safeParse(updateData);
-      if (!parsedUpdateData.success) {
-        throw new ValidationError('Request validation failed', parsedUpdateData.error);
-      }
-      const snakeCased = snakecaseKeys(parsedUpdateData.data);
-
-      const supabase = this.getAdminSupabaseClient();
-      const { data: event, error } = await supabase
-        .from(EventService.EVENTS_TABLE)
-        .update(snakeCased)
-        .eq('id', snakeCased.id)
-        .select()
-        .single();
-
-      if (error) this.handleDatabaseError(error, 'update event');
-
-      return { success: true, data: { id: event.id } };
-    } catch (e) {
-      return this.handleServiceError(e);
+    const parsedUpdateData = UpdateEventRequestDto.safeParse(updateData);
+    if (!parsedUpdateData.success) {
+      return validationFailure('Request validation failed', parsedUpdateData.error);
     }
+
+    const snakeCased = snakecaseKeys(parsedUpdateData.data);
+    const supabase = this.getAdminSupabaseClient();
+    const { data: event, error } = await supabase
+      .from(EventService.EVENTS_TABLE)
+      .update(snakeCased)
+      .eq('id', snakeCased.id)
+      .select()
+      .single();
+
+    if (error) {
+      return handleSingleRowPostgrestError(error, 'update event', 'Event not found');
+    }
+
+    return { success: true, data: { id: event.id } };
   }
 
   public async deleteEvent(id: string): Promise<void> {
     const supabase = this.getAdminSupabaseClient();
     const { error } = await supabase.from(EventService.EVENTS_TABLE).delete().eq('id', id);
 
-    if (error) this.handleDatabaseError(error, 'delete event');
+    if (error) {
+      throwUnexpectedPostgrestError(error, 'delete event');
+    }
   }
 }
 

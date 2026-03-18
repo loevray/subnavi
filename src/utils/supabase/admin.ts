@@ -1,3 +1,4 @@
+import 'server-only';
 import { createServerClient } from '@supabase/ssr';
 import { Database } from '../../../database.types';
 import { getSupabaseEnv } from './env';
