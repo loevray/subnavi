@@ -8,11 +8,11 @@ export default async function EventDetail({ params }: { params: Promise<{ id: st
   const response = await eventService.getEventById({ id });
 
   if (!response.success) {
-    if (response.error.code === 'NOT_FOUND') {
+    if (response.error.code === 'NOT_FOUND' || response.error.code === 'VALIDATION') {
       notFound();
     }
 
-    return <div>?대깽???곸꽭 ?붾㈃???덈윭? 諛쒖깮?덉뒿?덈떎.</div>;
+    throw new Error(response.error.message);
   }
 
   return <EventDetailView event={response.data} />;
