@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/admin';
 import { eventService } from '@/services/Event';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -15,7 +15,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const body = await request.json();
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { data: event, error } = await supabase.from('events').update(body).eq('id', id).select();
 
     if (error) {
@@ -40,7 +40,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const { id } = await params;
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const response = await supabase.from('events').delete().eq('id', id);
     if (response.error) {
       return Response.json({ error: response.error }, { status: 400 });

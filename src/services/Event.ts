@@ -5,6 +5,7 @@ import {
   isCustomError,
   InternalError,
 } from '@/lib/errors/serviceErrors.server';
+import { createAdminClient } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
 import camelcaseKeys from 'camelcase-keys';
 import snakecaseKeys from 'snakecase-keys';
@@ -65,6 +66,10 @@ export default class EventService {
 
   private async getSupabaseClient() {
     return await createClient();
+  }
+
+  private getAdminSupabaseClient() {
+    return createAdminClient();
   }
 
   private static calculatePaginationRange(page: number, pageSize: number) {
@@ -324,7 +329,7 @@ export default class EventService {
         throw new ValidationError('Request validation failed', parsed.error);
       }
 
-      const supabase = await this.getSupabaseClient();
+      const supabase = this.getAdminSupabaseClient();
       const { region_id, category_ids, ...snakeCased } = snakecaseKeys(parsed.data);
 
       //event 추가와 관계 추가 작업은 하나의 트랜잭션으로 묶여야함
@@ -358,7 +363,7 @@ export default class EventService {
       }
       const snakeCased = snakecaseKeys(parsedUpdateData.data);
 
-      const supabase = await this.getSupabaseClient();
+      const supabase = this.getAdminSupabaseClient();
       const { data: event, error } = await supabase
         .from(EventService.EVENTS_TABLE)
         .update(snakeCased)
@@ -375,7 +380,7 @@ export default class EventService {
   }
 
   public async deleteEvent(id: string): Promise<void> {
-    const supabase = await this.getSupabaseClient();
+    const supabase = this.getAdminSupabaseClient();
     const { error } = await supabase.from(EventService.EVENTS_TABLE).delete().eq('id', id);
 
     if (error) this.handleDatabaseError(error, 'delete event');
