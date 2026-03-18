@@ -1,22 +1,22 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import scrollToEventList from '@/utils/scrollToEventList';
+import { useEventListUrlNavigation } from './useEventListUrlNavigation';
 
 export function useUrlPagination() {
-  const searchParams = useSearchParams();
+  const { searchParams, navigateWithParams } = useEventListUrlNavigation();
 
   const currentPage = Number(searchParams.get('page') || '1');
 
   const setPage = useCallback(
     (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('page', String(page));
-      window.history.pushState(null, '', `?${params.toString()}`);
+      navigateWithParams((params) => {
+        params.set('page', String(page));
+      });
       scrollToEventList();
     },
-    [searchParams]
+    [navigateWithParams]
   );
 
   return { currentPage, setPage };
