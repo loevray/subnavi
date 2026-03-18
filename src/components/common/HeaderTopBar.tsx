@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import EventSearchForm from '../event/EventSearchForm';
@@ -31,7 +32,13 @@ export default function HeaderTopBar() {
         </button>
 
         <Link href="/" aria-label="Go to home">
-          <img width={140} src="/subnavi-logo.svg" alt="subnavi logo" />
+          <Image
+            width={140}
+            height={61}
+            src="/subnavi-logo.svg"
+            alt="subnavi logo"
+            className="h-auto w-[140px]"
+          />
         </Link>
       </div>
     );
@@ -40,8 +47,20 @@ export default function HeaderTopBar() {
   return (
     <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6 lg:px-8">
       <Link href="/" className="justify-self-start">
-        <img width={140} className="hidden md:block" src="/subnavi-logo.svg" alt="go to home logo" />
-        <img width={60} className="block md:hidden" src="/subnavi-compass-logo.svg" alt="go to home logo" />
+        <Image
+          width={140}
+          height={61}
+          className="hidden h-auto w-[140px] md:block"
+          src="/subnavi-logo.svg"
+          alt="go to home logo"
+        />
+        <Image
+          width={60}
+          height={60}
+          className="block h-auto w-[60px] md:hidden"
+          src="/subnavi-compass-logo.svg"
+          alt="go to home logo"
+        />
       </Link>
       <div className="min-w-0 justify-self-center">
         <EventSearchForm />
