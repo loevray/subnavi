@@ -50,10 +50,6 @@ const particles = [
 ];
 
 const pageStyles = String.raw`
-  body:has(.unexpected-error-shell) header {
-    display: none !important;
-  }
-
   .unexpected-error-shell {
     --bg: #f0eee8;
     --surface: #faf9f6;
@@ -614,8 +610,8 @@ type UnexpectedErrorPageProps = {
   description: ReactNode;
   primaryActionLabel: string;
   onPrimaryAction: () => void;
-  secondaryActionLabel: string;
-  onSecondaryAction: () => void;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
 };
 
 function formatTimestamp(date: Date) {
@@ -683,9 +679,11 @@ export default function UnexpectedErrorPage({
                 </svg>
                 {primaryActionLabel}
               </button>
-              <button type="button" className="btn btn-ghost" onClick={onSecondaryAction}>
-                {secondaryActionLabel}
-              </button>
+              {secondaryActionLabel && onSecondaryAction ? (
+                <button type="button" className="btn btn-ghost" onClick={onSecondaryAction}>
+                  {secondaryActionLabel}
+                </button>
+              ) : null}
             </div>
 
             <div className="error-info">
