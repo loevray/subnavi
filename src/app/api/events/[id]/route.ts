@@ -1,5 +1,6 @@
 import handleCustomError from '@/utils/handleCustomError';
 import { eventService } from '@/services/Event';
+import { createNotFoundApiResponse, isDevelopmentEnvironment } from '@/utils/runtimeEnvironment';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -20,6 +21,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!isDevelopmentEnvironment()) {
+    return createNotFoundApiResponse();
+  }
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -39,6 +44,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!isDevelopmentEnvironment()) {
+    return createNotFoundApiResponse();
+  }
+
   try {
     const { id } = await params;
     await eventService.deleteEvent(id);

@@ -2,6 +2,7 @@ import { eventService } from '@/services/Event';
 import { Constants } from '../../../../database.types';
 import { EventCategory, EventDateFilterDto, RegionName } from '@/dto/event/shared-event.dto';
 import handleCustomError from '@/utils/handleCustomError';
+import { createNotFoundApiResponse, isDevelopmentEnvironment } from '@/utils/runtimeEnvironment';
 
 export async function GET(request: Request) {
   try {
@@ -40,6 +41,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!isDevelopmentEnvironment()) {
+    return createNotFoundApiResponse();
+  }
+
   try {
     const body = await request.json();
 
