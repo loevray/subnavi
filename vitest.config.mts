@@ -14,6 +14,9 @@ const dirname =
 
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
+  optimizeDeps: {
+    include: ['server-only', '@radix-ui/react-popover', '@radix-ui/react-select', 'react-day-picker'],
+  },
   test: {
     projects: [
       {
