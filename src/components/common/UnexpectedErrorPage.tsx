@@ -49,6 +49,12 @@ const particles = [
   { left: '99%', width: '2px', height: '2px', duration: '22s', delay: '4.8s', background: '#d63031' },
 ];
 
+const hideHeaderStyles = String.raw`
+  body:has(.unexpected-error-shell.hide-layout-header) header {
+    display: none !important;
+  }
+`;
+
 const pageStyles = String.raw`
   .unexpected-error-shell {
     --bg: #f0eee8;
@@ -612,6 +618,7 @@ type UnexpectedErrorPageProps = {
   onPrimaryAction: () => void;
   secondaryActionLabel?: string;
   onSecondaryAction?: () => void;
+  hideHeader?: boolean;
 };
 
 function formatTimestamp(date: Date) {
@@ -631,8 +638,10 @@ export default function UnexpectedErrorPage({
   onPrimaryAction,
   secondaryActionLabel,
   onSecondaryAction,
+  hideHeader = false,
 }: UnexpectedErrorPageProps) {
   const [capturedAt, setCapturedAt] = useState('');
+  const resolvedPageStyles = hideHeader ? `${hideHeaderStyles}\n${pageStyles}` : pageStyles;
 
   useEffect(() => {
     console.error(logLabel, error);
@@ -640,7 +649,11 @@ export default function UnexpectedErrorPage({
   }, [error, logLabel]);
 
   return (
-    <main className={`${notoSansKr.className} ${bebas.variable} ${shareTechMono.variable} unexpected-error-shell`}>
+    <main
+      className={`${notoSansKr.className} ${bebas.variable} ${shareTechMono.variable} unexpected-error-shell${
+        hideHeader ? ' hide-layout-header' : ''
+      }`}
+    >
       <div className="bg-grid" />
       <div className="glow-blob amber" />
       <div className="glow-blob red" />
@@ -739,7 +752,7 @@ export default function UnexpectedErrorPage({
         </section>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
+      <style dangerouslySetInnerHTML={{ __html: resolvedPageStyles }} />
     </main>
   );
 }
