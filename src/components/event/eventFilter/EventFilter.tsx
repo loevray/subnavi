@@ -1,10 +1,10 @@
 'use client';
 
 import { MapPin, Shapes } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
 
 import { EventCategory, EventDateFilter, RegionNameDto } from '@/dto/event/shared-event.dto';
 import scrollToEventList from '@/utils/scrollToEventList';
+import { useEventListUrlNavigation } from '@/hooks/useEventListUrlNavigation';
 import EventDateFilterControl from './EventDateFilter';
 import EventFilterDropdown, { EventFilterDropdownOption } from './EventFilterDropdown';
 
@@ -35,7 +35,7 @@ function toGenreOptions(categories: ExtendedEventCategoriesResponse): EventFilte
 }
 
 export default function EventFilter({ categories }: { categories: ExtendedEventCategoriesResponse }) {
-  const searchParams = useSearchParams();
+  const { searchParams, navigateWithParams } = useEventListUrlNavigation();
   const genreOptions = toGenreOptions(categories);
   const currentDate = searchParams.get('date') ?? 'all';
   const currentRegion = searchParams.get('region') ?? 'all';
@@ -43,35 +43,34 @@ export default function EventFilter({ categories }: { categories: ExtendedEventC
     categories.find(({ name }) => name === searchParams.get('category'))?.id.toString() ?? 'all';
 
   const updateFilters = (next: { category?: string; region?: string; date?: string }) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
+    navigateWithParams((params) => {
+      params.delete('page');
 
-    if (!next.category || next.category === 'all') {
-      params.delete('category');
-    } else {
-      const selectedCategory = categories.find(({ id }) => `${id}` === next.category)?.name;
-
-      if (!selectedCategory || selectedCategory === '전체') {
+      if (!next.category || next.category === 'all') {
         params.delete('category');
       } else {
-        params.set('category', selectedCategory);
+        const selectedCategory = categories.find(({ id }) => `${id}` === next.category)?.name;
+
+        if (!selectedCategory || selectedCategory === '전체') {
+          params.delete('category');
+        } else {
+          params.set('category', selectedCategory);
+        }
       }
-    }
 
-    if (!next.region || next.region === 'all') {
-      params.delete('region');
-    } else {
-      params.set('region', next.region);
-    }
+      if (!next.region || next.region === 'all') {
+        params.delete('region');
+      } else {
+        params.set('region', next.region);
+      }
 
-    if (!next.date || next.date === 'all') {
-      params.delete('date');
-    } else {
-      params.set('date', next.date);
-    }
+      if (!next.date || next.date === 'all') {
+        params.delete('date');
+      } else {
+        params.set('date', next.date);
+      }
+    });
 
-    const nextUrl = params.toString() ? `/?${params.toString()}` : '/';
-    window.history.pushState(null, '', nextUrl);
     scrollToEventList();
   };
 

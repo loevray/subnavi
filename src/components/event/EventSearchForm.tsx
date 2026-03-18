@@ -6,14 +6,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Search, SearchIcon, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useSearchParams } from 'next/navigation';
 import { SearchKeyword, SearchKeywordDto } from '@/dto/event/shared-event.dto';
 import scrollToEventList from '@/utils/scrollToEventList';
+import { useEventListUrlNavigation } from '@/hooks/useEventListUrlNavigation';
 
 // Zod 스키마 정의
 
 export default function EventSearchForm() {
-  const searchParams = useSearchParams();
+  const { searchParams, navigateWithParams } = useEventListUrlNavigation();
   const {
     register,
     handleSubmit,
@@ -37,17 +37,15 @@ export default function EventSearchForm() {
 
   const onSubmit = (data: SearchKeyword) => {
     const keyword = preprocessSearch(data.query);
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
+    navigateWithParams((params) => {
+      params.delete('page');
 
-    if (keyword) {
-      params.set('keyword', keyword);
-    } else {
-      params.delete('keyword');
-    }
-
-    const nextUrl = params.toString() ? `/?${params.toString()}` : '/';
-    window.history.pushState(null, '', nextUrl);
+      if (keyword) {
+        params.set('keyword', keyword);
+      } else {
+        params.delete('keyword');
+      }
+    });
     scrollToEventList();
   };
 
@@ -60,12 +58,10 @@ export default function EventSearchForm() {
       return;
     }
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
-    params.delete('keyword');
-
-    const nextUrl = params.toString() ? `/?${params.toString()}` : '/';
-    window.history.pushState(null, '', nextUrl);
+    navigateWithParams((params) => {
+      params.delete('page');
+      params.delete('keyword');
+    });
     scrollToEventList();
   };
 
