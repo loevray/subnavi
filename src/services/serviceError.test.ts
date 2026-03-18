@@ -71,7 +71,7 @@ describe('serviceError helpers', () => {
   });
 
   it('throws for unexpected Supabase database errors', () => {
-    expect(() => throwUnexpectedPostgrestError(duplicateKeyError, 'create event')).toThrowError(
+    expect(() => throwUnexpectedPostgrestError(duplicateKeyError, 'create event')).toThrow(
       'Failed to create event: duplicate key value violates unique constraint "events_pkey"'
     );
   });
@@ -79,6 +79,6 @@ describe('serviceError helpers', () => {
   it('throws from the single-row helper when the error is not a missing-row case', () => {
     expect(() =>
       handleSingleRowPostgrestError<never>(duplicateKeyError, 'fetch event by id', 'Event not found')
-    ).toThrowError('Failed to fetch event by id: duplicate key value violates unique constraint "events_pkey"');
+    ).toThrow('Failed to fetch event by id: duplicate key value violates unique constraint "events_pkey"');
   });
 });
