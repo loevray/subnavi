@@ -84,16 +84,21 @@ export const BaseEventDto = z.object({
   updatedAt: z.string().nullish(),
 });
 
+export const SearchKeywordTextDto = z
+  .string()
+  .transform((val) => val.trim().replace(/\s+/g, ' '))
+  .refine((val) => val.replace(/\s/g, '').length >= 2, {
+    message: '공백 제외 최소 2글자 이상 입력해주세요',
+  })
+  .refine((val) => val.length <= 50, {
+    message: '최대 50글자까지 입력 가능합니다',
+  })
+  .refine((val) => !/[(),]/.test(val), {
+    message: '검색어에 사용할 수 없는 문자가 포함되어 있습니다',
+  });
+
 export const SearchKeywordDto = z.object({
-  query: z
-    .string()
-    .transform((val) => val.trim().replace(/\s+/g, ' '))
-    .refine((val) => val.replace(/\s/g, '').length >= 2, {
-      message: '공백 제외 최소 2글자 이상 입력해주세요',
-    })
-    .refine((val) => val.length <= 50, {
-      message: '최대 50글자까지 입력 가능합니다',
-    }),
+  query: SearchKeywordTextDto,
 });
 
 export type SearchKeyword = z.infer<typeof SearchKeywordDto>;
