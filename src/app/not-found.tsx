@@ -767,7 +767,7 @@ export default function NotFound() {
           <div className="img-frame">
             <div className="hud-ring" />
             <div className="hud-ring-br" />
-            <div className="img-badge">// ERROR_MAID.EXE //</div>
+            <div className="img-badge">{'// ERROR_MAID.EXE //'}</div>
             <div className="img-scan" />
 
             <Image
