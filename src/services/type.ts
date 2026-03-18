@@ -1,4 +1,4 @@
-import { CustomErrorSerialized } from '@/lib/errors/serviceErrors.server';
+import { SerializedAppError } from '@/lib/errors/error-contract';
 
 export type Result<D, E = Error> =
   | {
@@ -6,4 +6,4 @@ export type Result<D, E = Error> =
       data: D;
     }
   | { success: false; error: E };
-export type ServiceResult<D> = Result<D, CustomErrorSerialized['error']>;
+export type ServiceResult<D> = Result<D, SerializedAppError>;
