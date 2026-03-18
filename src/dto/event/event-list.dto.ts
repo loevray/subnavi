@@ -6,6 +6,7 @@ import {
   EventRelationsDto,
   PaginationDto,
   RegionNameDto,
+  SearchKeywordTextDto,
 } from './shared-event.dto';
 
 export const EventListItemDto = BaseEventDto.pick({
@@ -30,7 +31,7 @@ export type EventListResponse = z.infer<typeof EventListResponseDto>;
 export const EventListRequestDto = z.object({
   page: z.int().positive('need positive number').optional(),
   pageSize: z.int().positive('need positive number').max(10, 'less than 11').optional(),
-  keyword: z.string().optional(),
+  keyword: SearchKeywordTextDto.optional(),
   category: CateogryNameDto.optional(),
   region: RegionNameDto.optional(),
   date: EventDateFilterDto.optional(),

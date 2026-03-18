@@ -7,6 +7,7 @@ import { createNotFoundApiResponse, isDevelopmentEnvironment } from '@/utils/run
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const rawKeyword = searchParams.get('keyword');
 
     const rawCategory = searchParams.get('category');
     const rawRegion = searchParams.get('region');
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
       category,
       region,
       date,
-      keyword: searchParams.get('keyword') ?? undefined,
+      keyword: rawKeyword?.trim() ? rawKeyword : undefined,
     };
 
     const serviceResponse = await eventService.getEvents(queryParams);
