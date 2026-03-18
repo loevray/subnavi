@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import type { EventListResponse } from '@/dto/event/event-list.dto';
 import type { EventDateFilter, EventCategory, RegionName } from '@/dto/event/shared-event.dto';
 import ExploreFeedSection, { ExploreSectionBadge, ExploreSectionCopy } from '@/components/event/explore/ExploreFeedSection';
+import { ApiError, EventsApi } from '@/lib/api-client';
 import { formatEventDateFilterLabel } from '@/utils/eventDateFilter';
 import EventList from './EventList';
 import EventPagination from '../EventPagination';
@@ -55,15 +56,15 @@ function getExploreSectionCopy(params: EventListQueryState): ExploreSectionCopy 
   if (isLatestEventFeed(params)) {
     return {
       eyebrow: 'Latest Events',
-      title: '행사 일정',
-      description: '최근 등록된 행사를 기준으로 둘러보면서 관심 있는 일정을 빠르게 찾아보세요.',
+      title: '이벤트 일정',
+      description: '최근 등록된 이벤트를 기준으로 관심 있는 일정을 빠르게 둘러보세요.',
     };
   }
 
   return {
     eyebrow: 'Filtered Events',
-    title: '행사 일정',
-    description: '입력한 검색어와 선택한 조건에 맞는 행사만 모아서 보여드리고 있어요.',
+    title: '이벤트 일정',
+    description: '입력한 검색어와 선택한 조건에 맞는 이벤트만 모아 보여드리고 있어요.',
   };
 }
 
@@ -79,7 +80,7 @@ function getExploreSectionBadges(params: EventListQueryState): ExploreSectionBad
   }
 
   if (params.region) {
-    badges.push({ label: `위치: ${params.region}` });
+    badges.push({ label: `지역: ${params.region}` });
   }
 
   if (params.date) {
@@ -87,19 +88,6 @@ function getExploreSectionBadges(params: EventListQueryState): ExploreSectionBad
   }
 
   return badges;
-}
-
-function buildEventsApiUrl(params: EventListQueryState, pageSize: number) {
-  const nextParams = new URLSearchParams();
-  nextParams.set('page', String(params.page));
-  nextParams.set('pageSize', String(pageSize));
-
-  if (params.keyword) nextParams.set('keyword', params.keyword);
-  if (params.category) nextParams.set('category', params.category);
-  if (params.region) nextParams.set('region', params.region);
-  if (params.date) nextParams.set('date', params.date);
-
-  return `/api/events?${nextParams.toString()}`;
 }
 
 export default function EventListSection({
@@ -133,23 +121,31 @@ export default function EventListSection({
         setIsLoading(true);
         setErrorMessage(null);
 
-        const response = await fetch(buildEventsApiUrl(queryState, pageSize), {
-          signal: controller.signal,
-          cache: 'no-store',
+        const nextData = await EventsApi.getAll({
+          page: queryState.page,
+          pageSize,
+          keyword: queryState.keyword,
+          category: queryState.category,
+          region: queryState.region,
+          date: queryState.date,
         });
 
-        if (!response.ok) {
-          throw new Error('이벤트 리스트를 불러오지 못했습니다.');
+        if (controller.signal.aborted) {
+          return;
         }
 
-        const nextData = (await response.json()) as EventListResponse;
         setData(nextData);
       } catch (error) {
         if (controller.signal.aborted) {
           return;
         }
 
-        setErrorMessage(error instanceof Error ? error.message : '이벤트 리스트를 불러오지 못했습니다.');
+        if (error instanceof ApiError) {
+          setErrorMessage(error.message);
+          return;
+        }
+
+        setErrorMessage(error instanceof Error ? error.message : '이벤트 목록을 불러오지 못했습니다.');
       } finally {
         if (!controller.signal.aborted) {
           setIsLoading(false);
@@ -197,7 +193,7 @@ function EventListSectionContent({
   }
 
   if (!data) {
-    return <div>이벤트 리스트 fetching 실패</div>;
+    return <div>이벤트 목록을 불러오지 못했습니다.</div>;
   }
 
   const { events, pagination } = data;
@@ -211,11 +207,11 @@ function EventListSectionContent({
         <div className="flex h-80 items-center justify-center rounded-[28px] border border-dashed border-slate-200 bg-slate-50/80 px-6 text-center">
           <div>
             <p className="text-2xl font-extrabold tracking-[-0.03em] text-slate-900 sm:text-3xl">
-              조건에 맞는 행사를 아직 찾지 못했어요.
+              조건에 맞는 이벤트를 아직 찾지 못했어요.
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-500 sm:text-base">
               {queryState.category ?? '전체'} 범위에서 {queryState.keyword ? `'${queryState.keyword}'` : '입력한 조건'} 기준으로
-              검색했지만 결과가 없었습니다. 다른 키워드나 카테고리로 다시 좁혀보세요.
+              검색했지만 결과가 없었습니다. 다른 키워드나 카테고리로 다시 확인해보세요.
             </p>
           </div>
         </div>
@@ -226,11 +222,11 @@ function EventListSectionContent({
       <footer className="mt-12">
         <div className="mb-6 text-center">
           <div className="text-sm text-slate-600">
-            총 <span className="font-semibold text-indigo-600">{pagination.total}개</span> 행사 중{' '}
+            총 <span className="font-semibold text-indigo-600">{pagination.total}</span>개 이벤트 중{' '}
             <span className="font-semibold text-indigo-600">
               {startItem}-{endItem}
             </span>
-            를 보고 있어요
+            개를 보고 있어요.
           </div>
         </div>
         <EventPagination totalItems={pagination.total} itemsPerPage={pagination.pageSize} maxVisiblePages={1} />
