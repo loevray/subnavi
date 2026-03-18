@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import type { EventListResponse } from '@/dto/event/event-list.dto';
-import type { EventDateFilter, EventCategory, RegionName } from '@/dto/event/shared-event.dto';
 import ExploreFeedSection, { ExploreSectionBadge, ExploreSectionCopy } from '@/components/event/explore/ExploreFeedSection';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ApiError, EventsApi } from '@/lib/api-client';
 import { AlertCircle } from 'lucide-react';
 import { formatEventDateFilterLabel } from '@/utils/eventDateFilter';
+import { EventListQueryState, normalizeEventListQueryState } from '@/utils/eventListSearchParams';
 import EventList from './EventList';
 import EventPagination from '../EventPagination';
 import EventListSectionFallback from './EventListSectionFallback';
@@ -23,26 +23,6 @@ type EventListSectionProps = {
   latestPageSize: number;
   latestGridClassName?: string;
 };
-
-type EventListQueryState = {
-  page: number;
-  keyword?: string;
-  category?: EventCategory['name'];
-  region?: RegionName;
-  date?: EventDateFilter;
-};
-
-function getQueryState(searchParams: URLSearchParams | ReadonlyURLSearchParamsLike): EventListQueryState {
-  const rawPage = Number(searchParams.get('page') || '1');
-
-  return {
-    page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
-    keyword: searchParams.get('keyword') ?? undefined,
-    category: (searchParams.get('category') as EventCategory['name'] | null) ?? undefined,
-    region: (searchParams.get('region') as RegionName | null) ?? undefined,
-    date: (searchParams.get('date') as EventDateFilter | null) ?? undefined,
-  };
-}
 
 function isLatestEventFeed(params: EventListQueryState) {
   return !params.category && !params.region && !params.date && !params.keyword;
@@ -101,7 +81,7 @@ export default function EventListSection({
   latestGridClassName,
 }: EventListSectionProps) {
   const searchParams = useSearchParams();
-  const queryState = useMemo(() => getQueryState(searchParams), [searchParams]);
+  const queryState = useMemo(() => normalizeEventListQueryState(searchParams), [searchParams]);
   const isLatestFeed = isLatestEventFeed(queryState);
   const pageSize = isLatestFeed ? latestPageSize : DEFAULT_EVENT_PAGE_SIZE;
   const currentSearchKey = useMemo(() => getSearchKey(queryState, pageSize), [queryState, pageSize]);
@@ -244,7 +224,3 @@ function EventListSectionContent({
     </>
   );
 }
-
-type ReadonlyURLSearchParamsLike = {
-  get(name: string): string | null;
-};

@@ -4,6 +4,7 @@ import { MapPin, Shapes } from 'lucide-react';
 
 import { EventCategory, EventDateFilter, RegionNameDto } from '@/dto/event/shared-event.dto';
 import scrollToEventList from '@/utils/scrollToEventList';
+import { normalizeEventListQueryState } from '@/utils/eventListSearchParams';
 import { useEventListUrlNavigation } from '@/hooks/useEventListUrlNavigation';
 import EventDateFilterControl from './EventDateFilter';
 import EventFilterDropdown, { EventFilterDropdownOption } from './EventFilterDropdown';
@@ -36,11 +37,11 @@ function toGenreOptions(categories: ExtendedEventCategoriesResponse): EventFilte
 
 export default function EventFilter({ categories }: { categories: ExtendedEventCategoriesResponse }) {
   const { searchParams, navigateWithParams } = useEventListUrlNavigation();
+  const queryState = normalizeEventListQueryState(searchParams);
   const genreOptions = toGenreOptions(categories);
-  const currentDate = searchParams.get('date') ?? 'all';
-  const currentRegion = searchParams.get('region') ?? 'all';
-  const currentCategory =
-    categories.find(({ name }) => name === searchParams.get('category'))?.id.toString() ?? 'all';
+  const currentDate = queryState.date ?? 'all';
+  const currentRegion = queryState.region ?? 'all';
+  const currentCategory = categories.find(({ name }) => name === queryState.category)?.id.toString() ?? 'all';
 
   const updateFilters = (next: { category?: string; region?: string; date?: string }) => {
     navigateWithParams((params) => {

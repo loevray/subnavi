@@ -8,12 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SearchKeyword, SearchKeywordDto } from '@/dto/event/shared-event.dto';
 import scrollToEventList from '@/utils/scrollToEventList';
+import { normalizeEventListKeyword } from '@/utils/eventListSearchParams';
 import { useEventListUrlNavigation } from '@/hooks/useEventListUrlNavigation';
 
 // Zod 스키마 정의
 
 export default function EventSearchForm() {
   const { searchParams, navigateWithParams } = useEventListUrlNavigation();
+  const currentKeyword = normalizeEventListKeyword(searchParams.get('keyword')) ?? '';
   const {
     register,
     handleSubmit,
@@ -24,12 +26,11 @@ export default function EventSearchForm() {
     resolver: zodResolver(SearchKeywordDto),
     mode: 'onChange', // 실시간 검증
     defaultValues: {
-      query: searchParams.get('keyword') ?? '',
+      query: currentKeyword,
     },
   });
 
   const watchedQuery = watch('query');
-  const currentKeyword = searchParams.get('keyword') ?? '';
 
   useEffect(() => {
     reset({ query: currentKeyword });
