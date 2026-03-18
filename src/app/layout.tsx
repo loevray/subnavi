@@ -1,13 +1,25 @@
+import type { Metadata } from 'next';
+
 import MainLayout from '@/components/layout/MainLayout';
+import { getMetadataBase, getOptionalEnvValue } from '@/utils/siteConfig';
 import './globals.css';
 
-export const metadata = {
+const SITE_NAME = 'Subnavi';
+const SITE_TITLE = 'Subnavi - 서브컬쳐 행사 정보';
+const SITE_DESCRIPTION =
+  '애니메이션, 게임, 만화, 코스프레 등 서브컬쳐 행사 정보를 한눈에! 콘서트, 전시회, 팬미팅, 굿즈샵 이벤트까지 놓치지 마세요.';
+const SITE_OG_IMAGE = '/subnavi-og.svg';
+const TWITTER_HANDLE = getOptionalEnvValue(process.env.TWITTER_HANDLE);
+const GOOGLE_SITE_VERIFICATION = getOptionalEnvValue(process.env.GOOGLE_SITE_VERIFICATION);
+const NAVER_SITE_VERIFICATION = getOptionalEnvValue(process.env.NAVER_SITE_VERIFICATION);
+
+export const metadata: Metadata = {
+  metadataBase: getMetadataBase(),
   title: {
-    template: '%s | Subnavi - 서브컬쳐 행사 정보',
-    default: 'Subnavi - 서브컬쳐 행사 정보',
+    template: '%s | Subnavi',
+    default: SITE_TITLE,
   },
-  description:
-    '애니메이션, 게임, 만화, 코스프레 등 서브컬쳐 행사 정보를 한눈에! 콘서트, 전시회, 팬미팅, 굿즈샵 이벤트까지 놓치지 마세요.',
+  description: SITE_DESCRIPTION,
   keywords: [
     '서브컬쳐',
     '애니메이션',
@@ -26,8 +38,8 @@ export const metadata = {
     'subnavi',
   ],
   authors: [{ name: 'Subnavi Team' }],
-  creator: 'Subnavi',
-  publisher: 'Subnavi',
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   formatDetection: {
     email: false,
     address: false,
@@ -42,26 +54,25 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    title: 'Subnavi - 서브컬쳐 행사 정보',
-    description:
-      '애니메이션, 게임, 만화, 코스프레 등 서브컬쳐 행사 정보를 한눈에! 콘서트, 전시회, 팬미팅, 굿즈샵 이벤트까지 놓치지 마세요.',
-    siteName: 'Subnavi',
+    url: '/',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
     images: [
       {
-        url: '/subnavi-og.svg', // 1200x630 크기 권장
+        url: SITE_OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: 'Subnavi - 서브컬쳐 행사 정보',
+        alt: SITE_TITLE,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Subnavi - 서브컬쳐 행사 정보',
-    description: '애니메이션, 게임, 만화, 코스프레 등 서브컬쳐 행사 정보를 한눈에!',
-    site: '', // 실제 트위터 계정으로 변경
-    creator: '',
-    images: ['/subnavi-og.svg'], // 1200x600 크기 권장
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [SITE_OG_IMAGE],
+    ...(TWITTER_HANDLE ? { site: TWITTER_HANDLE, creator: TWITTER_HANDLE } : {}),
   },
   robots: {
     index: true,
@@ -77,9 +88,15 @@ export const metadata = {
     },
   },
   verification: {
-    google: 'google-site-verification-code', // Google Search Console 인증 코드
-    naver: 'naver-site-verification-code', // 네이버 웹마스터 인증 코드
+    ...(GOOGLE_SITE_VERIFICATION ? { google: GOOGLE_SITE_VERIFICATION } : {}),
   },
+  ...(NAVER_SITE_VERIFICATION
+    ? {
+        other: {
+          'naver-site-verification': NAVER_SITE_VERIFICATION,
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({
@@ -88,7 +105,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body>
         <MainLayout>{children}</MainLayout>
       </body>

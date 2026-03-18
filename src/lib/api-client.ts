@@ -4,6 +4,7 @@ import { EventListResponse } from '@/dto/event/event-list.dto';
 import { EventCategory, EventDateFilter, RegionListResponse, RegionName } from '@/dto/event/shared-event.dto';
 import { UpdateEventRequest, UpdateEventResponse } from '@/dto/event/update-event.dto';
 import { ErrorResponseBody, isSerializedAppError, SerializedAppError } from '@/lib/errors/error-contract';
+import { getApiBaseUrl } from '@/utils/siteConfig';
 
 export class ApiError extends Error {
   public readonly code: SerializedAppError['code'];
@@ -161,10 +162,6 @@ class ApiClient {
     delete this.defaultHeaders[key];
   }
 }
-
-const getApiBaseUrl = () => {
-  return process.env.NEXT_PUBLIC_API_BASE_URL;
-};
 
 export const apiClient = new ApiClient(getApiBaseUrl());
 
