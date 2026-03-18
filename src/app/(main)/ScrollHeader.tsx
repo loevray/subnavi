@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
+import { normalizeEventListQueryState } from '@/utils/eventListSearchParams';
 import useYouTubeHeader from '../../hooks/useYoutubeHeader';
 
 interface HeaderProps {
@@ -11,11 +12,10 @@ interface HeaderProps {
 
 const ScrollHeader: React.FC<HeaderProps> = ({ className = '', children }) => {
   const searchParams = useSearchParams();
-  const hasActiveSearchOrFilter =
-    Boolean(searchParams.get('keyword')) ||
-    Boolean(searchParams.get('category')) ||
-    Boolean(searchParams.get('region')) ||
-    Boolean(searchParams.get('date'));
+  const queryState = normalizeEventListQueryState(searchParams);
+  const hasActiveSearchOrFilter = Boolean(
+    queryState.keyword || queryState.category || queryState.region || queryState.date
+  );
 
   const { isVisible } = useYouTubeHeader({
     immediate: true,
