@@ -1,53 +1,50 @@
-import { createAdminClient } from '@/utils/supabase/admin';
+import handleCustomError from '@/utils/handleCustomError';
 import { eventService } from '@/services/Event';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const id = (await params).id;
-  const serviceResponse = await eventService.getEventById({ id });
-  if (serviceResponse.success) return Response.json(serviceResponse.data);
-  const { error } = serviceResponse;
-  console.error('Error in GET /api/events/[id]:', error);
+  try {
+    const id = (await params).id;
+    const serviceResponse = await eventService.getEventById({ id });
 
-  return Response.json({ error }, { status: error.statusCode });
+    if (serviceResponse.success) {
+      return Response.json(serviceResponse.data);
+    }
+
+    const { error } = serviceResponse;
+    console.error('Error in GET /api/events/[id]:', error);
+    return Response.json({ error }, { status: error.statusCode });
+  } catch (error) {
+    console.error('Unexpected error in GET /api/events/[id]:', error);
+    return handleCustomError(error);
+  }
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const body = await request.json();
   try {
-    const supabase = createAdminClient();
-    const { data: event, error } = await supabase.from('events').update(body).eq('id', id).select();
+    const { id } = await params;
+    const body = await request.json();
+    const serviceResponse = await eventService.updateEvent({ ...body, id });
 
-    if (error) {
-      console.error('Error update event by ID:', error);
-      return Response.json({ error: error.message }, { status: 500 });
+    if (serviceResponse.success) {
+      return Response.json(serviceResponse.data);
     }
 
-    if (!event) {
-      // 해당 ID의 이벤트가 없을 경우 404 Not Found 응답
-      return Response.json({ error: 'Event not found' }, { status: 404 });
-    }
-
-    return Response.json(event);
-  } catch (err) {
-    console.error('Failed to update event:', err);
-    return Response.json({ error: 'Failed to update event' }, { status: 500 });
+    const { error } = serviceResponse;
+    console.error('Error in PATCH /api/events/[id]:', error);
+    return Response.json({ error }, { status: error.statusCode });
+  } catch (error) {
+    console.error('Unexpected error in PATCH /api/events/[id]:', error);
+    return handleCustomError(error);
   }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  //특정 행사 삭제
-  const { id } = await params;
-
   try {
-    const supabase = createAdminClient();
-    const response = await supabase.from('events').delete().eq('id', id);
-    if (response.error) {
-      return Response.json({ error: response.error }, { status: 400 });
-    }
-    return Response.json({ status: 204 });
-  } catch (err) {
-    console.error('Failed to delete event:', err);
-    return Response.json({ error: 'Failed to delete event' }, { status: 500 });
+    const { id } = await params;
+    await eventService.deleteEvent(id);
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    console.error('Unexpected error in DELETE /api/events/[id]:', error);
+    return handleCustomError(error);
   }
 }
