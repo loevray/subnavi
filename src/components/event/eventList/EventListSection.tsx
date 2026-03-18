@@ -6,7 +6,9 @@ import { useSearchParams } from 'next/navigation';
 import type { EventListResponse } from '@/dto/event/event-list.dto';
 import type { EventDateFilter, EventCategory, RegionName } from '@/dto/event/shared-event.dto';
 import ExploreFeedSection, { ExploreSectionBadge, ExploreSectionCopy } from '@/components/event/explore/ExploreFeedSection';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ApiError, EventsApi } from '@/lib/api-client';
+import { AlertCircle } from 'lucide-react';
 import { formatEventDateFilterLabel } from '@/utils/eventDateFilter';
 import EventList from './EventList';
 import EventPagination from '../EventPagination';
@@ -16,6 +18,7 @@ const DEFAULT_EVENT_PAGE_SIZE = 5;
 
 type EventListSectionProps = {
   initialData?: EventListResponse | null;
+  initialErrorMessage?: string | null;
   initialSearchKey: string;
   latestPageSize: number;
   latestGridClassName?: string;
@@ -92,6 +95,7 @@ function getExploreSectionBadges(params: EventListQueryState): ExploreSectionBad
 
 export default function EventListSection({
   initialData,
+  initialErrorMessage,
   initialSearchKey,
   latestPageSize,
   latestGridClassName,
@@ -104,12 +108,12 @@ export default function EventListSection({
 
   const [data, setData] = useState<EventListResponse | null>(initialData ?? null);
   const [isLoading, setIsLoading] = useState(currentSearchKey !== initialSearchKey && !initialData);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage ?? null);
 
   useEffect(() => {
     if (currentSearchKey === initialSearchKey) {
       setData(initialData ?? null);
-      setErrorMessage(null);
+      setErrorMessage(initialErrorMessage ?? null);
       setIsLoading(false);
       return;
     }
@@ -156,7 +160,7 @@ export default function EventListSection({
     fetchEvents();
 
     return () => controller.abort();
-  }, [currentSearchKey, initialData, initialSearchKey, pageSize, queryState]);
+  }, [currentSearchKey, initialData, initialErrorMessage, initialSearchKey, pageSize, queryState]);
 
   const sectionCopy = getExploreSectionCopy(queryState);
   const sectionBadges = getExploreSectionBadges(queryState);
@@ -189,7 +193,13 @@ function EventListSectionContent({
   queryState: EventListQueryState;
 }) {
   if (errorMessage) {
-    return <div>{errorMessage}</div>;
+    return (
+      <Alert variant="destructive" className="rounded-[28px] border border-red-200 bg-white/90 p-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>이벤트 목록을 불러오지 못했습니다.</AlertTitle>
+        <AlertDescription>{errorMessage}</AlertDescription>
+      </Alert>
+    );
   }
 
   if (!data) {

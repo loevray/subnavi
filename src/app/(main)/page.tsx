@@ -41,6 +41,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Mai
         keyword: resolvedSearchParams.keyword,
       });
   const initialSectionData = initialSectionResponse.success ? initialSectionResponse.data : null;
+  const initialSectionErrorMessage = initialSectionResponse.success ? null : initialSectionResponse.error.message;
   const initialSearchKey = JSON.stringify({
     page: resolvedPage,
     category: resolvedSearchParams.category,
@@ -59,6 +60,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Mai
           <Suspense fallback={null}>
             <EventListSection
               initialData={initialSectionData}
+              initialErrorMessage={initialSectionErrorMessage}
               initialSearchKey={initialSearchKey}
               latestPageSize={HOME_LATEST_EVENT_PAGE_SIZE}
               latestGridClassName={HOME_LATEST_EVENT_GRID_STYLES}
