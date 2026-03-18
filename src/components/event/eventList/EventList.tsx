@@ -9,7 +9,7 @@ export const GRID_STYLES =
     .replace(/\s+/g, ' ')
     .trim();
 
-const createEventUrl = (id: string) => `${process.env.NEXT_PUBLIC_BASE_URL}/event/${id}`;
+const createEventUrl = (id: string) => `/event/${id}`;
 
 export default function EventList({
   events,
