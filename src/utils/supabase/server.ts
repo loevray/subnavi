@@ -1,17 +1,13 @@
 import { createServerClient /* type CookieOptions */ } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '../../../database.types';
+import { getSupabaseEnv } from './env';
 
-export const createClient = async (
-  useServiceRole = process.env.NODE_ENV === 'development'
-) => {
+export const createClient = async () => {
   const cookieStore = await cookies();
-  const supabaseUrl = process.env.SUPABASE_URL!;
-  const supabaseKey = useServiceRole
-    ? process.env.SUPABASE_SERVICE_ROLE_KEY!
-    : process.env.SUPABASE_ANON_KEY!;
+  const { url, anonKey } = getSupabaseEnv();
 
-  return createServerClient<Database>(supabaseUrl, supabaseKey, {
+  return createServerClient<Database>(url, anonKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

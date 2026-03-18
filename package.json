@@ -13,8 +13,10 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prepare": "husky",
-    "gen:types": "powershell -ExecutionPolicy Bypass -File ./supabase-type-gen.ps1",
-    "setup": "copy .env.example .env"
+    "gen:types": "powershell -ExecutionPolicy Bypass -File ./supabase-type-gen.ps1 -EnvFile .env.local",
+    "gen:types:prod": "powershell -ExecutionPolicy Bypass -File ./supabase-type-gen.ps1 -EnvFile .env",
+    "setup": "copy .env.local.example .env.local",
+    "setup:prod": "copy .env.example .env"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
